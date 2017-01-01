@@ -92,7 +92,7 @@ class CriticalCSS_Background_Process extends WP_Background_Process {
 		if ( ! empty( $item['queue_id'] ) ) {
 			$result = $api->get_result( $item['queue_id'] );
 			if ( $result instanceof WP_Error ) {
-				return false;
+				return $item;
 			}
 			if ( ! empty( $result->status ) ) {
 				$item['status'] = $result->status;
@@ -122,7 +122,7 @@ class CriticalCSS_Background_Process extends WP_Background_Process {
 		} else {
 			$result = $api->generate( $item );
 			if ( $result instanceof WP_Error ) {
-				return false;
+				return $item;
 			}
 			$item['queue_id'] = $result->id;
 
