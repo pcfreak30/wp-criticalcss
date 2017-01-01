@@ -37,6 +37,21 @@ You may go to https://www.github.com/pcfreak30/wp-criticalcss/issues and make a 
 
 Currently no. Since CriticalCSS.com can not access protected pages currently, the page must be publicaly visible to work. Means to allow this to work may come in the future.
 
+* What will happen if I update content on the site or change my theme?
+
+The plugins css cache will automatically purge for that post or term and get queued for processing again on the next user request of it.
+
+* What will happen if I upgrade a plugin or theme?
+
+The whole cache will be purged regardless of the purge setting
+
+* Does this support any caching plugins?
+
+Yes currently WP-Rocket is supported. Others can be added as integrations on request.
+
+* What host is supported?
+
+Generally any host. Some hosts like WPEngine has special support to purge the server cache.
 
 == Changelog ==
 
