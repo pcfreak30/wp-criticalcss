@@ -33,6 +33,9 @@ Please sign up at [CriticalCSS.com](https://www.criticalcss.com) then go to [Cri
 
 You may go to https://www.github.com/pcfreak30/wp-criticalcss/issues and make a new issue. For any support, see the support forums.
 
+* Will this work for inside paywalls or membershp sites?
+
+Currently no. Since CriticalCSS.com can not access protected pages currently, the page must be publicaly visible to work. Means to allow this to work may come in the future.
 
 
 == Changelog ==
