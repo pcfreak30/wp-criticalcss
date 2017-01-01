@@ -78,6 +78,7 @@ class CriticalCSS_API {
 				'height' => 900,
 				'width'  => 1300,
 				'url'    => CriticalCSS::get_permalink( $item ),
+				'aff'    => 3,
 			),
 		) );
 
