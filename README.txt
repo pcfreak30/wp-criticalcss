@@ -29,6 +29,10 @@ This section describes how to install the plugin and get it working.
 
 Please sign up at [CriticalCSS.com](https://www.criticalcss.com) then go to [CriticalCSS.com API Keys](https://www.criticalcss.com/account/api-keys). Be sure to read the additional pricing information!
 
+At the time of writing (1 Jan 2017) the price for using [CriticalCSS.com](https://www.criticalcss.com) is:
+
+£2/month for membership + £5/domain/month. This means the total cost will be £7/month if you use this plugin for one site.
+
 * How do I report an issue?
 
 You may go to https://www.github.com/pcfreak30/wp-criticalcss/issues and make a new issue. For any support, see the support forums.
