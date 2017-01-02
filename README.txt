@@ -59,6 +59,11 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.1.3 ###
+
+* Bug/Enhancement: Use a simpler means to enable nocache on the homepage thats less error prone
+* Cleanup: reorder_rewrite_rules method not needed
+
 ### 0.1.2 ###
 
 * Bug: Revert bug fix for purging in 0.1.1 and just purge before setting cache
