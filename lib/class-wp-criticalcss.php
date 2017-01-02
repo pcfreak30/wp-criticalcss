@@ -496,12 +496,12 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function settings_init() {
-		$hook = add_options_page( 'Critical CSS', 'Critical CSS', 'manage_options', 'criticalcss', array(
+		$hook = add_options_page( 'WP Critical CSS', 'WP Critical CSS', 'manage_options', 'wp_criticalcss', array(
 			__CLASS__,
 			'settings_ui',
 		) );
 		add_action( "load-$hook", array( __CLASS__, 'screen_option' ) );
-		self::$_settings_ui->add_section( array( 'id' => 'criticalcss', 'title' => 'Critical CSS Options' ) );
+		self::$_settings_ui->add_section( array( 'id' => 'criticalcss', 'title' => 'WP Critical CSS Options' ) );
 		self::$_settings_ui->add_field( 'criticalcss', array(
 			'name'              => 'apikey',
 			'label'             => 'API Key',
