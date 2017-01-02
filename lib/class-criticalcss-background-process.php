@@ -115,10 +115,10 @@ class CriticalCSS_Background_Process extends WP_Background_Process {
 			if ( 'JOB_DONE' == $result->status ) {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
 					set_transient( CriticalCSS::get_transient_name( $item ), $result->css );
-					delete_transient( CriticalCSS::get_transient_name() . '_pending' );
 					CriticalCSS::purge_cache( $item['type'], $item['object_id'], CriticalCSS::get_permalink( $item ) );
 				}
 			}
+			delete_transient( CriticalCSS::get_transient_name() . '_pending' );
 		} else {
 			$result = $api->generate( $item );
 			if ( $result instanceof WP_Error ) {
