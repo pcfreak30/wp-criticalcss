@@ -77,10 +77,6 @@ class CriticalCSS {
 			add_action( 'wp', array( __CLASS__, 'wp_action' ) );
 		}
 		add_action( 'init', array( __CLASS__, 'init_action' ) );
-		/*	add_action( 'rewrite_rules_array', array(
-				__CLASS__,
-				'reorder_rewrite_rules',
-			) );*/
 		// Prevent a 404 on homepage if a static page is set
 		add_action( 'parse_query', array( __CLASS__, 'parse_query' ) );
 		// Don't fix url or try to guess url if we are using nocache on the homepage
