@@ -13,7 +13,9 @@ WordPress plugin that will use CriticalCSS.com to generate above-the-fold CSS fo
 
 This plugin will automatically have the CriticalCSS.com web service get the needed above the fold CSS for every page on your site to help improve your user experience and site speed. This is commonly required by google pagespeed as one of the last steps to do.
 
-This plugin does not handle any minification or re-ordering of assets. I recommend using [WP Rocket](https://wp-rocket.me/) with my [WP Rocket Footer JS](https://wordpress.org/plugins/rocket-footer-js/), [WP Rocket ASYNC CSS](https://wordpress.org/plugins/rocket-async-css/), and the plugin [Preloader](https://wordpress.org/plugin/the-preloader/)
+**This plugin alone will not improve site performance**. You need a minify and/or caching plugin as well.
+
+This plugin **does not** handle any minification or re-ordering of assets. I recommend using [WP Rocket](https://wp-rocket.me/) with my [WP Rocket Footer JS](https://wordpress.org/plugins/rocket-footer-js/), [WP Rocket ASYNC CSS](https://wordpress.org/plugins/rocket-async-css/), and the plugin [Preloader](https://wordpress.org/plugin/the-preloader/)
 
 If you need dedicated/professional assistance with this plugin or just want an expert to get your site to run the fastest it can be, you may hire me at [Codeable](https://codeable.io/developers/derrick-hammer/?ref=rvtGZ)
 
