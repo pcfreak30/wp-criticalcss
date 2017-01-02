@@ -141,6 +141,7 @@ class WP_CriticalCSS {
 			unset( $wp->query_vars['nocache'] );
 		}
 	}
+
 	/**
 	 * @param $vars
 	 *
@@ -501,22 +502,22 @@ class WP_CriticalCSS {
 			'settings_ui',
 		) );
 		add_action( "load-$hook", array( __CLASS__, 'screen_option' ) );
-		self::$_settings_ui->add_section( array( 'id' => 'criticalcss', 'title' => 'WP Critical CSS Options' ) );
-		self::$_settings_ui->add_field( 'criticalcss', array(
+		self::$_settings_ui->add_section( array( 'id' => self::OPTIONNAME, 'title' => 'WP Critical CSS Options' ) );
+		self::$_settings_ui->add_field( self::OPTIONNAME, array(
 			'name'              => 'apikey',
 			'label'             => 'API Key',
 			'type'              => 'text',
 			'sanitize_callback' => array( __CLASS__, 'validate_criticalcss_apikey' ),
 			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', self::LANG_DOMAIN ),
 		) );
-		self::$_settings_ui->add_field( 'criticalcss', array(
+		self::$_settings_ui->add_field( self::OPTIONNAME, array(
 			'name'  => 'disable_autopurge',
 			'label' => 'Disable Auto-Purge',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Do not automatically purge the CSS cache. This setting is ignored for theme updates, plugin updates, and switching themes.', self::LANG_DOMAIN ),
 		) );
 		if ( ! self::has_external_integration() ) {
-			self::$_settings_ui->add_field( 'criticalcss', array(
+			self::$_settings_ui->add_field( self::OPTIONNAME, array(
 				'name'  => 'expire',
 				'label' => 'Cache Time',
 				'type'  => 'number',
