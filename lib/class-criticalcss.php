@@ -247,9 +247,7 @@ class CriticalCSS {
 				) );
 				remove_action( 'rocket_buffer', array( 'Rocket_Async_Css_The_Preloader', 'inject_div' ) );
 			}
-			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-				define( 'DONOTCACHEPAGE', true );
-			}
+			define( 'DONOTCACHEPAGE', true );
 		}
 		// Compatibility with WP Rocket
 		if ( function_exists( 'get_rocket_option' ) ) {
@@ -258,18 +256,6 @@ class CriticalCSS {
 				add_action( 'after_rocket_clean_post', array( __CLASS__, 'prune_post_transients' ) );
 				add_action( 'after_rocket_clean_term', array( __CLASS__, 'prune_term_transients' ) );
 				add_action( 'after_rocket_clean_home', array( __CLASS__, 'prune_home_transients' ) );
-			}
-		}
-	}
-
-	public static function disable_external_integration() {
-		// Compatibility with WP Rocket
-		if ( function_exists( 'get_rocket_option' ) ) {
-			remove_action( 'after_rocket_clean_domain', array( __CLASS__, 'prune_transients' ) );
-			if ( 'off' == self::$_settings['disable_autopurge'] ) {
-				remove_action( 'after_rocket_clean_post', array( __CLASS__, 'prune_post_transients' ) );
-				remove_action( 'after_rocket_clean_term', array( __CLASS__, 'prune_term_transients' ) );
-				remove_action( 'after_rocket_clean_home', array( __CLASS__, 'prune_home_transients' ) );
 			}
 		}
 	}
