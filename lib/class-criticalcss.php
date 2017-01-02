@@ -20,20 +20,21 @@ class CriticalCSS {
 	const OPTIONNAME = 'criticalcss';
 
 	/**
+	 * @var bool
+	 */
+	public static $nocache = false;
+	/**
 	 * @var \WeDevs_Settings_API
 	 */
 	protected static $_settings_ui;
-
 	/**
 	 * @var
 	 */
 	protected static $_background_queue;
-
 	/**
 	 * @var
 	 */
 	protected static $_queue_table;
-
 	/**
 	 * @var array
 	 */
@@ -77,8 +78,11 @@ class CriticalCSS {
 			add_action( 'wp', array( __CLASS__, 'wp_action' ) );
 		}
 		add_action( 'init', array( __CLASS__, 'init_action' ) );
-		// Prevent a 404 on homepage if a static page is set
-		add_action( 'parse_query', array( __CLASS__, 'parse_query' ) );
+		/*
+		 * Prevent a 404 on homepage if a static page is set.
+		 * Will store query_var outside \WP_Query temporarily so we don't need to do any extra routing logic and will appear as if it was not set.
+		 */
+		add_action( 'parse_request', array( __CLASS__, 'parse_request' ) );
 		// Don't fix url or try to guess url if we are using nocache on the homepage
 		add_filter( 'redirect_canonical', array( __CLASS__, 'redirect_canonical' ) );
 		add_action( 'criticalcss_purge', array( __CLASS__, 'prune_transients' ) );
@@ -129,40 +133,13 @@ class CriticalCSS {
 	}
 
 	/**
-	 * @param \WP_Query $wp_query
-	 *
-	 * @return bool
+	 * @param \WP $wp
 	 */
-	public static function parse_query( WP_Query &$wp_query ) {
-		global $wp_current_filter;
-
-		$filters = array_count_values( $wp_current_filter );
-		if ( ! empty( $filters ) && ! empty( $filters['parse_query'] ) && $filters['parse_query'] > 1 ) {
-			return false;
+	public static function parse_request( WP &$wp ) {
+		if ( isset( $wp->query_vars['nocache'] ) ) {
+			self::$nocache = $wp->query_vars['nocache'];
+			unset( $wp->query_vars['nocache'] );
 		}
-		$qv = &$wp_query->query_vars;
-		if ( $wp_query->is_home && 'page' == get_option( 'show_on_front' ) && get_option( 'page_on_front' ) ) {
-			$_query = wp_parse_args( $wp_query->query );
-			// pagename can be set and empty depending on matched rewrite rules. Ignore an empty pagename.
-			if ( isset( $_query['pagename'] ) && '' == $_query['pagename'] ) {
-				unset( $_query['pagename'] );
-			}
-
-			unset( $_query['embed'] );
-		}
-		if ( empty( $_query ) || ! array_diff( array_keys( $_query ), array( 'nocache' ) ) ) {
-			$wp_query->is_page = true;
-			$wp_query->is_home = false;
-			$qv['page_id']     = get_option( 'page_on_front' );
-			// Correct <!--nextpage--> for page_on_front
-			if ( ! empty( $qv['paged'] ) ) {
-				$qv['page'] = $qv['paged'];
-				unset( $qv['paged'] );
-			}
-		}
-		$wp_query->parse_query();
-
-		return true;
 	}
 
 	/**
@@ -209,7 +186,7 @@ class CriticalCSS {
 	 *
 	 */
 	public static function wp_action() {
-
+		set_query_var( 'nocache', self::$nocache );
 		if ( self::has_external_integration() ) {
 			self::external_integration();
 		} else {
