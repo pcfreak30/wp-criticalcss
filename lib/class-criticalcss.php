@@ -141,23 +141,6 @@ class CriticalCSS {
 			unset( $wp->query_vars['nocache'] );
 		}
 	}
-
-	/**
-	 * @param array $rules
-	 *
-	 * @return array
-	 */
-	public static function reorder_rewrite_rules( array $rules ) {
-		$top_rules    = array_filter( $rules, function ( $rule ) {
-			return false !== strpos( $rule, 'nocache' );
-		} );
-		$bottom_rules = array_filter( $rules, function ( $rule ) {
-			return false === strpos( $rule, 'nocache' );
-		} );
-
-		return array_merge( $top_rules, $bottom_rules );
-	}
-
 	/**
 	 * @param $vars
 	 *
