@@ -7,16 +7,16 @@ require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
  */
 class CriticalCSS_Queue_List_Table extends WP_List_Table {
 	/**
-	 * @var \CriticalCSS_Background_Process
+	 * @var \WP_CriticalCSS_Background_Process
 	 */
 	private $_background_queue;
 
 	/**
 	 * CriticalCSS_Queue_List_Table constructor.
 	 *
-	 * @param \CriticalCSS_Background_Process $background_queue
+	 * @param \WP_CriticalCSS_Background_Process $background_queue
 	 */
-	public function __construct( CriticalCSS_Background_Process $background_queue ) {
+	public function __construct( WP_CriticalCSS_Background_Process $background_queue ) {
 		$this->_background_queue = $background_queue;
 		parent::__construct( array(
 			'singular' => __( 'Queue Item', 'criticalcss' ),
@@ -37,9 +37,9 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 	 */
 	function get_columns() {
 		$columns = array(
-			'url'            => __( 'URL', CriticalCSS::LANG_DOMAIN ),
-			'status'         => __( 'Status', CriticalCSS::LANG_DOMAIN ),
-			'queue_position' => __( 'Queue Position', CriticalCSS::LANG_DOMAIN ),
+			'url'            => __( 'URL', WP_CriticalCSS::LANG_DOMAIN ),
+			'status'         => __( 'Status', WP_CriticalCSS::LANG_DOMAIN ),
+			'queue_position' => __( 'Queue Position', WP_CriticalCSS::LANG_DOMAIN ),
 		);
 
 		return $columns;
@@ -117,7 +117,7 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 	 * @return false|mixed|string|\WP_Error
 	 */
 	protected function column_url( array $item ) {
-		return CriticalCSS::get_permalink( $item );
+		return WP_CriticalCSS::get_permalink( $item );
 	}
 
 	/**
@@ -129,20 +129,20 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 		if ( ! empty( $item['queue_id'] ) ) {
 			switch ( $item['status'] ) {
 				case 'JOB_UNKNOWN':
-					return __( 'Unknown', CriticalCSS::LANG_DOMAIN );
+					return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
 					break;
 				case 'JOB_QUEUED':
-					return __( 'Queued', CriticalCSS::LANG_DOMAIN );
+					return __( 'Queued', WP_CriticalCSS::LANG_DOMAIN );
 					break;
 				case 'JOB_ONGOING':
-					return __( 'In Progress', CriticalCSS::LANG_DOMAIN );
+					return __( 'In Progress', WP_CriticalCSS::LANG_DOMAIN );
 					break;
 				case 'JOB_DONE':
-					return __( 'Completed', CriticalCSS::LANG_DOMAIN );
+					return __( 'Completed', WP_CriticalCSS::LANG_DOMAIN );
 					break;
 			}
 		} else {
-			return __( 'Pending', CriticalCSS::LANG_DOMAIN );
+			return __( 'Pending', WP_CriticalCSS::LANG_DOMAIN );
 		}
 	}
 
@@ -153,7 +153,7 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 	 */
 	protected function column_queue_position( array $item ) {
 		if ( ! isset( $item['queue_id'] ) || ! isset( $item['queue_index'] ) ) {
-			return __( 'N/A', CriticalCSS::LANG_DOMAIN );
+			return __( 'N/A', WP_CriticalCSS::LANG_DOMAIN );
 		}
 
 		return $item['queue_index'];

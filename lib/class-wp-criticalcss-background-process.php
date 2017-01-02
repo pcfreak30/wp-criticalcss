@@ -1,7 +1,7 @@
 <?php
 
-class CriticalCSS_Background_Process extends WP_Background_Process {
-	protected $action = 'criticalcss';
+class WP_CriticalCSS_Background_Process extends WP_Background_Process {
+	protected $action = 'wp_criticalcss';
 	private $_ping_checked = false;
 
 	/**
@@ -64,11 +64,11 @@ class CriticalCSS_Background_Process extends WP_Background_Process {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		$cache = get_transient( CriticalCSS::get_transient_name( $item ) );
+		$cache = get_transient( WP_CriticalCSS::get_transient_name( $item ) );
 		if ( ! empty( $cache ) ) {
 			return false;
 		}
-		$settings = CriticalCSS::get_settings();
+		$settings = WP_CriticalCSS::get_settings();
 
 		if ( empty( $settings ) || empty( $settings['apikey'] ) ) {
 			return false;
@@ -114,11 +114,11 @@ class CriticalCSS_Background_Process extends WP_Background_Process {
 			}
 			if ( 'JOB_DONE' == $result->status ) {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
-					CriticalCSS::purge_cache( $item['type'], $item['object_id'], CriticalCSS::get_permalink( $item ) );
-					set_transient( CriticalCSS::get_transient_name( $item ), $result->css );
+					WP_CriticalCSS::purge_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
+					set_transient( WP_CriticalCSS::get_transient_name( $item ), $result->css );
 				}
 			}
-			delete_transient( CriticalCSS::get_transient_name() . '_pending' );
+			delete_transient( WP_CriticalCSS::get_transient_name() . '_pending' );
 		} else {
 			$result = $api->generate( $item );
 			if ( $result instanceof WP_Error ) {

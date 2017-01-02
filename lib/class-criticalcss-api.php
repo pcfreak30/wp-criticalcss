@@ -77,7 +77,7 @@ class CriticalCSS_API {
 			'body' => array(
 				'height' => 900,
 				'width'  => 1300,
-				'url'    => CriticalCSS::get_permalink( $item ),
+				'url'    => WP_CriticalCSS::get_permalink( $item ),
 				'aff'    => 3,
 			),
 		) );

@@ -3,7 +3,7 @@
 /**
  * Class CriticalCSS
  */
-class CriticalCSS {
+class WP_CriticalCSS {
 	/**
 	 *
 	 */
@@ -12,12 +12,12 @@ class CriticalCSS {
 	/**
 	 *
 	 */
-	const LANG_DOMAIN = 'criticalcss';
+	const LANG_DOMAIN = 'wp_criticalcss';
 
 	/**
 	 *
 	 */
-	const OPTIONNAME = 'criticalcss';
+	const OPTIONNAME = 'wp_criticalcss';
 
 	/**
 	 * @var bool
@@ -46,10 +46,10 @@ class CriticalCSS {
 	public static function init() {
 		self::$_settings = self::get_settings();
 		if ( empty( self::$_settings_ui ) ) {
-			self::$_settings_ui = new CriticalCSS_Settings_API();
+			self::$_settings_ui = new WP_CriticalCSS_Settings_API();
 		}
 		if ( empty( self::$_background_queue ) ) {
-			self::$_background_queue = new CriticalCSS_Background_Process();
+			self::$_background_queue = new WP_CriticalCSS_Background_Process();
 		}
 		if ( ! is_admin() ) {
 			add_action( 'wp_print_styles', array( __CLASS__, 'print_styles' ), 7 );

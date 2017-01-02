@@ -1,6 +1,6 @@
 <?php
 
-class CriticalCSS_Settings_API extends WeDevs_Settings_API {
+class WP_CriticalCSS_Settings_API extends WeDevs_Settings_API {
 	/**
 	 * Sanitize callback for Settings API
 	 *
