@@ -59,6 +59,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.1.2 ###
+
+* Bug: Revert bug fix for purging in 0.1.1 and just purge before setting cache
+
 ### 0.1.1 ###
 
 * Bug: Always delete pending transient if there is no fatal error
