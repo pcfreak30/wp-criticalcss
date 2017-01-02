@@ -551,7 +551,7 @@ class CriticalCSS {
 			'label'             => 'API Key',
 			'type'              => 'text',
 			'sanitize_callback' => array( __CLASS__, 'validate_criticalcss_apikey' ),
-			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys">CriticalCSS.com</a>', self::LANG_DOMAIN ),
+			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', self::LANG_DOMAIN ),
 		) );
 		self::$_settings_ui->add_field( 'criticalcss', array(
 			'name'  => 'disable_autopurge',
