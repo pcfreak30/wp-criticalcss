@@ -63,13 +63,18 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.2.2 ###
+
+* Change: Renamed options page
+* Bug: Switch to using OPTIONNAME constant
+
 ### 0.2.1 ###
 
-* Renamed options page
+* Bug: Missed places to use new class name
 
 ### 0.2.0 ###
 
-* Rename everything to WP CriticalCSS due to legalities. This means that it will not be fully compatible with 0.1.x as all classes and options are renamed.
+* Change: Rename everything to WP CriticalCSS due to legalities. This means that it will not be fully compatible with 0.1.x as all classes and options are renamed.
 
 ### 0.1.3 ###
 
