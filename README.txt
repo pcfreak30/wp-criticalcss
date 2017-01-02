@@ -59,6 +59,13 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.1.1 ###
+
+* Bug: Always delete pending transient if there is no fatal error
+* Bug: Toggle purge plugin integration to prevent generated css from getting purged
+* Enhancement: If WP_Error just return item so it will get re-attempted
+* Enhancement: Add method to disable purge plugin integration
+
 ### 0.1.0 ###
 
 * Initial version
