@@ -115,7 +115,9 @@ class CriticalCSS_Background_Process extends WP_Background_Process {
 			if ( 'JOB_DONE' == $result->status ) {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
 					set_transient( CriticalCSS::get_transient_name( $item ), $result->css );
+					CriticalCSS::disable_external_integration();
 					CriticalCSS::purge_cache( $item['type'], $item['object_id'], CriticalCSS::get_permalink( $item ) );
+					CriticalCSS::external_integration();
 				}
 			}
 			delete_transient( CriticalCSS::get_transient_name() . '_pending' );
