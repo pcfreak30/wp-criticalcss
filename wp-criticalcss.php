@@ -13,8 +13,8 @@ License: GPL3
 /**
  * Activation hooks
  */
-register_activation_hook( __FILE__, array( 'CriticalCSS', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'CriticalCSS', 'deactivate' ) );
+register_activation_hook( __FILE__, array( 'WP_CriticalCSS', 'activate' ) );
+register_deactivation_hook( __FILE__, array( 'WP_CriticalCSS', 'deactivate' ) );
 
 /**
  * Autoloader function
@@ -23,8 +23,8 @@ register_deactivation_hook( __FILE__, array( 'CriticalCSS', 'deactivate' ) );
  *
  * @param $class_name
  */
-if ( ! function_exists( 'criticalcss_autoloader' ) ):
-	function criticalcss_autoloader( $class_name ) {
+if ( ! function_exists( 'wp_criticalcss_autoloader' ) ):
+	function wp_criticalcss_autoloader( $class_name ) {
 		$file      = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
 		$base_path = plugin_dir_path( __FILE__ );
 
@@ -42,8 +42,8 @@ if ( ! function_exists( 'criticalcss_autoloader' ) ):
 		}
 	}
 
-	spl_autoload_register( 'criticalcss_autoloader' );
+	spl_autoload_register( 'wp_criticalcss_autoloader' );
 endif;
 
 
-add_action( 'plugins_loaded', array( 'CriticalCSS', 'init' ) );
+add_action( 'plugins_loaded', array( 'WP_CriticalCSS', 'init' ) );
