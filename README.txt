@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.2.3 ###
+
+* Bug: Rename more places to wp_criticalcss
+
 ### 0.2.2 ###
 
 * Change: Renamed options page
