@@ -302,7 +302,19 @@ class WP_CriticalCSS {
 		}
 		self::enable_relative_plugin_filters();
 
-		return trailingslashit( $url ) . 'nocache/';
+		$url_parts         = parse_url( $url );
+		$url_parts['path'] = trailingslashit( $url_parts['path'] ) . 'nocache/';
+		if ( class_exists( 'http\Url' ) ) {
+			$url = new \http\Url( $url_parts );
+			$url = $url->toString();
+		} else {
+			if ( ! function_exists( 'http_build_url' ) ) {
+				require_once plugin_dir_path( __FILE__ ) . 'http_build_url.php';
+			}
+			$url = http_build_url( $url_parts );
+		}
+
+		return $url;
 	}
 
 	/**
@@ -401,7 +413,7 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function print_styles() {
-		if ( ! get_query_var( 'nocache' ) ) {
+		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
 			$cache        = get_transient( self::get_transient_name() );
 			$style_handle = null;
 			if ( ! empty( $cache ) ) {
