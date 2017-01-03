@@ -61,8 +61,8 @@ class WP_CriticalCSS {
 		} else {
 			add_action( 'admin_menu', array( __CLASS__, 'settings_init' ) );
 		}
-		add_action( 'pre_update_option_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
-		add_action( 'pre_update_site_option_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
+		add_action( 'pre_update_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
+		add_action( 'pre_update_site_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
 
 		add_action( 'after_switch_theme', array( __CLASS__, 'prune_transients' ) );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'prune_transients' ) );
@@ -531,7 +531,7 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function settings_ui() {
-		self::$_settings_ui->add_section( array( 'id' => 'criticalcss_queue', 'title' => 'Critical CSS Queue' ) );
+		self::$_settings_ui->add_section( array( 'id' => 'wp_criticalcss_queue', 'title' => 'Critical CSS Queue' ) );
 
 		ob_start();
 
@@ -545,7 +545,7 @@ class WP_CriticalCSS {
 		self::$_queue_table->prepare_items();
 		self::$_queue_table->display();
 
-		self::$_settings_ui->add_field( 'criticalcss_queue', array(
+		self::$_settings_ui->add_field( 'wp_criticalcss_queue', array(
 			'name'  => 'queue',
 			'label' => null,
 			'type'  => 'html',
