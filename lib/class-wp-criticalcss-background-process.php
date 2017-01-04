@@ -74,7 +74,7 @@ class WP_CriticalCSS_Background_Process extends WP_Background_Process {
 			return false;
 		}
 
-		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] >= time() + ( SECOND_IN_SECONDS * 8 ) ) {
+		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + ( SECOND_IN_SECONDS * 8 ) >= time() ) {
 			return $item;
 		}
 
