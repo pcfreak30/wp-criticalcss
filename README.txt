@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.2.4.1 ###
+
+* Bug: Messed up 0.2.4 version number
+
 ### 0.2.4 ###
 
 * Change: Do not automatically auto-purge by default
@@ -70,6 +74,7 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 * Bug: Allow purge through wp-rocket to work if its not through cron
 * Bug: Fix timestamp logic
 * Enhancement: Do not process critical css on 404 pages
+
 ### 0.2.3 ###
 
 * Bug: Rename more places to wp_criticalcss
