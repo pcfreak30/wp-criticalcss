@@ -227,7 +227,7 @@ class WP_CriticalCSS {
 	public static function activate() {
 		self::update_settings( array_merge( array(
 			'expire'            => DAY_IN_SECONDS,
-			'disable_autopurge' => 'off',
+			'disable_autopurge' => 'on',
 		), self::get_settings() ) );
 		self::init_action();
 		flush_rewrite_rules();
