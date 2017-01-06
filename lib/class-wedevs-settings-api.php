@@ -62,6 +62,7 @@ if ( ! class_exists( 'WeDevs_Settings_API' ) ):
 		 * @return $this
 		 */
 		function add_section( $section ) {
+			$section                   = wp_parse_args( $section, array( 'form' => true ) );
 			$this->settings_sections[] = $section;
 
 			return $this;
@@ -525,19 +526,23 @@ if ( ! class_exists( 'WeDevs_Settings_API' ) ):
             <div class="metabox-holder">
 				<?php foreach ( $this->settings_sections as $form ) { ?>
                     <div id="<?php echo $form['id']; ?>" class="group" style="display: none;">
+	                    <?php if ( $form['form'] ): ?>
                         <form method="post" action="options.php">
+	                        <?php endif; ?>
 							<?php
 							do_action( 'wsa_form_top_' . $form['id'], $form );
 							settings_fields( $form['id'] );
 							do_settings_sections( $form['id'] );
 							do_action( 'wsa_form_bottom_' . $form['id'], $form );
-							if ( isset( $this->settings_fields[ $form['id'] ] ) ):
+							if ( $form['form'] && isset( $this->settings_fields[ $form['id'] ] ) ):
 								?>
                                 <div style="padding-left: 10px">
 									<?php submit_button(); ?>
                                 </div>
 							<?php endif; ?>
+	                        <?php if ( $form['form'] ): ?>
                         </form>
+                    <?php endif; ?>
                     </div>
 				<?php } ?>
             </div>
