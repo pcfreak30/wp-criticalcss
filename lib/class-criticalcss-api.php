@@ -43,7 +43,8 @@ class CriticalCSS_API {
 		if ( ! function_exists( $func ) ) {
 			return false;
 		}
-		$response = $func( add_query_arg( $query_args, "https://criticalcss.com/api/premium/${endpoint}" ), array_merge_recursive( array(
+		$query_args = array_merge( $query_args, array( 'version' => WP_CriticalCSS::VERSION ) );
+		$response   = $func( add_query_arg( $query_args, "https://criticalcss.com/api/premium/${endpoint}" ), array_merge_recursive( array(
 			'headers' => array(
 				'Authorization' => 'JWT ' . $this->_api_key,
 			),
@@ -75,10 +76,11 @@ class CriticalCSS_API {
 	public function generate( array $item ) {
 		$response = $this->_send_request( 'post', 'generate', array(), array(
 			'body' => array(
-				'height' => 900,
-				'width'  => 1300,
-				'url'    => WP_CriticalCSS::get_permalink( $item ),
-				'aff'    => 3,
+				'height'  => 900,
+				'width'   => 1300,
+				'url'     => WP_CriticalCSS::get_permalink( $item ),
+				'aff'     => 3,
+				'version' => WP_CriticalCSS::VERSION,
 			),
 		) );
 
