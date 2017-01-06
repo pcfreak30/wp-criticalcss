@@ -212,8 +212,8 @@ class WP_CriticalCSS {
 		}
 		// Compatibility with WP Rocket
 		if ( function_exists( 'get_rocket_option' ) ) {
-			add_action( 'after_rocket_clean_domain', array( __CLASS__, 'prune_transients' ) );
 			if ( 'off' == self::$_settings['disable_autopurge'] || ! ( defined( 'DOING_CRON' ) && DOING_CRON ) ) {
+				add_action( 'after_rocket_clean_domain', array( __CLASS__, 'prune_transients' ) );
 				add_action( 'after_rocket_clean_post', array( __CLASS__, 'prune_post_transients' ) );
 				add_action( 'after_rocket_clean_term', array( __CLASS__, 'prune_term_transients' ) );
 				add_action( 'after_rocket_clean_home', array( __CLASS__, 'prune_home_transients' ) );
