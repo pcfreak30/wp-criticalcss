@@ -116,6 +116,7 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 			$queue = new WP_CriticalCSS_Background_Process();
 			while ( ( $item = $queue->get_batch() ) && ! empty( $item->data ) ) {
 				$queue->delete( $item->key );
+				delete_transient( WP_CriticalCSS::get_transient_name( $item->data ) . '_pending' );
 			}
 		}
 	}
