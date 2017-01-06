@@ -543,7 +543,11 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function settings_ui() {
-		self::$_settings_ui->add_section( array( 'id' => 'wp_criticalcss_queue', 'title' => 'Critical CSS Queue' ) );
+		self::$_settings_ui->add_section( array(
+			'id'    => 'wp_criticalcss_queue',
+			'title' => 'WP Critical CSS Queue',
+			'form'  => false,
+		) );
 
 		ob_start();
 
@@ -553,10 +557,13 @@ class WP_CriticalCSS {
                 display: none;
             }
         </style>
+        <form method="post">
+			<?php
+			self::$_queue_table->prepare_items();
+			self::$_queue_table->display();
+			?>
+        </form>
 		<?php
-		self::$_queue_table->prepare_items();
-		self::$_queue_table->display();
-
 		self::$_settings_ui->add_field( 'wp_criticalcss_queue', array(
 			'name'  => 'queue',
 			'label' => null,
@@ -567,6 +574,9 @@ class WP_CriticalCSS {
 		self::$_settings_ui->admin_init();
 		self::$_settings_ui->show_navigation();
 		self::$_settings_ui->show_forms();
+		?>
+
+		<?php
 	}
 
 	/**
