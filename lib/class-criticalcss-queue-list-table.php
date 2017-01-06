@@ -52,7 +52,7 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 		global $wpdb;
 
 		$this->_column_headers = $this->get_column_info();
-
+		$this->_process_bulk_action();
 
 		$table        = $wpdb->options;
 		$column       = 'option_name';
@@ -109,6 +109,19 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 			}
 		}
 		$this->items = array_slice( $this->items, $start, $end - $start );
+	}
+
+	private function _process_bulk_action() {
+		if ( 'purge' == $this->current_action() ) {
+			$queue = new WP_CriticalCSS_Background_Process();
+			while ( ( $item = $queue->get_batch() ) && ! empty( $item->data ) ) {
+				$queue->delete( $item->key );
+			}
+		}
+	}
+
+	protected function get_bulk_actions() {
+		return array( 'purge' => __( 'Purge', WP_CriticalCSS::LANG_DOMAIN ) );
 	}
 
 	/**
