@@ -593,25 +593,25 @@ class WP_CriticalCSS {
 
 	/**
 	 * @param array  $type
-	 * @param string $css
+	 * @param string $hash
 	 *
 	 * @return void
 	 */
-	public static function set_hash( $item, $css ) {
+	public static function set_hash( $item, $hash ) {
 		if ( 'url' == $item['type'] ) {
 			$name = "criticalcss_url_hash_" . md5( $item['url'] );
-			set_transient( $name, $css, 0 );
+			set_transient( $name, $hash, 0 );
 		} else {
 			$name = "criticalcss_hash";
 			switch ( $item['type'] ) {
 				case 'post':
-					update_post_meta( $item['object_id'], $name, $css );
+					update_post_meta( $item['object_id'], $name, $hash );
 					break;
 				case 'term':
-					update_term_meta( $item['object_id'], $name, $css );
+					update_term_meta( $item['object_id'], $name, $hash );
 					break;
 				case 'author':
-					update_user_meta( $item['object_id'], $name, $css );
+					update_user_meta( $item['object_id'], $name, $hash );
 					break;
 			}
 		}
