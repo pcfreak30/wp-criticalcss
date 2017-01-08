@@ -5,19 +5,19 @@ require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 /**
  * Class CriticalCSS_Queue_List_Table
  */
-class CriticalCSS_Queue_List_Table extends WP_List_Table {
+class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	/**
-	 * @var \WP_CriticalCSS_Background_Process
+	 * @var \WP_CriticalCSS_API_Background_Process
 	 */
-	private $_background_queue;
+	private $_api_queue;
 
 	/**
 	 * CriticalCSS_Queue_List_Table constructor.
 	 *
 	 * @param \WP_CriticalCSS_Background_Process $background_queue
 	 */
-	public function __construct( WP_CriticalCSS_Background_Process $background_queue ) {
-		$this->_background_queue = $background_queue;
+	public function __construct( WP_CriticalCSS_API_Background_Process $api_queue ) {
+		$this->_api_queue = $api_queue;
 		parent::__construct( array(
 			'singular' => __( 'Queue Item', 'criticalcss' ),
 			'plural'   => __( 'Queue Items', 'criticalcss' ),
@@ -66,7 +66,7 @@ class CriticalCSS_Queue_List_Table extends WP_List_Table {
 			$value_column = 'meta_value';
 		}
 
-		$key = $this->_background_queue->get_identifier() . '_batch_%';
+		$key = $this->_api_queue->get_identifier() . '_batch_%';
 
 		$query = $wpdb->get_results( $wpdb->prepare( "
 			SELECT *

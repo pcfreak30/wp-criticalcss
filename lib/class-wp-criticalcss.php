@@ -26,15 +26,20 @@ class WP_CriticalCSS {
 	/**
 	 * @var \WeDevs_Settings_API
 	 */
-	protected static $_settings_ui;
+	private static $_settings_ui;
 	/**
 	 * @var
 	 */
-	protected static $_background_queue;
+	private static $_web_check_queue;
+
 	/**
 	 * @var
 	 */
-	protected static $_queue_table;
+	private static $_api_queue;
+	/**
+	 * @var
+	 */
+	private static $_queue_table;
 	/**
 	 * @var array
 	 */
@@ -48,8 +53,11 @@ class WP_CriticalCSS {
 		if ( empty( self::$_settings_ui ) ) {
 			self::$_settings_ui = new WP_CriticalCSS_Settings_API();
 		}
-		if ( empty( self::$_background_queue ) ) {
-			self::$_background_queue = new WP_CriticalCSS_Background_Process();
+		if ( empty( self::$_web_check_queue ) ) {
+			self::$_web_check_queue = new WP_CriticalCSS_Web_Check_Background_Process();
+		}
+		if ( empty( self::$_api_queue ) ) {
+			self::$_api_queue = new WP_CriticalCSS_API_Background_Process();
 		}
 		if ( ! is_admin() ) {
 			add_action( 'wp_print_styles', array( __CLASS__, 'print_styles' ), 7 );
@@ -64,12 +72,8 @@ class WP_CriticalCSS {
 		add_action( 'pre_update_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
 		add_action( 'pre_update_site_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
 
-		add_action( 'after_switch_theme', array( __CLASS__, 'prune_transients' ) );
-		add_action( 'upgrader_process_complete', array( __CLASS__, 'prune_transients' ) );
-		if ( 'off' == self::$_settings['disable_autopurge'] ) {
-			add_action( 'post_updated', array( __CLASS__, 'prune_post_transients' ) );
-			add_action( 'edited_term', array( __CLASS__, 'prune_term_transients' ) );
-		}
+		add_action( 'after_switch_theme', array( __CLASS__, 'reset_web_check_transients' ) );
+		add_action( 'upgrader_process_complete', array( __CLASS__, 'reset_web_check_transients' ) );
 		add_action( 'request', array( __CLASS__, 'update_request' ) );
 		if ( is_admin() ) {
 
@@ -85,7 +89,6 @@ class WP_CriticalCSS {
 		add_action( 'parse_request', array( __CLASS__, 'parse_request' ) );
 		// Don't fix url or try to guess url if we are using nocache on the homepage
 		add_filter( 'redirect_canonical', array( __CLASS__, 'redirect_canonical' ) );
-		add_action( 'criticalcss_purge', array( __CLASS__, 'prune_transients' ) );
 		add_action( 'update_option_criticalcss', array( __CLASS__, 'after_options_updated' ), 10, 2 );
 	}
 
@@ -173,9 +176,6 @@ class WP_CriticalCSS {
 		set_query_var( 'nocache', self::$nocache );
 		if ( self::has_external_integration() ) {
 			self::external_integration();
-		} else {
-			add_action( 'admin_bar_menu', array( __CLASS__, 'admin_menu' ) );
-			add_action( 'admin_post_purge_criticalcss_cache', array( __CLASS__, 'admin_prune_transients' ) );
 		}
 	}
 
@@ -212,12 +212,7 @@ class WP_CriticalCSS {
 		}
 		// Compatibility with WP Rocket
 		if ( function_exists( 'get_rocket_option' ) ) {
-			if ( 'off' == self::$_settings['disable_autopurge'] || ! ( defined( 'DOING_CRON' ) && DOING_CRON ) ) {
-				add_action( 'after_rocket_clean_domain', array( __CLASS__, 'prune_transients' ) );
-				add_action( 'after_rocket_clean_post', array( __CLASS__, 'prune_post_transients' ) );
-				add_action( 'after_rocket_clean_term', array( __CLASS__, 'prune_term_transients' ) );
-				add_action( 'after_rocket_clean_home', array( __CLASS__, 'prune_home_transients' ) );
-			}
+			add_action( 'after_rocket_clean_domain', array( __CLASS__, 'reset_web_check_transients' ) );
 		}
 	}
 
@@ -225,11 +220,33 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function activate() {
+		global $wpdb;
+		$settings    = self::get_settings();
+		$no_version  = ! empty( $settings ) && empty( $settings['version'] );
+		$version_0_3 = false;
+		if ( ! $no_version ) {
+			$version     = $settings['version'];
+			$version_0_3 = version_compare( '0.3.0', $version ) === true;
+		}
+		if ( $no_version || $version_0_3 ) {
+			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_%', '_transient_timeout_criticalcss_%' ) );
+			remove_action( 'update_option_criticalcss', array( __CLASS__, 'after_options_updated' ) );
+			if ( isset( $settings['disable_autopurge'] ) ) {
+				unset( $settings['disable_autopurge'] );
+				self::update_settings( $settings );
+			}
+			if ( isset( $settings['expire'] ) ) {
+				unset( $settings['expire'] );
+				self::update_settings( $settings );
+			}
+		}
 		self::update_settings( array_merge( array(
-			'expire'            => DAY_IN_SECONDS,
-			'disable_autopurge' => 'on',
+			'web_check_interval' => DAY_IN_SECONDS,
+			'version'            => self::VERSION,
 		), self::get_settings() ) );
+
 		self::init_action();
+
 		flush_rewrite_rules();
 	}
 
@@ -252,22 +269,6 @@ class WP_CriticalCSS {
 	public static function init_action() {
 		add_rewrite_endpoint( 'nocache', E_ALL );
 		add_rewrite_rule( 'nocache/?$', 'index.php?nocache=1', 'top' );
-		if ( 'off' == self::$_settings['disable_autopurge'] && ! wp_next_scheduled( 'criticalcss_purge' ) ) {
-			wp_schedule_single_event( time() + self::get_expire_period(), 'criticalcss_purge' );
-		}
-	}
-
-	/**
-	 * @return int
-	 */
-	public static function get_expire_period() {
-// WP-Rocket integration
-		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
-			return get_rocket_purge_cron_interval();
-		}
-		$settings = self::get_settings();
-
-		return absint( $settings['expire'] );
 	}
 
 	/**
@@ -414,7 +415,7 @@ class WP_CriticalCSS {
 	 */
 	public static function print_styles() {
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
-			$cache        = get_transient( self::get_transient_name() );
+			$cache        = self::get_cache();
 			$style_handle = null;
 			if ( ! empty( $cache ) ) {
 				// Enable CDN in CSS for WP-Rocket
@@ -432,34 +433,48 @@ class WP_CriticalCSS {
 				?>
                 <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
 				<?php
-			} else {
-				$pending = get_transient( self::get_transient_name() . '_pending' );
-
-				if ( empty( $pending ) ) {
-					$type = self::get_current_page_type();
-					self::$_background_queue->push_to_queue( $type )->save();
-					set_transient( self::get_transient_name() . '_pending', true );
-				}
 			}
+			$type  = self::get_current_page_type();
+			$id    = md5( serialize( $type ) );
+			$check = get_transient( "criticalcss_web_check_$id" );
+			if ( empty( $check ) ) {
+				self::$_web_check_queue->push_to_queue( $type )->save();
+				set_transient( "criticalcss_web_check_$id", true, self::get_expire_period() );
+			}
+
 		}
 	}
 
 	/**
-	 * @param array $type
+	 * @param array $item
 	 *
 	 * @return string
 	 */
-	public static function get_transient_name( $type = array() ) {
-		if ( empty( $type ) ) {
-			$type = self::get_current_page_type();
+	public static function get_cache( $item = array() ) {
+		$cache = null;
+		if ( empty( $item ) ) {
+			$item = self::get_current_page_type();
 		}
-		if ( 'url' == $type['type'] ) {
-			$name = "criticalcss_url_" . md5( $type['url'] );
+		if ( 'url' == $item['type'] ) {
+			$name  = "criticalcss_url_" . md5( $item['url'] );
+			$cache = get_transient( $name );
 		} else {
-			$name = "criticalcss_{$type['type']}_{$type['object_id']}";
+			$name = "criticalcss_cache";
+			switch ( $item['type'] ) {
+				case 'post':
+					$cache = get_post_meta( $item['object_id'], $name, true );
+					break;
+				case 'term':
+					$cache = get_term_meta( $item['object_id'], $name, true );
+					break;
+				case 'author':
+					$cache = get_user_meta( $item['object_id'], $name, true );
+					break;
+
+			}
 		}
 
-		return $name;
+		return $cache;
 	}
 
 	/**
@@ -506,6 +521,103 @@ class WP_CriticalCSS {
 	}
 
 	/**
+	 * @return int
+	 */
+	public static function get_expire_period() {
+// WP-Rocket integration
+		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
+			return get_rocket_purge_cron_interval();
+		}
+		$settings = self::get_settings();
+
+		return absint( self::$_settings['web_check_interval'] );
+	}
+
+	/**
+	 * @param array  $type
+	 * @param string $css
+	 *
+	 * @return void
+	 */
+	public static function set_cache( $item, $css ) {
+		if ( 'url' == $item['type'] ) {
+			$name = "criticalcss_url_" . md5( $item['url'] );
+			set_transient( $name, $css, 0 );
+		} else {
+			$name = "criticalcss_cache";
+			switch ( $item['type'] ) {
+				case 'post':
+					update_post_meta( $item['object_id'], $name, $css );
+					break;
+				case 'term':
+					update_term_meta( $item['object_id'], $name, $css );
+					break;
+				case 'author':
+					update_user_meta( $item['object_id'], $name, $css );
+					break;
+			}
+		}
+	}
+
+	/**
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	public static function get_hash( $item = array() ) {
+		$hash = null;
+		if ( empty( $item ) ) {
+			$item = self::get_current_page_type();
+		}
+		if ( 'url' == $item['type'] ) {
+			$name = "criticalcss_url_hash_" . md5( $item['url'] );
+			$hash = get_site_transient( $name );
+		} else {
+			$name = "criticalcss_hash";
+			switch ( $item ) {
+				case 'post':
+					$hash = get_post_meta( $item['object_id'], $name, true );
+					break;
+				case 'term':
+					$hash = get_term_meta( $item['object_id'], $name, true );
+					break;
+				case 'author':
+					$hash = get_user_meta( $item['object_id'], $name, true );
+					break;
+
+			}
+		}
+
+		return $hash;
+	}
+
+	/**
+	 * @param array  $type
+	 * @param string $css
+	 *
+	 * @return void
+	 */
+	public static function set_hash( $item, $css ) {
+		if ( 'url' == $item['type'] ) {
+			$name = "criticalcss_url_hash_" . md5( $item['url'] );
+			set_transient( $name, $css, 0 );
+		} else {
+			$name = "criticalcss_hash";
+			switch ( $item['type'] ) {
+				case 'post':
+					update_post_meta( $item['object_id'], $name, $css );
+					break;
+				case 'term':
+					update_term_meta( $item['object_id'], $name, $css );
+					break;
+				case 'author':
+					update_user_meta( $item['object_id'], $name, $css );
+					break;
+			}
+		}
+	}
+
+	/**
 	 *
 	 */
 	public static function settings_init() {
@@ -523,17 +635,17 @@ class WP_CriticalCSS {
 			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', self::LANG_DOMAIN ),
 		) );
 		self::$_settings_ui->add_field( self::OPTIONNAME, array(
-			'name'  => 'disable_autopurge',
-			'label' => 'Disable Auto-Purge',
+			'name'  => 'force_web_check',
+			'label' => 'Force Web Check',
 			'type'  => 'checkbox',
-			'desc'  => __( 'Do not automatically purge the CSS cache. This setting is ignored for theme updates, plugin updates, and switching themes.', self::LANG_DOMAIN ),
+			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', self::LANG_DOMAIN ),
 		) );
 		if ( ! self::has_external_integration() ) {
 			self::$_settings_ui->add_field( self::OPTIONNAME, array(
-				'name'  => 'expire',
-				'label' => 'Cache Time',
+				'name'  => 'web_check_interval',
+				'label' => 'Web Check Interval',
 				'type'  => 'number',
-				'desc'  => __( 'How long css should be cached for', self::LANG_DOMAIN ),
+				'desc'  => __( 'How often in seconds web pages should be checked for changes to re-generate CSS', self::LANG_DOMAIN ),
 			) );
 		}
 		self::$_settings_ui->admin_init();
@@ -613,56 +725,22 @@ class WP_CriticalCSS {
 			$old_value = array();
 		}
 
-		return array_merge( $old_value, $value );
+		$value = array_merge( $old_value, $value );
+
+		if ( isset( $value['force_web_check'] ) && 'on' == $value['force_web_check'] ) {
+			$value['force_web_check'] = 'off';
+			self::reset_web_check_transients();
+		}
+
+		return $value;
 	}
 
 	/**
-	 * @param $post WP_Post
-	 */
-	public static function prune_post_transients( $post ) {
-		global $wpdb;
-		$post = get_post( $post );
-		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", "_transient_criticalcss_post_{$post->ID}%", "_transient_timeout_criticalcss_post_{$post->ID}%" ) );
-		wp_cache_flush();
-	}
-
-	/**
-	 * @param $term
 	 *
-	 * @internal param \WP_Term $post
 	 */
-	public static function prune_term_transients( $term ) {
+	public static function reset_web_check_transients() {
 		global $wpdb;
-		$term = get_term( $term );
-		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", "_transient_criticalcss_term_{$term->term_id}%", "_transient_timeout_criticalcss_term_{$term->term_id}%" ) );
-		wp_cache_flush();
-	}
-
-	/**
-	 * @internal param \WP_Term $post
-	 */
-	public static function prune_home_transients() {
-		global $wpdb;
-		$page_for_posts = get_option( 'page_for_posts' );
-		if ( ! empty( $page_for_posts ) ) {
-			$post_id = $page_for_posts;
-		}
-		if ( empty( $post_id ) || ( ! empty( $post_id ) && get_permalink( $post_id ) != site_url() ) ) {
-			$page_on_front = get_option( 'page_on_front' );
-			if ( ! empty( $page_on_front ) ) {
-				$post_id = $page_on_front;
-			} else {
-				$post_id = false;
-			}
-		}
-		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
-			$transient        = "_transient_criticalcss_post_{$post_id}";
-			$transient_expire = "_transient_timeout_criticalcss_post_{$post_id}";
-		} else {
-			$transient        = "_transient_criticalcss_url_" . md5( site_url() );
-			$transient_expire = "_transient_timeout_criticalcss_url_" . md5( site_url() );
-		}
-		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", "$transient%", "$transient_expire%" ) );
+		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_web_check_%', '_transient_timeout_criticalcss_web_check_%' ) );
 		wp_cache_flush();
 	}
 
@@ -675,7 +753,7 @@ class WP_CriticalCSS {
 			'default' => 20,
 			'option'  => 'queue_items_per_page',
 		) );
-		self::$_queue_table = new CriticalCSS_Queue_List_Table( self::$_background_queue );
+		self::$_queue_table = new WP_CriticalCSS_Queue_List_Table( self::$_api_queue );
 	}
 
 	/**
@@ -694,24 +772,5 @@ class WP_CriticalCSS {
 				'action'           => $action,
 			), admin_url( 'admin-post.php' ) ), $action ),
 		) );
-	}
-
-	/**
-	 *
-	 */
-	public static function admin_prune_transients() {
-		if ( check_ajax_referer( 'purge_criticalcss_cache' ) ) {
-			self::prune_transients();
-			wp_redirect( wp_get_referer() );
-		}
-	}
-
-	/**
-	 *
-	 */
-	public static function prune_transients() {
-		global $wpdb;
-		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_%', '_transient_timeout_criticalcss_%' ) );
-		wp_cache_flush();
 	}
 }
