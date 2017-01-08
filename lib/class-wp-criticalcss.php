@@ -74,9 +74,10 @@ class WP_CriticalCSS {
 
 		add_action( 'after_switch_theme', array( __CLASS__, 'reset_web_check_transients' ) );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'reset_web_check_transients' ) );
+		add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
+		add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 		add_action( 'request', array( __CLASS__, 'update_request' ) );
 		if ( is_admin() ) {
-
 			add_action( 'wp_loaded', array( __CLASS__, 'wp_action' ) );
 		} else {
 			add_action( 'wp', array( __CLASS__, 'wp_action' ) );
@@ -213,6 +214,9 @@ class WP_CriticalCSS {
 		// Compatibility with WP Rocket
 		if ( function_exists( 'get_rocket_option' ) ) {
 			add_action( 'after_rocket_clean_domain', array( __CLASS__, 'reset_web_check_transients' ) );
+			add_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
+			add_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
+			add_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
 		}
 	}
 
@@ -741,6 +745,55 @@ class WP_CriticalCSS {
 		global $wpdb;
 		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_web_check_%', '_transient_timeout_criticalcss_web_check_%' ) );
 		wp_cache_flush();
+	}
+
+	public static function reset_web_check_post_transient( $post ) {
+		global $wpdb;
+		$post = get_post( $post );
+		$item = array( 'type' => 'post', 'object_id' => $post->ID );
+		$id   = md5( serialize( $item ) );
+		delete_transient( "criticalcss_web_check_$id" );
+	}
+
+	/**
+	 * @param $term
+	 *
+	 * @internal param \WP_Term $post
+	 */
+	public static function reset_web_check_term_transient( $term ) {
+		global $wpdb;
+		$term = get_term( $term );
+		$item = array( 'type' => 'term', 'object_id' => $term->term_id );
+		$id   = md5( serialize( $item ) );
+		delete_transient( "criticalcss_web_check_$id" );
+	}
+
+	/**
+	 * @internal param \WP_Term $post
+	 */
+	public static function reset_web_check_home_transient() {
+		global $wpdb;
+		$id             = '';
+		$page_for_posts = get_option( 'page_for_posts' );
+		if ( ! empty( $page_for_posts ) ) {
+			$post_id = $page_for_posts;
+		}
+		if ( empty( $post_id ) || ( ! empty( $post_id ) && get_permalink( $post_id ) != site_url() ) ) {
+			$page_on_front = get_option( 'page_on_front' );
+			if ( ! empty( $page_on_front ) ) {
+				$post_id = $page_on_front;
+			} else {
+				$post_id = false;
+			}
+		}
+		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
+			$item = array( 'type' => 'post', 'object_id' => $post_id );
+			$id   = md5( serialize( $item ) );
+		} else {
+			$item = array( 'type' => 'url', 'url' => site_url() );
+			$id   = md5( serialize( $item ) );
+		}
+		delete_transient( "criticalcss_web_check_$id" );
 	}
 
 	/**
