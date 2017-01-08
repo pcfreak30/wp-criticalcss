@@ -4,48 +4,6 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 	protected $action = 'wp_criticalcss_api';
 	private $_ping_checked = false;
 
-	private $_batches_processed = 0;
-
-	/**
-	 * Get batch
-	 *
-	 * @return stdClass Return the first batch from the queue
-	 */
-	public function get_batch() {
-		global $wpdb;
-
-		$table        = $wpdb->options;
-		$column       = 'option_name';
-		$key_column   = 'option_id';
-		$value_column = 'option_value';
-
-		if ( is_multisite() ) {
-			$table        = $wpdb->sitemeta;
-			$column       = 'meta_key';
-			$key_column   = 'meta_id';
-			$value_column = 'meta_value';
-		}
-
-		$key = $this->identifier . '_batch_%';
-
-		$query = $wpdb->get_row( $wpdb->prepare( "
-			SELECT *
-			FROM {$table}
-			WHERE {$column} LIKE %s
-			ORDER BY {$key_column} ASC
-			LIMIT 1 OFFSET %d
-		", $key, $this->_batches_processed ) );
-
-		$batch       = new stdClass();
-		$batch->key  = $query->$column;
-		$batch->data = maybe_unserialize( $query->$value_column );
-		if ( empty( $batch->data ) ) {
-			$batch->data = array();
-		}
-
-		return $batch;
-	}
-
 	/**
 	 * Task
 	 *
@@ -91,20 +49,12 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			}
 			if ( 'JOB_UNKNOWN' == $result->status ) {
 				unset( $item['queue_id'] );
-				$this->_batches_processed ++;
-				if ( $this->_batches_processed > $this->get_queue_item_count() ) {
-					$this->_batches_processed = 0;
-				}
 
 				return $item;
 			}
 			if ( 'JOB_ONGOING' == $result->status || 'JOB_QUEUED' == $result->status ) {
 				if ( 'JOB_QUEUED' == $result->status ) {
 					$item['queue_index'] = $result->queueIndex;
-				}
-				$this->_batches_processed ++;
-				if ( $this->_batches_processed > $this->get_queue_item_count() ) {
-					$this->_batches_processed = 0;
 				}
 
 				return $item;
@@ -122,11 +72,6 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 				return false;
 			}
 			$item['queue_id'] = $result->id;
-
-			$this->_batches_processed ++;
-			if ( $this->_batches_processed > $this->get_queue_item_count() ) {
-				$this->_batches_processed = 0;
-			}
 
 			return $item;
 		}
