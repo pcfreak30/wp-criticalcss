@@ -23,7 +23,8 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 			return false;
 		}
 		$api_queue = new WP_CriticalCSS_API_Background_Process();
-		$hash      = WP_CriticalCSS::get_hash( $item );
+		$css_hash = WP_CriticalCSS::get_css_hash( $item );
+		$html_hash = WP_CriticalCSS::get_html_hash( $item );
 		$result    = wp_remote_get( WP_CriticalCSS::get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', array(), $item ) );
 
 		if ( $result instanceof WP_Error ) {
@@ -107,10 +108,29 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 			}
 			$css .= $file['body'];
 		}
+		$changed      = false;
+		$new_css_hash = hash( "crc32b", $css );
+		if ( empty( $css_hash ) || $css_hash != $new_css_hash ) {
+			$changed  = true;
+			$css_hash = $new_css_hash;
+		}
 
-		$new_hash = hash( "crc32b", $css );
-		if ( empty( $hash ) || $hash != $new_hash ) {
-			$item['hash'] = $new_hash;
+		if ( ! $changed ) {
+			$body = $document->getElementsByTagName( 'body' )->item( 0 );
+			if ( ! empty( $body ) ) {
+				$new_html_hash = hash( "crc32b", $document->saveHTML( $body ) );
+				if ( empty( $html_hash ) || $html_hash != $new_html_hash ) {
+					$changed   = true;
+					$html_hash = $new_html_hash;
+				}
+			}
+		}
+
+		if ( $changed ) {
+			$item['css_hash']  = $css_hash;
+			$item['html_hash'] = $html_hash;
+			WP_CriticalCSS::purge_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
+			WP_CriticalCSS::set_cache( $item, '' );
 			$api_queue->push_to_queue( $item )->save();
 			$this->_processed_urls[ $url ] = true;
 		}
