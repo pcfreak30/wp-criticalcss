@@ -451,30 +451,40 @@ class WP_CriticalCSS {
 	 * @return string
 	 */
 	public static function get_cache( $item = array() ) {
-		$cache = null;
+		return self::get_item_data( $item, 'cache' );
+	}
+
+	/**
+	 * @param array $item
+	 * @param       $name
+	 *
+	 * @return mixed|null
+	 */
+	public static function get_item_data( $item = array(), $name ) {
+		$hash = null;
 		if ( empty( $item ) ) {
 			$item = self::get_current_page_type();
 		}
 		if ( 'url' == $item['type'] ) {
-			$name  = "criticalcss_url_" . md5( $item['url'] );
-			$cache = get_transient( $name );
+			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
+			$hash = get_transient( $name );
 		} else {
-			$name = "criticalcss_cache";
-			switch ( $item['type'] ) {
+			$name = "criticalcss_hash";
+			switch ( $item ) {
 				case 'post':
-					$cache = get_post_meta( $item['object_id'], $name, true );
+					$hash = get_post_meta( $item['object_id'], $name, true );
 					break;
 				case 'term':
-					$cache = get_term_meta( $item['object_id'], $name, true );
+					$hash = get_term_meta( $item['object_id'], $name, true );
 					break;
 				case 'author':
-					$cache = get_user_meta( $item['object_id'], $name, true );
+					$hash = get_user_meta( $item['object_id'], $name, true );
 					break;
 
 			}
 		}
 
-		return $cache;
+		return $hash;
 	}
 
 	/**
@@ -534,26 +544,44 @@ class WP_CriticalCSS {
 	}
 
 	/**
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	public static function get_html_hash( $item = array() ) {
+		return self::get_item_data( $item, 'html_hash' );
+	}
+
+	/**
 	 * @param array  $type
 	 * @param string $css
 	 *
 	 * @return void
 	 */
 	public static function set_cache( $item, $css ) {
+		self::set_item_data( $item, 'cache', $css );
+	}
+
+	/**
+	 * @param     $item
+	 * @param     $name
+	 * @param     $value
+	 * @param int $expires
+	 */
+	public static function set_item_data( $item, $name, $value, $expires = 0 ) {
 		if ( 'url' == $item['type'] ) {
-			$name = "criticalcss_url_" . md5( $item['url'] );
-			set_transient( $name, $css, 0 );
+			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
+			set_transient( $name, $value, $expires );
 		} else {
-			$name = "criticalcss_cache";
 			switch ( $item['type'] ) {
 				case 'post':
-					update_post_meta( $item['object_id'], $name, $css );
+					update_post_meta( $item['object_id'], $name, $value );
 					break;
 				case 'term':
-					update_term_meta( $item['object_id'], $name, $css );
+					update_term_meta( $item['object_id'], $name, $value );
 					break;
 				case 'author':
-					update_user_meta( $item['object_id'], $name, $css );
+					update_user_meta( $item['object_id'], $name, $value );
 					break;
 			}
 		}
@@ -564,30 +592,8 @@ class WP_CriticalCSS {
 	 *
 	 * @return string
 	 */
-	public static function get_hash( $item = array() ) {
-		$hash = null;
-		if ( empty( $item ) ) {
-			$item = self::get_current_page_type();
-		}
-		if ( 'url' == $item['type'] ) {
-			$name = "criticalcss_url_hash_" . md5( $item['url'] );
-			$hash = get_transient( $name );
-		} else {
-			$name = "criticalcss_hash";
-			switch ( $item ) {
-				case 'post':
-					$hash = get_post_meta( $item['object_id'], $name, true );
-					break;
-				case 'term':
-					$hash = get_term_meta( $item['object_id'], $name, true );
-					break;
-				case 'author':
-					$hash = get_user_meta( $item['object_id'], $name, true );
-					break;
-
-			}
-		}
-		return $hash;
+	public static function get_css_hash( $item = array() ) {
+		return self::get_item_data( $item, 'css_hash' );
 	}
 
 	/**
@@ -596,24 +602,18 @@ class WP_CriticalCSS {
 	 *
 	 * @return void
 	 */
-	public static function set_hash( $item, $hash ) {
-		if ( 'url' == $item['type'] ) {
-			$name = "criticalcss_url_hash_" . md5( $item['url'] );
-			set_transient( $name, $hash, 0 );
-		} else {
-			$name = "criticalcss_hash";
-			switch ( $item['type'] ) {
-				case 'post':
-					update_post_meta( $item['object_id'], $name, $hash );
-					break;
-				case 'term':
-					update_term_meta( $item['object_id'], $name, $hash );
-					break;
-				case 'author':
-					update_user_meta( $item['object_id'], $name, $hash );
-					break;
-			}
-		}
+	public static function set_css_hash( $item, $hash ) {
+		self::set_item_data( $item, 'css_hash', $hash );
+	}
+
+	/**
+	 * @param array  $type
+	 * @param string $hash
+	 *
+	 * @return void
+	 */
+	public static function set_html_hash( $item, $hash ) {
+		self::set_item_data( $item, 'html_hash', $hash );
 	}
 
 	/**
