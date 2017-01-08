@@ -349,7 +349,7 @@ class WP_CriticalCSS {
 	 * @param $object_id
 	 * @param $url
 	 */
-	public static function purge_cache( $type, $object_id, $url ) {
+	public static function purge_page_cache( $type, $object_id, $url ) {
 		global $wpe_varnish_servers;
 		$url = preg_replace( '#nocache/$#', '', $url );
 // WP Engine Support
