@@ -90,7 +90,6 @@ class WP_CriticalCSS {
 		add_action( 'parse_request', array( __CLASS__, 'parse_request' ) );
 		// Don't fix url or try to guess url if we are using nocache on the homepage
 		add_filter( 'redirect_canonical', array( __CLASS__, 'redirect_canonical' ) );
-		add_action( 'update_option_criticalcss', array( __CLASS__, 'after_options_updated' ), 10, 2 );
 	}
 
 	/**
@@ -110,17 +109,6 @@ class WP_CriticalCSS {
 		return $settings;
 	}
 
-	/**
-	 * @param $old
-	 * @param $new
-	 */
-	public static function after_options_updated( $old, $new ) {
-		if ( 'on' == $new['disable_autopurge'] ) {
-			if ( $timestamp = wp_next_scheduled( 'criticalcss_purge' ) ) {
-				wp_unschedule_event( $timestamp, 'criticalcss_purge' );
-			}
-		}
-	}
 
 	/**
 	 * @param $redirect_url
