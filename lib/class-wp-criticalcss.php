@@ -571,7 +571,7 @@ class WP_CriticalCSS {
 		}
 		if ( 'url' == $item['type'] ) {
 			$name = "criticalcss_url_hash_" . md5( $item['url'] );
-			$hash = get_site_transient( $name );
+			$hash = get_transient( $name );
 		} else {
 			$name = "criticalcss_hash";
 			switch ( $item ) {
@@ -587,7 +587,6 @@ class WP_CriticalCSS {
 
 			}
 		}
-
 		return $hash;
 	}
 
