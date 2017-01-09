@@ -738,7 +738,7 @@ class WP_CriticalCSS {
 	public static function reset_web_check_post_transient( $post ) {
 		global $wpdb;
 		$post = get_post( $post );
-		$item = array( 'type' => 'post', 'object_id' => $post->ID );
+		$item = array( 'object_id' => $post->ID, 'type' => 'post' );
 		$id   = md5( serialize( $item ) );
 		delete_transient( "criticalcss_web_check_$id" );
 	}
@@ -751,7 +751,7 @@ class WP_CriticalCSS {
 	public static function reset_web_check_term_transient( $term ) {
 		global $wpdb;
 		$term = get_term( $term );
-		$item = array( 'type' => 'term', 'object_id' => $term->term_id );
+		$item = array( 'object_id' => $term->term_id, 'type' => 'term' );
 		$id   = md5( serialize( $item ) );
 		delete_transient( "criticalcss_web_check_$id" );
 	}
@@ -775,7 +775,7 @@ class WP_CriticalCSS {
 			}
 		}
 		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
-			$item = array( 'type' => 'post', 'object_id' => $post_id );
+			$item = array( 'object_id' => $post_id, 'type' => 'post' );
 			$id   = md5( serialize( $item ) );
 		} else {
 			$item = array( 'type' => 'url', 'url' => site_url() );
