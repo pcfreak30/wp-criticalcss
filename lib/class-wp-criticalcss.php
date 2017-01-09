@@ -485,6 +485,7 @@ class WP_CriticalCSS {
 	protected static function get_current_page_type() {
 		global $wp;
 		global $query_string;
+		$object_id = 0;
 		if ( is_home() ) {
 			$page_for_posts = get_option( 'page_for_posts' );
 			if ( ! empty( $page_for_posts ) ) {
@@ -518,6 +519,7 @@ class WP_CriticalCSS {
 
 			$type = 'url';
 		}
+		$object_id = absint( $object_id );
 
 		return compact( 'object_id', 'type', 'url' );
 	}
