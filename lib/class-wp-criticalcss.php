@@ -453,29 +453,29 @@ class WP_CriticalCSS {
 	 * @return mixed|null
 	 */
 	public static function get_item_data( $item = array(), $name ) {
-		$hash = null;
+		$value     = null;
 		if ( empty( $item ) ) {
 			$item = self::get_current_page_type();
 		}
 		if ( 'url' == $item['type'] ) {
 			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
-			$hash = get_transient( $name );
+			$value = get_transient( $name );
 		} else {
 			switch ( $item ) {
 				case 'post':
-					$hash = get_post_meta( $item['object_id'], $name, true );
+					$value = get_post_meta( $item['object_id'], $name, true );
 					break;
 				case 'term':
-					$hash = get_term_meta( $item['object_id'], $name, true );
+					$value = get_term_meta( $item['object_id'], $name, true );
 					break;
 				case 'author':
-					$hash = get_user_meta( $item['object_id'], $name, true );
+					$value = get_user_meta( $item['object_id'], $name, true );
 					break;
 
 			}
 		}
 
-		return $hash;
+		return $value;
 	}
 
 	/**
