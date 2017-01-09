@@ -461,6 +461,7 @@ class WP_CriticalCSS {
 			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
 			$value = get_transient( $name );
 		} else {
+			$name = "criticalcss_{$name}";
 			switch ( $item ) {
 				case 'post':
 					$value = get_post_meta( $item['object_id'], $name, true );
@@ -566,6 +567,7 @@ class WP_CriticalCSS {
 			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
 			set_transient( $name, $value, $expires );
 		} else {
+			$name = "criticalcss_{$name}";
 			switch ( $item['type'] ) {
 				case 'post':
 					update_post_meta( $item['object_id'], $name, $value );
