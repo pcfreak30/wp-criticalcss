@@ -461,7 +461,6 @@ class WP_CriticalCSS {
 			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
 			$hash = get_transient( $name );
 		} else {
-			$name = "criticalcss_hash";
 			switch ( $item ) {
 				case 'post':
 					$hash = get_post_meta( $item['object_id'], $name, true );
