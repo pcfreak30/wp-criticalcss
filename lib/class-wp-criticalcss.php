@@ -462,7 +462,7 @@ class WP_CriticalCSS {
 			$value = get_transient( $name );
 		} else {
 			$name = "criticalcss_{$name}";
-			switch ( $item ) {
+			switch ( $item['type'] ) {
 				case 'post':
 					$value = get_post_meta( $item['object_id'], $name, true );
 					break;
