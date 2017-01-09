@@ -736,7 +736,6 @@ class WP_CriticalCSS {
 	}
 
 	public static function reset_web_check_post_transient( $post ) {
-		global $wpdb;
 		$post = get_post( $post );
 		$item = array( 'object_id' => $post->ID, 'type' => 'post' );
 		$id   = md5( serialize( $item ) );
@@ -749,7 +748,6 @@ class WP_CriticalCSS {
 	 * @internal param \WP_Term $post
 	 */
 	public static function reset_web_check_term_transient( $term ) {
-		global $wpdb;
 		$term = get_term( $term );
 		$item = array( 'object_id' => $term->term_id, 'type' => 'term' );
 		$id   = md5( serialize( $item ) );
@@ -760,7 +758,6 @@ class WP_CriticalCSS {
 	 * @internal param \WP_Term $post
 	 */
 	public static function reset_web_check_home_transient() {
-		global $wpdb;
 		$id             = '';
 		$page_for_posts = get_option( 'page_for_posts' );
 		if ( ! empty( $page_for_posts ) ) {
