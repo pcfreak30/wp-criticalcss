@@ -73,6 +73,7 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 				return false;
 			}
 			$item['queue_id'] = $result->id;
+			$item['status'] = $result->status;
 
 			return $item;
 		}
