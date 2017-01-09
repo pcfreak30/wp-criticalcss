@@ -129,7 +129,7 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 		if ( $changed ) {
 			$item['css_hash']  = $css_hash;
 			$item['html_hash'] = $html_hash;
-			WP_CriticalCSS::purge_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
+			WP_CriticalCSS::purge_page_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
 			WP_CriticalCSS::set_cache( $item, '' );
 			$api_queue->push_to_queue( $item )->save();
 
