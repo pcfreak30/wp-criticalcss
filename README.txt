@@ -3,7 +3,7 @@ Contributors: pcfreak30
 Donate link: https://www.paypal.me/pcfreak30
 Tags: optimize, above the fold, critical css
 Requires at least: 4.7
-Tested up to: 4.7
+Tested up to: 4.7.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -62,6 +62,13 @@ Yes currently WP-Rocket is supported. Others can be added as integrations on req
 Generally any host. Some hosts like WPEngine has special support to purge the server cache.
 
 == Changelog ==
+
+### 0.3.0 ###
+
+* Bug: Store status information when a generate API request is made
+* Enhancement: Rework elements of settings UI
+* Enhancement: Add bulk purge option in queue table
+* Enhancement: Queue system and core system refactor that checks for changes by hashing html and css output via web request
 
 ### 0.2.5 ###
 
