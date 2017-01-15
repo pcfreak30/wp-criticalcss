@@ -2,7 +2,7 @@
 Contributors: pcfreak30
 Donate link: https://www.paypal.me/pcfreak30
 Tags: optimize, above the fold, critical css
-Requires at least: 4.7
+Requires at least: 4.5
 Tested up to: 4.7.1
 Stable tag: trunk
 License: GPLv2 or later
