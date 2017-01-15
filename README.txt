@@ -8,7 +8,7 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-WordPress plugin that will use CriticalCSS.com to generate above-the-fold CSS for your pages.
+WordPress plugin that will use CriticalCSS.com to automatically generate above-the-fold CSS for your pages.
 == Description ==
 
 This plugin will automatically have the CriticalCSS.com web service get the needed above the fold CSS for every page on your site to help improve your user experience and site speed. This is commonly required by google pagespeed as one of the last steps to do.
