@@ -63,6 +63,11 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.3.1 ###
+
+* Bug: Fix purge bulk action
+* Cleanup: Merge settings classes together
+
 ### 0.3.0 ###
 
 * Bug: Store status information when a generate API request is made
