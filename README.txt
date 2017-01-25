@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.3.2 ###
+
+* Enhancement: Prevent duplicate web request queue items by querying the serialized data from the options table
+
 ### 0.3.1 ###
 
 * Bug: Fix purge bulk action
