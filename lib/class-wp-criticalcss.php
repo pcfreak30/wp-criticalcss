@@ -406,6 +406,7 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function print_styles() {
+		global $wpdb;
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
 			$cache        = self::get_cache();
 			$style_handle = null;
@@ -430,8 +431,11 @@ class WP_CriticalCSS {
 			$id    = md5( serialize( $type ) );
 			$check = get_transient( "criticalcss_web_check_$id" );
 			if ( empty( $check ) ) {
-				self::$_web_check_queue->push_to_queue( $type )->save();
-				set_transient( "criticalcss_web_check_$id", true, self::get_expire_period() );
+				$wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->options} WHERE option_value = %s", serialize( $type ) ) );
+				if ( empty( $wpdb->num_rows ) ) {
+					self::$_web_check_queue->push_to_queue( $type )->save();
+					set_transient( "criticalcss_web_check_$id", true, self::get_expire_period() );
+				}
 			}
 
 		}
@@ -453,12 +457,12 @@ class WP_CriticalCSS {
 	 * @return mixed|null
 	 */
 	public static function get_item_data( $item = array(), $name ) {
-		$value     = null;
+		$value = null;
 		if ( empty( $item ) ) {
 			$item = self::get_current_page_type();
 		}
 		if ( 'url' == $item['type'] ) {
-			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
+			$name  = "criticalcss_url_{$name}_" . md5( $item['url'] );
 			$value = get_transient( $name );
 		} else {
 			$name = "criticalcss_{$name}";
