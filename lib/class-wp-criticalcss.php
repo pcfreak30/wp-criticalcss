@@ -234,8 +234,7 @@ class WP_CriticalCSS {
 		}
 		self::update_settings( array_merge( array(
 			'web_check_interval' => DAY_IN_SECONDS,
-			'version'            => self::VERSION,
-		), self::get_settings() ) );
+		), self::get_settings(), array( 'version' => self::VERSION ) ) );
 
 		self::init_action();
 
