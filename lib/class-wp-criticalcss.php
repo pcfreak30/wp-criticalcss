@@ -7,7 +7,7 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	const VERSION = '0.3.2';
+	const VERSION = '0.3.3';
 
 	/**
 	 *

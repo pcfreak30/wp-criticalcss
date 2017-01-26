@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.3.3 ###
+
+* Bug: Ensure the version setting actually updates on upgrade
+
 ### 0.3.2 ###
 
 * Enhancement: Prevent duplicate web request queue items by querying the serialized data from the options table
