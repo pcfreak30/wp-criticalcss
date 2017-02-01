@@ -81,6 +81,7 @@ class WP_CriticalCSS {
 			add_action( 'wp_loaded', array( __CLASS__, 'wp_action' ) );
 		} else {
 			add_action( 'wp', array( __CLASS__, 'wp_action' ) );
+			add_action( 'wp_head', array( __CLASS__, 'wp_head' ) );
 		}
 		add_action( 'init', array( __CLASS__, 'init_action' ) );
 		/*
@@ -109,6 +110,13 @@ class WP_CriticalCSS {
 		return $settings;
 	}
 
+	public static function wp_head() {
+		if ( get_query_var( 'nocache' ) ):
+			?>
+            <meta name="robots" content="noindex, nofollow"/>
+			<?php
+		endif;
+	}
 
 	/**
 	 * @param $redirect_url
