@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.3.5 ###
+
+* Enhancement: If nocache is on, add robots meta for SEO to prevent duplicate content
+
 ### 0.3.4 ###
 
 * Bug: Add slashes with wp_slash to protect post meta with slashes
