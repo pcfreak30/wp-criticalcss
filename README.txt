@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.3.4 ###
+
+* Bug: Add slashes with wp_slash to protect post meta with slashes
+
 ### 0.3.3 ###
 
 * Bug: Ensure the version setting actually updates on upgrade
