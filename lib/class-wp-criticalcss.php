@@ -364,10 +364,10 @@ class WP_CriticalCSS {
 				$purge_domains  = array( $blog_domain );
 				$object_parts   = parse_url( $url );
 				$object_uri     = rtrim( $object_parts   ['path'], '/' ) . "(.*)";
-				$paths          = array( $object_uri );
 				if ( ! empty( $object_parts['query'] ) ) {
 					$object_uri .= "?" . $object_parts['query'];
 				}
+				$paths          = array( $object_uri );
 				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
 				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == "pod" ) {
 					$wpe_varnish_servers = array( "localhost" );
