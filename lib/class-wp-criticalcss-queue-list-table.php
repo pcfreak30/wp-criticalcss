@@ -119,8 +119,7 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 				extract( $item->data );
 				$type  = compact( 'object_id', 'type', 'url' );
 				$id    = md5( serialize( $type ) );
-				$check = get_transient( "criticalcss_web_check_$id" );
-				delete_transient( $check );
+				delete_transient( "criticalcss_web_check_$id" );
 			}
 		}
 	}
