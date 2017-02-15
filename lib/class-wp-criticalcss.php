@@ -437,13 +437,13 @@ class WP_CriticalCSS {
 				<?php
 			}
 			$type  = self::get_current_page_type();
-			$id    = md5( serialize( $type ) );
-			$check = get_transient( "criticalcss_web_check_$id" );
+			$hash  = self::get_item_hash( $type );
+			$check = get_transient( "criticalcss_web_check_$hash" );
 			if ( empty( $check ) ) {
 				$wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->options} WHERE option_value = %s", serialize( $type ) ) );
 				if ( empty( $wpdb->num_rows ) ) {
 					self::$_web_check_queue->push_to_queue( $type )->save();
-					set_transient( "criticalcss_web_check_$id", true, self::get_expire_period() );
+					set_transient( "criticalcss_web_check_${hash}", true, self::get_expire_period() );
 				}
 			}
 
@@ -535,6 +535,13 @@ class WP_CriticalCSS {
 		$object_id = absint( $object_id );
 
 		return compact( 'object_id', 'type', 'url' );
+	}
+
+	public static function get_item_hash( $item ) {
+		extract( $item );
+		$type = compact( 'object_id', 'type', 'url' );
+
+		return md5( serialize( $type ) );
 	}
 
 	/**
@@ -754,9 +761,8 @@ class WP_CriticalCSS {
 
 	public static function reset_web_check_post_transient( $post ) {
 		$post = get_post( $post );
-		$item = array( 'object_id' => $post->ID, 'type' => 'post' );
-		$id   = md5( serialize( $item ) );
-		delete_transient( "criticalcss_web_check_$id" );
+		$hash = self::get_item_hash( array( 'object_id' => $post->ID, 'type' => 'post' ) );
+		delete_transient( "criticalcss_web_check_${hash}" );
 	}
 
 	/**
@@ -766,16 +772,14 @@ class WP_CriticalCSS {
 	 */
 	public static function reset_web_check_term_transient( $term ) {
 		$term = get_term( $term );
-		$item = array( 'object_id' => $term->term_id, 'type' => 'term' );
-		$id   = md5( serialize( $item ) );
-		delete_transient( "criticalcss_web_check_$id" );
+		$hash = self::get_item_hash( array( 'object_id' => $term->term_id, 'type' => 'term' ) );
+		delete_transient( "criticalcss_web_check_${hash}" );
 	}
 
 	/**
 	 * @internal param \WP_Term $post
 	 */
 	public static function reset_web_check_home_transient() {
-		$id             = '';
 		$page_for_posts = get_option( 'page_for_posts' );
 		if ( ! empty( $page_for_posts ) ) {
 			$post_id = $page_for_posts;
@@ -789,13 +793,11 @@ class WP_CriticalCSS {
 			}
 		}
 		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
-			$item = array( 'object_id' => $post_id, 'type' => 'post' );
-			$id   = md5( serialize( $item ) );
+			$hash = self::get_item_hash( array( 'object_id' => $post_id, 'type' => 'post' ) );
 		} else {
-			$item = array( 'type' => 'url', 'url' => site_url() );
-			$id   = md5( serialize( $item ) );
+			$hash = self::get_item_hash( array( 'type' => 'url', 'url' => site_url() ) );
 		}
-		delete_transient( "criticalcss_web_check_$id" );
+		delete_transient( "criticalcss_web_check_${hash}" );
 	}
 
 	/**

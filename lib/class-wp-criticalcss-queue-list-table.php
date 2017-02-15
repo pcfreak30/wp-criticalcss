@@ -116,10 +116,8 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 			$queue = new WP_CriticalCSS_API_Background_Process();
 			while ( ( $item = $queue->get_batch() ) && ! empty( $item->data ) ) {
 				$queue->delete( $item->key );
-				extract( $item->data );
-				$type  = compact( 'object_id', 'type', 'url' );
-				$id    = md5( serialize( $type ) );
-				delete_transient( "criticalcss_web_check_$id" );
+				$hash = WP_CriticalCSS::get_item_hash( $item->data );
+				delete_transient( "criticalcss_web_check_${hash}" );
 			}
 		}
 	}
