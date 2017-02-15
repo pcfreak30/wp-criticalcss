@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.3.6 ###
+
+* Bug: Only set DONOTCACHEPAGE if not set
+
 ### 0.3.5 ###
 
 * Enhancement: If nocache is on, add robots meta for SEO to prevent duplicate content
