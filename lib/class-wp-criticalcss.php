@@ -205,7 +205,9 @@ class WP_CriticalCSS {
 				) );
 				remove_action( 'rocket_buffer', array( 'Rocket_Async_Css_The_Preloader', 'inject_div' ) );
 			}
-			define( 'DONOTCACHEPAGE', true );
+			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+				define( 'DONOTCACHEPAGE', true );
+			}
 		}
 		// Compatibility with WP Rocket
 		if ( function_exists( 'get_rocket_option' ) ) {
