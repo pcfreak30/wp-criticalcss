@@ -4,7 +4,11 @@
 /**
  * Class CriticalCSS_API
  */
-class CriticalCSS_API {
+class WP_CriticalCSS_API {
+	const STATUS_UNKNOWN = 'JOB_UNKNOWN';
+	const STATUS_QUEUED = 'JOB_QUEUED';
+	const STATUS_ONGOING = 'JOB_ONGOING';
+	const STATUS_DONE = 'JOB_DONE';
 	/**
 	 * @var
 	 */

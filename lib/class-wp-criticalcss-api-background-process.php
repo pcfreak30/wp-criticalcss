@@ -27,7 +27,7 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			return $item;
 		}
 
-		$api = new CriticalCSS_API( $settings['apikey'] );
+		$api = new WP_CriticalCSS_API( $settings['apikey'] );
 		if ( ! $this->_ping_checked ) {
 			if ( $api->ping() ) {
 				$this->_ping_checked = true;

@@ -720,7 +720,7 @@ class WP_CriticalCSS {
 		if ( ! $valid ) {
 			return $valid;
 		}
-		$api = new CriticalCSS_API( $options['apikey'] );
+		$api = new WP_CriticalCSS_API( $options['apikey'] );
 		if ( ! $api->ping() ) {
 			add_settings_error( 'apikey', 'invalid_apikey', 'CriticalCSS.com API Key is invalid' );
 			$valid = false;

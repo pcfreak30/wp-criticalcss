@@ -143,16 +143,16 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	protected function column_status( array $item ) {
 		if ( ! empty( $item['queue_id'] ) ) {
 			switch ( $item['status'] ) {
-				case 'JOB_UNKNOWN':
+				case WP_CriticalCSS_API::STATUS_UNKNOWN:
 					return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
 					break;
-				case 'JOB_QUEUED':
+				case WP_CriticalCSS_API::STATUS_QUEUED:
 					return __( 'Queued', WP_CriticalCSS::LANG_DOMAIN );
 					break;
-				case 'JOB_ONGOING':
+				case WP_CriticalCSS_API::STATUS_ONGOING:
 					return __( 'In Progress', WP_CriticalCSS::LANG_DOMAIN );
 					break;
-				case 'JOB_DONE':
+				case WP_CriticalCSS_API::STATUS_DONE:
 					return __( 'Completed', WP_CriticalCSS::LANG_DOMAIN );
 					break;
 			}
