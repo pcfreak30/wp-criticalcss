@@ -63,6 +63,15 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.4.0 ###
+
+* Bug: Fix version comparison logic for upgrade routines and allow previous upgrade code to run on 0.4.0 upgrade due to the bug
+* Enhancement: Major refactor to use dedicated mysql storage tables for queue instead of wp_options to simplify data management and ensure no duplicates can exist
+* Enhancement: If $url in WP_CriticalCSS::get_permalink is a WP_Error, return false
+* Enhancement: Skip item in web check queue if item exists in API queue or the permalink is false
+* Cleanup: Purge all queue items from options table and web check transients on 0.4.0 upgrade
+
+
 ### 0.3.6 ###
 
 * Bug: Only set DONOTCACHEPAGE if not set
