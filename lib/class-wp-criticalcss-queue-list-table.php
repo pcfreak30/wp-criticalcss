@@ -54,71 +54,27 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 		$this->_column_headers = $this->get_column_info();
 		$this->_process_bulk_action();
 
-		$table        = $wpdb->options;
-		$column       = 'option_name';
-		$key_column   = 'option_id';
-		$value_column = 'option_value';
+		$per_page = $this->get_items_per_page( 'queue_items_per_page', 20 );
 
-		if ( is_multisite() ) {
-			$table        = $wpdb->sitemeta;
-			$column       = 'meta_key';
-			$key_column   = 'meta_id';
-			$value_column = 'meta_value';
-		}
+		$total_items = $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->prefix}wp_criticalcss_api_queue" );
 
-		$key = $this->_api_queue->get_identifier() . '_batch_%';
+		$paged = $this->get_pagenum();
+		$start = ( $paged - 1 ) * $per_page;
 
-		$query = $wpdb->get_results( $wpdb->prepare( "
-			SELECT *
-			FROM {$table}
-			WHERE {$column} LIKE %s
-			GROUP BY {$value_column}
-			ORDER BY {$key_column} ASC
-		", $key ) );
-
-		$pending_batches = array();
-		$new_batches     = array();
-		foreach ( $query as $item ) {
-			$item = unserialize( $item->option_value );
-			$item = end( $item );
-			if ( isset( $item['queue_id'] ) && ! isset( $pending_batchess[ $item['queue_id'] ] ) ) {
-				$pending_batches[ $item['queue_id'] ] = $item;
-			} else {
-				$new_batches[] = $item;
-			}
-		}
-
-
-		$this->items = array_merge( array_values( $pending_batches ), $new_batches );
-
-		$per_page     = $this->get_items_per_page( 'queue_items_per_page', 20 );
-		$current_page = $this->get_pagenum();
-		$total_items  = count( $this->items );
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wp_criticalcss_api_queue LIMIT %d,%d", $start, $per_page ), ARRAY_A );
 
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,
 			'per_page'    => $per_page,
+			'total_pages' => ceil( $total_items / $per_page ),
 		) );
-
-		$start = ( $current_page - 1 ) * $per_page;
-		$end   = $total_items;
-		if ( $per_page < $total_items ) {
-			$end = $per_page * $current_page;
-			if ( $end > $total_items ) {
-				$end = $total_items;
-			}
-		}
-		$this->items = array_slice( $this->items, $start, $end - $start );
 	}
 
 	private function _process_bulk_action() {
 		if ( 'purge' == $this->current_action() ) {
 			$queue = new WP_CriticalCSS_API_Background_Process();
-			while ( ( $item = $queue->get_batch() ) && ! empty( $item->data ) ) {
-				$queue->delete( $item->key );
-				$hash = WP_CriticalCSS::get_item_hash( $item->data );
-				delete_transient( "criticalcss_web_check_${hash}" );
-			}
+			$queue->purge();
+			WP_CriticalCSS::reset_web_check_transients();
 		}
 	}
 
@@ -141,8 +97,9 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	 * @return string
 	 */
 	protected function column_status( array $item ) {
-		if ( ! empty( $item['queue_id'] ) ) {
-			switch ( $item['status'] ) {
+		$data = maybe_unserialize( $item['data'] );
+		if ( ! empty( $data ) && ! empty( $data['queue_id'] ) ) {
+			switch ( $data['status'] ) {
 				case WP_CriticalCSS_API::STATUS_UNKNOWN:
 					return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
 					break;
@@ -157,7 +114,13 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 					break;
 			}
 		} else {
-			return __( 'Pending', WP_CriticalCSS::LANG_DOMAIN );
+			switch ( $data['status'] ) {
+				case WP_CriticalCSS_API::STATUS_UNKNOWN:
+					return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
+					break;
+				default:
+					return __( 'Pending', WP_CriticalCSS::LANG_DOMAIN );
+			}
 		}
 	}
 

@@ -36,6 +36,10 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			}
 		}
 		$item['timestamp'] = time();
+		$url               = WP_CriticalCSS::get_permalink( $item );
+		if ( empty( $url ) ) {
+			return false;
+		}
 		if ( ! empty( $item['queue_id'] ) ) {
 			$result = $api->get_result( $item['queue_id'] );
 			if ( $result instanceof WP_Error ) {
@@ -61,7 +65,7 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			}
 			if ( 'JOB_DONE' == $result->status ) {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
-					WP_CriticalCSS::purge_page_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
+					WP_CriticalCSS::purge_page_cache( $item['type'], $item['object_id'], $url );
 					WP_CriticalCSS::set_cache( $item, $result->css );
 					WP_CriticalCSS::set_css_hash( $item, $item['css_hash'] );
 					WP_CriticalCSS::set_html_hash( $item, $item['html_hash'] );
@@ -73,7 +77,7 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 				return false;
 			}
 			$item['queue_id'] = $result->id;
-			$item['status'] = $result->status;
+			$item['status']   = $result->status;
 
 			return $item;
 		}

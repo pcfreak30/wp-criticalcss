@@ -23,9 +23,18 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 			return false;
 		}
 		$api_queue = new WP_CriticalCSS_API_Background_Process();
-		$css_hash = WP_CriticalCSS::get_css_hash( $item );
+
+		if ( $api_queue->get_item_exists( $item ) ) {
+			return false;
+		}
+
+		$css_hash  = WP_CriticalCSS::get_css_hash( $item );
 		$html_hash = WP_CriticalCSS::get_html_hash( $item );
-		$result    = wp_remote_get( WP_CriticalCSS::get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', array(), $item ) );
+		$url       = WP_CriticalCSS::get_permalink( $item );
+		if ( empty( $url ) ) {
+			return false;
+		}
+		$result = wp_remote_get( WP_CriticalCSS::get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', array(), $item ) );
 
 		if ( $result instanceof WP_Error ) {
 			if ( empty( $item['error'] ) ) {
@@ -135,6 +144,7 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 
 		}
 		$this->_processed_urls[ $url ] = true;
+
 		return false;
 	}
 }

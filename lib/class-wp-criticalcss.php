@@ -28,12 +28,12 @@ class WP_CriticalCSS {
 	 */
 	private static $_settings_ui;
 	/**
-	 * @var
+	 * @var WP_CriticalCSS_Web_Check_Background_Process
 	 */
 	private static $_web_check_queue;
 
 	/**
-	 * @var
+	 * @var WP_CriticalCSS_API_Background_Process
 	 */
 	private static $_api_queue;
 	/**
@@ -44,71 +44,6 @@ class WP_CriticalCSS {
 	 * @var array
 	 */
 	private static $_settings = array();
-
-	/**
-	 *
-	 */
-	public static function init() {
-		self::$_settings = self::get_settings();
-		if ( empty( self::$_settings_ui ) ) {
-			self::$_settings_ui = new WP_CriticalCSS_Settings_API();
-		}
-		if ( empty( self::$_web_check_queue ) ) {
-			self::$_web_check_queue = new WP_CriticalCSS_Web_Check_Background_Process();
-		}
-		if ( empty( self::$_api_queue ) ) {
-			self::$_api_queue = new WP_CriticalCSS_API_Background_Process();
-		}
-		if ( ! is_admin() ) {
-			add_action( 'wp_print_styles', array( __CLASS__, 'print_styles' ), 7 );
-		}
-
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		if ( is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
-			add_action( 'network_admin_menu', array( __CLASS__, 'settings_init' ) );
-		} else {
-			add_action( 'admin_menu', array( __CLASS__, 'settings_init' ) );
-		}
-		add_action( 'pre_update_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
-		add_action( 'pre_update_site_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
-
-		add_action( 'after_switch_theme', array( __CLASS__, 'reset_web_check_transients' ) );
-		add_action( 'upgrader_process_complete', array( __CLASS__, 'reset_web_check_transients' ) );
-		add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
-		add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
-		add_action( 'request', array( __CLASS__, 'update_request' ) );
-		if ( is_admin() ) {
-			add_action( 'wp_loaded', array( __CLASS__, 'wp_action' ) );
-		} else {
-			add_action( 'wp', array( __CLASS__, 'wp_action' ) );
-			add_action( 'wp_head', array( __CLASS__, 'wp_head' ) );
-		}
-		add_action( 'init', array( __CLASS__, 'init_action' ) );
-		/*
-		 * Prevent a 404 on homepage if a static page is set.
-		 * Will store query_var outside \WP_Query temporarily so we don't need to do any extra routing logic and will appear as if it was not set.
-		 */
-		add_action( 'parse_request', array( __CLASS__, 'parse_request' ) );
-		// Don't fix url or try to guess url if we are using nocache on the homepage
-		add_filter( 'redirect_canonical', array( __CLASS__, 'redirect_canonical' ) );
-	}
-
-	/**
-	 * @return array
-	 */
-	public static function get_settings() {
-		$settings = array();
-		if ( is_multisite() ) {
-			$settings = get_site_option( self::OPTIONNAME, array() );
-			if ( empty( $settings ) ) {
-				$settings = get_option( self::OPTIONNAME, array() );
-			}
-		} else {
-			$settings = get_option( self::OPTIONNAME, array() );
-		}
-
-		return $settings;
-	}
 
 	public static function wp_head() {
 		if ( get_query_var( 'nocache' ) ):
@@ -226,11 +161,13 @@ class WP_CriticalCSS {
 		$settings    = self::get_settings();
 		$no_version  = ! empty( $settings ) && empty( $settings['version'] );
 		$version_0_3 = false;
+		$version_0_4 = false;
 		if ( ! $no_version ) {
 			$version     = $settings['version'];
-			$version_0_3 = version_compare( '0.3.0', $version ) === true;
+			$version_0_3 = version_compare( '0.3.0', $version ) === 1;
+			$version_0_4 = version_compare( '0.4.0', $version ) === 1;
 		}
-		if ( $no_version || $version_0_3 ) {
+		if ( $no_version || $version_0_3 || $version_0_4 ) {
 			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_%', '_transient_timeout_criticalcss_%' ) );
 			remove_action( 'update_option_criticalcss', array( __CLASS__, 'after_options_updated' ) );
 			if ( isset( $settings['disable_autopurge'] ) ) {
@@ -242,13 +179,38 @@ class WP_CriticalCSS {
 				self::update_settings( $settings );
 			}
 		}
+		if ( $version_0_4 ) {
+			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '%wp_criticalcss_api%', '%wp_criticalcss_web_check%' ) );
+			self::reset_web_check_transients();
+		}
 		self::update_settings( array_merge( array(
 			'web_check_interval' => DAY_IN_SECONDS,
 		), self::get_settings(), array( 'version' => self::VERSION ) ) );
 
+		self::init();
 		self::init_action();
 
+		self::$_web_check_queue->create_table();
+		self::$_api_queue->create_table();
+
 		flush_rewrite_rules();
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function get_settings() {
+		$settings = array();
+		if ( is_multisite() ) {
+			$settings = get_site_option( self::OPTIONNAME, array() );
+			if ( empty( $settings ) ) {
+				$settings = get_option( self::OPTIONNAME, array() );
+			}
+		} else {
+			$settings = get_option( self::OPTIONNAME, array() );
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -262,6 +224,63 @@ class WP_CriticalCSS {
 		} else {
 			return update_option( self::OPTIONNAME, $settings );
 		}
+	}
+
+	/**
+	 *
+	 */
+	public static function reset_web_check_transients() {
+		global $wpdb;
+		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_web_check_%', '_transient_timeout_criticalcss_web_check_%' ) );
+		wp_cache_flush();
+	}
+
+	/**
+	 *
+	 */
+	public static function init() {
+		self::$_settings = self::get_settings();
+		if ( empty( self::$_settings_ui ) ) {
+			self::$_settings_ui = new WP_CriticalCSS_Settings_API();
+		}
+		if ( empty( self::$_web_check_queue ) ) {
+			self::$_web_check_queue = new WP_CriticalCSS_Web_Check_Background_Process();
+		}
+		if ( empty( self::$_api_queue ) ) {
+			self::$_api_queue = new WP_CriticalCSS_API_Background_Process();
+		}
+		if ( ! is_admin() ) {
+			add_action( 'wp_print_styles', array( __CLASS__, 'print_styles' ), 7 );
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		if ( is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
+			add_action( 'network_admin_menu', array( __CLASS__, 'settings_init' ) );
+		} else {
+			add_action( 'admin_menu', array( __CLASS__, 'settings_init' ) );
+		}
+		add_action( 'pre_update_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
+		add_action( 'pre_update_site_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
+
+		add_action( 'after_switch_theme', array( __CLASS__, 'reset_web_check_transients' ) );
+		add_action( 'upgrader_process_complete', array( __CLASS__, 'reset_web_check_transients' ) );
+		add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
+		add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
+		add_action( 'request', array( __CLASS__, 'update_request' ) );
+		if ( is_admin() ) {
+			add_action( 'wp_loaded', array( __CLASS__, 'wp_action' ) );
+		} else {
+			add_action( 'wp', array( __CLASS__, 'wp_action' ) );
+			add_action( 'wp_head', array( __CLASS__, 'wp_head' ) );
+		}
+		add_action( 'init', array( __CLASS__, 'init_action' ) );
+		/*
+		 * Prevent a 404 on homepage if a static page is set.
+		 * Will store query_var outside \WP_Query temporarily so we don't need to do any extra routing logic and will appear as if it was not set.
+		 */
+		add_action( 'parse_request', array( __CLASS__, 'parse_request' ) );
+		// Don't fix url or try to guess url if we are using nocache on the homepage
+		add_filter( 'redirect_canonical', array( __CLASS__, 'redirect_canonical' ) );
 	}
 
 	/**
@@ -303,6 +322,10 @@ class WP_CriticalCSS {
 				$url = $object['url'];
 		}
 		self::enable_relative_plugin_filters();
+
+		if ( $url instanceof WP_Error ) {
+			return false;
+		}
 
 		$url_parts         = parse_url( $url );
 		$url_parts['path'] = trailingslashit( $url_parts['path'] ) . 'nocache/';
@@ -367,7 +390,7 @@ class WP_CriticalCSS {
 				if ( ! empty( $object_parts['query'] ) ) {
 					$object_uri .= "?" . $object_parts['query'];
 				}
-				$paths          = array( $object_uri );
+				$paths         = array( $object_uri );
 				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
 				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == "pod" ) {
 					$wpe_varnish_servers = array( "localhost" );
@@ -415,7 +438,6 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function print_styles() {
-		global $wpdb;
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
 			$cache        = self::get_cache();
 			$style_handle = null;
@@ -440,8 +462,7 @@ class WP_CriticalCSS {
 			$hash  = self::get_item_hash( $type );
 			$check = get_transient( "criticalcss_web_check_$hash" );
 			if ( empty( $check ) ) {
-				$wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->options} WHERE option_value = %s", serialize( $type ) ) );
-				if ( empty( $wpdb->num_rows ) ) {
+				if ( ! self::$_web_check_queue->get_item_exists( $type ) ) {
 					self::$_web_check_queue->push_to_queue( $type )->save();
 					set_transient( "criticalcss_web_check_${hash}", true, self::get_expire_period() );
 				}
@@ -567,10 +588,11 @@ class WP_CriticalCSS {
 	}
 
 	/**
-	 * @param array  $type
+	 * @param        $item
 	 * @param string $css
 	 *
 	 * @return void
+	 * @internal param array $type
 	 */
 	public static function set_cache( $item, $css ) {
 		self::set_item_data( $item, 'cache', $css );
@@ -613,20 +635,22 @@ class WP_CriticalCSS {
 	}
 
 	/**
-	 * @param array  $type
+	 * @param        $item
 	 * @param string $hash
 	 *
 	 * @return void
+	 * @internal param array $type
 	 */
 	public static function set_css_hash( $item, $hash ) {
 		self::set_item_data( $item, 'css_hash', $hash );
 	}
 
 	/**
-	 * @param array  $type
+	 * @param        $item
 	 * @param string $hash
 	 *
 	 * @return void
+	 * @internal param array $type
 	 */
 	public static function set_html_hash( $item, $hash ) {
 		self::set_item_data( $item, 'html_hash', $hash );
@@ -748,15 +772,6 @@ class WP_CriticalCSS {
 		}
 
 		return $value;
-	}
-
-	/**
-	 *
-	 */
-	public static function reset_web_check_transients() {
-		global $wpdb;
-		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_web_check_%', '_transient_timeout_criticalcss_web_check_%' ) );
-		wp_cache_flush();
 	}
 
 	public static function reset_web_check_post_transient( $post ) {
