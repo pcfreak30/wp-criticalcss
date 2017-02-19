@@ -65,7 +65,9 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			}
 			if ( 'JOB_DONE' == $result->status ) {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
+					WP_CriticalCSS::set_purge_lock( true );
 					WP_CriticalCSS::purge_page_cache( $item['type'], $item['object_id'], $url );
+					WP_CriticalCSS::set_purge_lock( false );
 					WP_CriticalCSS::set_cache( $item, $result->css );
 					WP_CriticalCSS::set_css_hash( $item, $item['css_hash'] );
 					WP_CriticalCSS::set_html_hash( $item, $item['html_hash'] );

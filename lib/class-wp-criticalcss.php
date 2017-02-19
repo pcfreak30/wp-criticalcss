@@ -24,6 +24,10 @@ class WP_CriticalCSS {
 	 */
 	public static $nocache = false;
 	/**
+	 * @var bool
+	 */
+	protected static $purge_lock = false;
+	/**
 	 * @var \WeDevs_Settings_API
 	 */
 	private static $_settings_ui;
@@ -31,7 +35,6 @@ class WP_CriticalCSS {
 	 * @var WP_CriticalCSS_Web_Check_Background_Process
 	 */
 	private static $_web_check_queue;
-
 	/**
 	 * @var WP_CriticalCSS_API_Background_Process
 	 */
@@ -145,7 +148,7 @@ class WP_CriticalCSS {
 			}
 		}
 		// Compatibility with WP Rocket
-		if ( function_exists( 'get_rocket_option' ) ) {
+		if ( function_exists( 'get_rocket_option' ) && ! self::$purge_lock ) {
 			add_action( 'after_rocket_clean_domain', array( __CLASS__, 'reset_web_check_transients' ) );
 			add_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
 			add_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
@@ -843,5 +846,19 @@ class WP_CriticalCSS {
 				'action'           => $action,
 			), admin_url( 'admin-post.php' ) ), $action ),
 		) );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public static function get_purge_lock() {
+		self::$purge_lock;
+	}
+
+	/**
+	 * @param bool $purge_lock
+	 */
+	public static function set_purge_lock( $purge_lock ) {
+		self::$purge_lock = $purge_lock;
 	}
 }
