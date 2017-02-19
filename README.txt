@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.4.1 ###
+
+* Bug: Add a purge_lock property with getter/setter to flag when cache is being purged due to a item completing the API queue to prevent a process infinate cycle
+
 ### 0.4.0 ###
 
 * Bug: Fix version comparison logic for upgrade routines and allow previous upgrade code to run on 0.4.0 upgrade due to the bug
