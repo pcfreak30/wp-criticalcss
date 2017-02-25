@@ -63,6 +63,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 
 == Changelog ==
 
+### 0.4.2 ###
+
+* Enhancement: Convert relative URL's to absolute when doing a web check
+
 ### 0.4.1 ###
 
 * Bug: Add a purge_lock property with getter/setter to flag when cache is being purged due to a item completing the API queue to prevent a process infinate cycle
