@@ -94,6 +94,10 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 		}
 		$urls = apply_filters( 'wp_criticalcss_web_check_css_urls', $urls, $item );
 		foreach ( $urls as $url ) {
+			$host = parse_url( $url, PHP_URL_HOST );
+			if ( empty( $host ) ) {
+				$url = site_url( $url );
+			}
 			$file = wp_remote_get( $url, array(
 				'sslverify' => false,
 			) );
