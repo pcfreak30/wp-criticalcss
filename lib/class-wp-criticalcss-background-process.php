@@ -115,6 +115,17 @@ abstract class WP_CriticalCSS_Background_Process extends WP_Background_Process {
 			$item['data'] = maybe_serialize( $data );
 			$item         = array_diff_key( $item, $data );
 			$wpdb->insert( "{$wpdb->prefix}{$this->action}_queue", $item );
+			if ( class_exists( 'WPECommon' ) ) {
+				$wpdb->query( "DELETE q1 FROM {$wpdb->prefix}{$this->action}_queue q1, {$wpdb->prefix}{$this->action}_queue q2 WHERE q1.id > q2.id 
+	AND (  
+			(
+				q1.object_id = q2.object_id AND q1.type != 'url' AND q2.type != 'url'
+			) OR  
+			(
+				q1.url = q1.url   AND q1.type = 'url'  AND q2.type = 'url'
+			)
+		)" );
+			}
 		}
 		$this->schedule_event();
 
