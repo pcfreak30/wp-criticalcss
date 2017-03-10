@@ -61,6 +61,10 @@ Yes currently WP-Rocket is supported. Others can be added as integrations on req
 
 Generally any host. Some hosts like WPEngine has special support to purge the server cache.
 
+* What is the `/nocache/` in the URL's in the queue?
+
+This is used as a special version of the web page that forcibly disables supported caching and minify plugins to ensure that critical css is created without complications. SEO wise these URL's are safe as they have no references anywhere and google will not be aware to crawl them.
+
 == Changelog ==
 
 ### 0.4.3 ###
