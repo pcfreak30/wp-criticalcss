@@ -67,6 +67,11 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.4.4 ###
+
+* Bug: Ensure all custom taxonomies that have rewrite enabled have the nocache url enabled
+* Bug: Fix woocommerce taxonomies by forcing all nocache rewrite rules for woocommerce taxonomies to the top of the rewrite rule list
+
 ### 0.4.3 ###
 
 * Enhancement: Added hack for WPEngine websites to prevent duplicate item entries
