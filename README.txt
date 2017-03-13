@@ -67,6 +67,12 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.4.5 ###
+
+* Change: Generalize fix_woocommerce_rewrite to fix_rewrites
+* Bug: Add nocache URL rewrite fix for page archives
+* Tweak: Don't append $query_string as it is generally unnecessary
+
 ### 0.4.4 ###
 
 * Bug: Ensure all custom taxonomies that have rewrite enabled have the nocache url enabled
