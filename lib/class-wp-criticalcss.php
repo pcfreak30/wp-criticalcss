@@ -277,6 +277,7 @@ class WP_CriticalCSS {
 			add_action( 'wp_head', array( __CLASS__, 'wp_head' ) );
 		}
 		add_action( 'init', array( __CLASS__, 'init_action' ) );
+		add_filter( 'rewrite_rules_array', array( __CLASS__, 'fix_woocommerce_rewrite' ), 11 );
 		/*
 		 * Prevent a 404 on homepage if a static page is set.
 		 * Will store query_var outside \WP_Query temporarily so we don't need to do any extra routing logic and will appear as if it was not set.
@@ -292,6 +293,37 @@ class WP_CriticalCSS {
 	public static function init_action() {
 		add_rewrite_endpoint( 'nocache', E_ALL );
 		add_rewrite_rule( 'nocache/?$', 'index.php?nocache=1', 'top' );
+		$taxonomies = get_taxonomies( array(
+			'public'   => true,
+			'_builtin' => false,
+		), 'objects' );
+
+		foreach ( $taxonomies as $tax_id => $tax ) {
+			if ( ! empty( $tax->rewrite ) ) {
+				add_rewrite_rule( $tax->rewrite['slug'] . '/(.+?)/nocache/?$', 'index.php?' . $tax_id . '=$matches[1]&nocache', 'top' );
+			}
+		}
+	}
+
+	/**
+	 *
+	 */
+	public static function fix_woocommerce_rewrite( $rules ) {
+		$nocache_rules = array();
+		$taxonomies    = get_taxonomies( array(
+			'public'   => true,
+			'_builtin' => false,
+		) );
+
+		foreach ( $rules as $match => $query ) {
+			if ( false !== strpos( $match, 'nocache' ) && preg_match( '/' . implode( '|', $taxonomies ) . '/', $query ) ) {
+				$nocache_rules[ $match ] = $query;
+				unset( $rules[ $match ] );
+			}
+		}
+		$rules = array_merge( $nocache_rules, $rules );
+
+		return $rules;
 	}
 
 	/**
