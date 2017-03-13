@@ -556,7 +556,6 @@ class WP_CriticalCSS {
 	 */
 	protected static function get_current_page_type() {
 		global $wp;
-		global $query_string;
 		$object_id = 0;
 		if ( is_home() ) {
 			$page_for_posts = get_option( 'page_for_posts' );
@@ -584,9 +583,7 @@ class WP_CriticalCSS {
 
 		if ( ! isset( $type ) ) {
 			self::disable_relative_plugin_filters();
-			$query = array();
-			wp_parse_str( $query_string, $query );
-			$url = add_query_arg( $query, site_url( $wp->request ) );
+			$url = site_url( $wp->request );
 			self::enable_relative_plugin_filters();
 
 			$type = 'url';
