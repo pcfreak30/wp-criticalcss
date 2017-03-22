@@ -63,7 +63,7 @@ class WP_CriticalCSS {
 	 */
 	public static function redirect_canonical( $redirect_url ) {
 		global $wp_query;
-		if ( ! array_diff( array_keys( $wp_query->query ), array( 'nocache' ) ) ) {
+		if ( ! array_diff( array_keys( $wp_query->query ), array( 'nocache' ) ) || get_query_var( 'nocache' ) ) {
 			$redirect_url = false;
 		}
 
