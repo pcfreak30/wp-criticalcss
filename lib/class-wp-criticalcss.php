@@ -24,10 +24,6 @@ class WP_CriticalCSS {
 	 */
 	public static $nocache = false;
 	/**
-	 * @var bool
-	 */
-	protected static $purge_lock = false;
-	/**
 	 * @var \WeDevs_Settings_API
 	 */
 	private static $_settings_ui;
@@ -148,11 +144,21 @@ class WP_CriticalCSS {
 			}
 		}
 		// Compatibility with WP Rocket
-		if ( function_exists( 'get_rocket_option' ) && ! self::$purge_lock ) {
+		if ( function_exists( 'get_rocket_option' ) ) {
 			add_action( 'after_rocket_clean_domain', array( __CLASS__, 'reset_web_check_transients' ) );
 			add_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
 			add_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 			add_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
+		}
+	}
+
+	public static function disable_external_integration() {
+		// Compatibility with WP Rocket
+		if ( function_exists( 'get_rocket_option' ) ) {
+			remove_action( 'after_rocket_clean_domain', array( __CLASS__, 'reset_web_check_transients' ) );
+			remove_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
+			remove_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
+			remove_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
 		}
 	}
 
@@ -496,13 +502,14 @@ class WP_CriticalCSS {
                 <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
 				<?php
 			}
-			$type  = self::get_current_page_type();
-			$hash  = self::get_item_hash( $type );
-			$check = get_transient( "criticalcss_web_check_$hash" );
+			$type           = self::get_current_page_type();
+			$hash           = self::get_item_hash( $type );
+			$transient_name = "criticalcss_web_check_{$hash}";
+			$check          = get_transient( $transient_name );
 			if ( empty( $check ) ) {
 				if ( ! self::$_web_check_queue->get_item_exists( $type ) ) {
 					self::$_web_check_queue->push_to_queue( $type )->save();
-					set_transient( "criticalcss_web_check_${hash}", true, self::get_expire_period() );
+					set_transient( $transient_name, true, self::get_expire_period() );
 				}
 			}
 
@@ -878,19 +885,5 @@ class WP_CriticalCSS {
 				'action'           => $action,
 			), admin_url( 'admin-post.php' ) ), $action ),
 		) );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public static function get_purge_lock() {
-		self::$purge_lock;
-	}
-
-	/**
-	 * @param bool $purge_lock
-	 */
-	public static function set_purge_lock( $purge_lock ) {
-		self::$purge_lock = $purge_lock;
 	}
 }
