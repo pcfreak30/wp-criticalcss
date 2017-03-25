@@ -19,6 +19,8 @@ class WP_CriticalCSS {
 	 */
 	const OPTIONNAME = 'wp_criticalcss';
 
+	const TRANSIENT_PREFIX = 'wp_criticalcss_web_check_';
+
 	/**
 	 * @var bool
 	 */
@@ -239,9 +241,7 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function reset_web_check_transients() {
-		global $wpdb;
-		$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_web_check_%', '_transient_timeout_criticalcss_web_check_%' ) );
-		wp_cache_flush();
+		self::delete_cache_branch();
 	}
 
 	/**
@@ -502,14 +502,13 @@ class WP_CriticalCSS {
                 <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
 				<?php
 			}
-			$type           = self::get_current_page_type();
-			$hash           = self::get_item_hash( $type );
-			$transient_name = "criticalcss_web_check_{$hash}";
-			$check          = get_transient( $transient_name );
+			$type  = self::get_current_page_type();
+			$hash  = self::get_item_hash( $type );
+			$check = self::get_cache_fragment( array( $hash ) );
 			if ( empty( $check ) ) {
 				if ( ! self::$_web_check_queue->get_item_exists( $type ) ) {
 					self::$_web_check_queue->push_to_queue( $type )->save();
-					set_transient( $transient_name, true, self::get_expire_period() );
+					self::update_cache_fragment( array( $hash ), true );
 				}
 			}
 
@@ -819,7 +818,7 @@ class WP_CriticalCSS {
 	public static function reset_web_check_post_transient( $post ) {
 		$post = get_post( $post );
 		$hash = self::get_item_hash( array( 'object_id' => $post->ID, 'type' => 'post' ) );
-		delete_transient( "criticalcss_web_check_${hash}" );
+		self::delete_cache_branch( array( $hash ) );
 	}
 
 	/**
@@ -830,7 +829,7 @@ class WP_CriticalCSS {
 	public static function reset_web_check_term_transient( $term ) {
 		$term = get_term( $term );
 		$hash = self::get_item_hash( array( 'object_id' => $term->term_id, 'type' => 'term' ) );
-		delete_transient( "criticalcss_web_check_${hash}" );
+		self::delete_cache_branch( array( $hash ) );
 	}
 
 	/**
@@ -854,7 +853,7 @@ class WP_CriticalCSS {
 		} else {
 			$hash = self::get_item_hash( array( 'type' => 'url', 'url' => site_url() ) );
 		}
-		delete_transient( "criticalcss_web_check_${hash}" );
+		self::delete_cache_branch( array( $hash ) );
 	}
 
 	/**
@@ -885,5 +884,115 @@ class WP_CriticalCSS {
 				'action'           => $action,
 			), admin_url( 'admin-post.php' ) ), $action ),
 		) );
+	}
+
+	protected function get_cache_fragment( $path ) {
+		if ( ! in_array( 'cache', $path ) ) {
+			array_unshift( $path, 'cache' );
+		}
+
+		return get_transient( self::TRANSIENT_PREFIX . implode( '_', $path ) );
+	}
+
+	protected static function update_cache_fragment( $path, $value ) {
+		if ( ! in_array( 'cache', $path ) ) {
+			array_unshift( $path, 'cache' );
+		}
+		self::build_cache_tree( array_slice( $path, 0, count( $path ) - 1 ) );
+		self::update_tree_branch( $path, $value );
+	}
+
+	protected static function build_cache_tree( $path ) {
+		$levels = count( $path );
+		$expire = get_rocket_purge_cron_interval();
+		for ( $i = 0; $i < $levels; $i ++ ) {
+			$transient_id       = self::TRANSIENT_PREFIX . implode( '_', array_slice( $path, 0, $i + 1 ) );
+			$transient_cache_id = $transient_id;
+			if ( 'cache' != $path[ $i ] ) {
+				$transient_cache_id .= '_cache';
+			}
+			$transient_cache_id .= '_1';
+			$cache              = get_transient( $transient_cache_id );
+			$transient_value    = array();
+			if ( $i + 1 < $levels ) {
+				$transient_value[] = self::TRANSIENT_PREFIX . implode( '_', array_slice( $path, 0, $i + 2 ) );
+			}
+			if ( ! is_null( $cache ) && false !== $cache ) {
+				$transient_value = array_unique( array_merge( $cache, $transient_value ) );
+			}
+			set_transient( $transient_cache_id, $transient_value, $expire );
+			$transient_counter_id = $transient_id;
+			if ( 'cache' != $path[ $i ] ) {
+				$transient_counter_id .= '_cache';
+			}
+			$transient_counter_id .= '_count';
+			$transient_counter    = get_transient( $transient_counter_id );
+			if ( is_null( $transient_counter ) || false === $transient_counter ) {
+				set_transient( $transient_counter_id, 1, $expire );
+			}
+		}
+	}
+
+	protected static function update_tree_branch( $path, $value ) {
+		$branch            = self::TRANSIENT_PREFIX . implode( '_', $path );
+		$parent_path       = array_slice( $path, 0, count( $path ) - 1 );
+		$parent            = self::TRANSIENT_PREFIX . implode( '_', $parent_path );
+		$counter_transient = $parent;
+		$cache_transient   = $parent;
+		if ( 'cache' != end( $parent_path ) ) {
+			$counter_transient .= '_cache';
+			$cache_transient   .= '_cache';
+		}
+		$counter_transient .= '_count';
+		$counter           = (int) get_transient( $counter_transient );
+		$cache_transient   .= "_{$counter}";
+		$cache             = get_transient( $cache_transient );
+		$count             = count( $cache );
+		$cache_keys        = array_flip( $cache );
+		$expire            = get_rocket_purge_cron_interval();
+		if ( ! isset( $cache_keys[ $branch ] ) ) {
+			if ( $count >= apply_filters( 'rocket_async_css_max_branch_length', 50 ) ) {
+				$counter ++;
+				set_transient( $counter_transient, $counter, $expire );
+				$cache_transient = $parent;
+				if ( 'cache' != end( $parent_path ) ) {
+					$cache_transient .= '_cache';
+				}
+				$cache_transient .= "_{$counter}";
+				$cache           = array();
+			}
+			$cache[] = $branch;
+			set_transient( $cache_transient, $cache, $expire );
+		}
+		set_transient( $branch, $value, $expire );
+	}
+
+	protected static function delete_cache_branch( $path = array() ) {
+		if ( is_array( $path ) ) {
+			if ( ! empty( $path ) ) {
+				$path = self::TRANSIENT_PREFIX . implode( '_', $path ) . '_';
+			} else {
+				$path = self::TRANSIENT_PREFIX;
+			}
+		}
+		$counter_transient = "{$path}cache_count";
+		$counter           = get_transient( $counter_transient );
+
+		if ( is_null( $counter ) || false === $counter ) {
+			delete_transient( rtrim( $path, '_' ) );
+
+			return;
+		}
+		for ( $i = 1; $i <= $counter; $i ++ ) {
+			$transient_name = "{$path}cache_{$i}";
+			$cache          = get_transient( "{$path}cache_{$i}" );
+			if ( ! empty( $cache ) ) {
+				foreach ( $cache as $sub_branch ) {
+					self::delete_cache_branch( "{$sub_branch}_" );
+				}
+				delete_transient( $transient_name );
+			}
+		}
+		delete_transient( $counter_transient );
 	}
 }
