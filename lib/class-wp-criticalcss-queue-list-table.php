@@ -1,5 +1,5 @@
 <?php
-
+defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 
 /**
@@ -42,6 +42,9 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 			'status'         => __( 'Status', WP_CriticalCSS::LANG_DOMAIN ),
 			'queue_position' => __( 'Queue Position', WP_CriticalCSS::LANG_DOMAIN ),
 		);
+		if ( is_multisite() ) {
+			$columns = array_merge( array( 'blog_id' => __( 'Blog', WP_CriticalCSS::LANG_DOMAIN ) ), $columns );
+		}
 
 		return $columns;
 	}
@@ -57,12 +60,18 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 
 		$per_page = $this->get_items_per_page( 'queue_items_per_page', 20 );
 
+		if ( is_multisite() ) {
+			$table = "{$wpdb->base_prefix}wp_criticalcss_api_queue";
+		} else {
+			$table = "{$wpdb->prefix}wp_criticalcss_api_queue";
+		}
+
 		$total_items = $wpdb->get_var( "SELECT COUNT(id) FROM {$wpdb->prefix}wp_criticalcss_api_queue" );
 
 		$paged = $this->get_pagenum();
 		$start = ( $paged - 1 ) * $per_page;
 
-		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$wpdb->prefix}wp_criticalcss_api_queue LIMIT %d,%d", $start, $per_page ), ARRAY_A );
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} LIMIT %d,%d", $start, $per_page ), ARRAY_A );
 
 		$this->set_pagination_args( array(
 			'total_items' => $total_items,
@@ -85,7 +94,26 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	/**
 	 * @param array $item
 	 *
-	 * @return false|mixed|string|\WP_Error
+	 * @return string
+	 */
+	protected function column_blog_id( array $item ) {
+		if ( empty( $item['blog_id'] ) ) {
+			return __( 'N/A', WP_CriticalCSS::LANG_DOMAIN );
+		}
+
+		$details = get_blog_details( array( 'blog_id' => $item['blog_id'] ) );
+
+		if ( empty( $details ) ) {
+			return __( 'Blog Deleted', WP_CriticalCSS::LANG_DOMAIN );
+		}
+
+		return $details->blogname;
+	}
+
+	/**
+	 * @param array $item
+	 *
+	 * @return string
 	 */
 	protected function column_url( array $item ) {
 		$settings = WP_CriticalCSS::get_settings();
@@ -99,7 +127,7 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	/**
 	 * @param array $item
 	 *
-	 * @return false|mixed|string|\WP_Error
+	 * @return string
 	 */
 	protected function column_template( array $item ) {
 		$settings = WP_CriticalCSS::get_settings();
