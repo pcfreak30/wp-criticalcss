@@ -1,5 +1,5 @@
 <?php
-
+defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Background_Process {
 	protected $action = 'wp_criticalcss_web_check';
 
