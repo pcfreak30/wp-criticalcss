@@ -1,5 +1,6 @@
 <?php
 defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
+
 class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Background_Process {
 	protected $action = 'wp_criticalcss_web_check';
 
@@ -22,7 +23,7 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 		if ( isset( $this->_processed_urls[ $url ] ) ) {
 			return false;
 		}
-		$api_queue = new WP_CriticalCSS_API_Background_Process();
+		$api_queue = WP_CriticalCSS::get_api_queue();
 
 		if ( $api_queue->get_item_exists( $item ) ) {
 			return false;
