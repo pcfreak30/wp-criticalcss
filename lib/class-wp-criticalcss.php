@@ -173,13 +173,14 @@ class WP_CriticalCSS {
 		$no_version  = ! empty( $settings ) && empty( $settings['version'] );
 		$version_0_3 = false;
 		$version_0_4 = false;
+		$version_0_5 = false;
 		if ( ! $no_version ) {
 			$version     = $settings['version'];
 			$version_0_3 = version_compare( '0.3.0', $version ) === 1;
 			$version_0_4 = version_compare( '0.4.0', $version ) === 1;
+			$version_0_5 = version_compare( '0.5.0', $version ) === 1;
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 ) {
-			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_%', '_transient_timeout_criticalcss_%' ) );
 			remove_action( 'update_option_criticalcss', array( __CLASS__, 'after_options_updated' ) );
 			if ( isset( $settings['disable_autopurge'] ) ) {
 				unset( $settings['disable_autopurge'] );
@@ -190,10 +191,10 @@ class WP_CriticalCSS {
 				self::update_settings( $settings );
 			}
 		}
-		if ( $version_0_4 ) {
-			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '%wp_criticalcss_api%', '%wp_criticalcss_web_check%' ) );
-			self::reset_web_check_transients();
+		if ( $no_version || $version_0_3 || $version_0_4 || $version_0_5 ) {
+			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_%', '_transient_timeout_criticalcss_%' ) );
 		}
+
 		self::update_settings( array_merge( array(
 			'web_check_interval' => DAY_IN_SECONDS,
 		), self::get_settings(), array( 'version' => self::VERSION ) ) );
