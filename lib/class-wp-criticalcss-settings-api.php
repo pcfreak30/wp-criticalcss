@@ -520,7 +520,7 @@ if ( ! class_exists( 'WP_CriticalCSS_Settings_API' ) ):
 				<?php foreach ( $this->settings_sections as $form ) { ?>
                     <div id="<?php echo $form['id']; ?>" class="group" style="display: none;">
 	                    <?php if ( $form['form'] ): ?>
-                        <form method="post" action="options.php">
+                        <form method="post" action="<?php if ( is_multisite() ): ?>../<?php endif; ?>options.php">
 	                        <?php endif; ?>
 							<?php
 							do_action( 'wsa_form_top_' . $form['id'], $form );

@@ -26,7 +26,7 @@ class WP_CriticalCSS {
 	 */
 	public static $nocache = false;
 	/**
-	 * @var \WP_Cr
+	 * @var \WP_CriticalCSS_Settings_API
 	 */
 	private static $_settings_ui;
 	/**
@@ -260,13 +260,9 @@ class WP_CriticalCSS {
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		if ( is_plugin_active_for_network( plugin_basename( dirname( __DIR__ ) . '/wp-criticalcss.php' ) ) ) {
-			add_action( 'network_admin_menu', array( __CLASS__, 'settings_init' ) );
-		} else {
-			add_action( 'admin_menu', array( __CLASS__, 'settings_init' ) );
-		}
+		add_action( 'network_admin_menu', array( __CLASS__, 'settings_init' ) );
+		add_action( 'admin_menu', array( __CLASS__, 'settings_init' ) );
 		add_action( 'pre_update_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
-		add_action( 'pre_update_site_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
 
 		add_action( 'after_switch_theme', array( __CLASS__, 'reset_web_check_transients' ) );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'reset_web_check_transients' ) );
@@ -861,6 +857,7 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function settings_ui() {
+		require ABSPATH . 'wp-admin/options-head.php';
 		self::$_settings_ui->add_section( array(
 			'id'    => 'wp_criticalcss_queue',
 			'title' => 'WP Critical CSS Queue',
@@ -927,6 +924,7 @@ class WP_CriticalCSS {
 	 * @return array
 	 */
 	public static function sync_options( $value, $old_value ) {
+		$original_old_value = $old_value;
 		if ( ! is_array( $old_value ) ) {
 			$old_value = array();
 		}
@@ -938,6 +936,11 @@ class WP_CriticalCSS {
 			self::reset_web_check_transients();
 		}
 
+		if ( is_multisite() ) {
+			update_site_option( self::OPTIONNAME, $value );
+			$value = $original_old_value;
+		}
+
 		return $value;
 	}
 
@@ -945,6 +948,13 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function reset_web_check_transients() {
+		if ( is_multisite() ) {
+			foreach ( get_sites( array( 'fields' => 'ids', 'site__not_in' => get_current_blog_id() ) ) as $blog_id ) {
+				switch_to_blog( $blog_id );
+				self::delete_cache_branch();
+				restore_current_blog();
+			}
+		}
 		self::delete_cache_branch();
 	}
 
