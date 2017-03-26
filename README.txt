@@ -67,6 +67,13 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.6.0 ###
+
+ * Bug: Fix multisite settings menu
+ * Feature: Add new cache mode to process pages by the wordpress template
+ * Feature: Add full multisite compatibilty using site transients and network wide queue tables
+ * Security: Prevent direct access class files
+
 ### 0.5.1 ###
 
 * Bug: Use get_expire_period not get_rocket_purge_cron_interval
