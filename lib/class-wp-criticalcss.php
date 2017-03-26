@@ -618,7 +618,7 @@ class WP_CriticalCSS {
 
 	protected static function build_cache_tree( $path ) {
 		$levels = count( $path );
-		$expire = get_rocket_purge_cron_interval();
+		$expire = self::get_expire_period();
 		for ( $i = 0; $i < $levels; $i ++ ) {
 			$transient_id       = self::TRANSIENT_PREFIX . implode( '_', array_slice( $path, 0, $i + 1 ) );
 			$transient_cache_id = $transient_id;
@@ -647,6 +647,19 @@ class WP_CriticalCSS {
 		}
 	}
 
+	/**
+	 * @return int
+	 */
+	public static function get_expire_period() {
+// WP-Rocket integration
+		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
+			return get_rocket_purge_cron_interval();
+		}
+		$settings = self::get_settings();
+
+		return absint( self::$_settings['web_check_interval'] );
+	}
+
 	protected static function update_tree_branch( $path, $value ) {
 		$branch            = self::TRANSIENT_PREFIX . implode( '_', $path );
 		$parent_path       = array_slice( $path, 0, count( $path ) - 1 );
@@ -663,7 +676,7 @@ class WP_CriticalCSS {
 		$cache             = get_transient( $cache_transient );
 		$count             = count( $cache );
 		$cache_keys        = array_flip( $cache );
-		$expire            = get_rocket_purge_cron_interval();
+		$expire            = self::get_expire_period();
 		if ( ! isset( $cache_keys[ $branch ] ) ) {
 			if ( $count >= apply_filters( 'rocket_async_css_max_branch_length', 50 ) ) {
 				$counter ++;
@@ -679,19 +692,6 @@ class WP_CriticalCSS {
 			set_transient( $cache_transient, $cache, $expire );
 		}
 		set_transient( $branch, $value, $expire );
-	}
-
-	/**
-	 * @return int
-	 */
-	public static function get_expire_period() {
-// WP-Rocket integration
-		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
-			return get_rocket_purge_cron_interval();
-		}
-		$settings = self::get_settings();
-
-		return absint( self::$_settings['web_check_interval'] );
 	}
 
 	/**
