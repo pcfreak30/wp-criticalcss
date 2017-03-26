@@ -73,8 +73,9 @@ abstract class WP_CriticalCSS_Background_Process extends WP_Background_Process {
 		include_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$charset_collate = $wpdb->get_charset_collate();
-		dbDelta( "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}{$this->action}_queue (
+		dbDelta( "CREATE TABLE {$wpdb->prefix}{$this->action}_queue (
   id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
+  template  VARCHAR(255),
   object_id  BIGINT(10),
   type VARCHAR (10),
   url TEXT,
@@ -85,19 +86,26 @@ abstract class WP_CriticalCSS_Background_Process extends WP_Background_Process {
 
 	public function get_item_exists( $item ) {
 		global $wpdb;
+
+		$args = array();
+
+		$sql = "SELECT *
+			FROM `{$wpdb->prefix}{$this->action}_queue`
+			WHERE ";
 		if ( 'url' == $item['type'] ) {
-			$result = $wpdb->get_row( $wpdb->prepare( "
-			SELECT *
-			FROM `{$wpdb->prefix}{$this->action}_queue`
-			WHERE `url` = %s
-		", $item['url'] ) );
+			$sql    .= '`url` = %s';
+			$args[] = $item['url'];
 		} else {
-			$result = $wpdb->get_row( $wpdb->prepare( "
-			SELECT *
-			FROM `{$wpdb->prefix}{$this->action}_queue`
-			WHERE `object_id` = %d AND `type` = %s
-		", $item['object_id'], $item['type'] ) );
+			$sql    .= '`object_id` = %d AND `type` = %s';
+			$args[] = $item['object_id'];
+			$args[] = $item['type'];
 		}
+		if ( ! empty( $item['template'] ) ) {
+			$sql    .= ' AND `template` = %s';
+			$args[] = $item['template'];
+		}
+		$result = $wpdb->get_row( $wpdb->prepare( $sql, $args ) );
+
 		if ( is_null( $result ) ) {
 			$result = false;
 		}
@@ -112,6 +120,7 @@ abstract class WP_CriticalCSS_Background_Process extends WP_Background_Process {
 			unset( $data['object_id'] );
 			unset( $data['type'] );
 			unset( $data['url'] );
+			unset( $data['template'] );
 			$item['data'] = maybe_serialize( $data );
 			$item         = array_diff_key( $item, $data );
 			$wpdb->insert( "{$wpdb->prefix}{$this->action}_queue", $item );

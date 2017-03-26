@@ -38,6 +38,7 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	function get_columns() {
 		$columns = array(
 			'url'            => __( 'URL', WP_CriticalCSS::LANG_DOMAIN ),
+			'template'       => __( 'Template', WP_CriticalCSS::LANG_DOMAIN ),
 			'status'         => __( 'Status', WP_CriticalCSS::LANG_DOMAIN ),
 			'queue_position' => __( 'Queue Position', WP_CriticalCSS::LANG_DOMAIN ),
 		);
@@ -72,8 +73,7 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 
 	private function _process_bulk_action() {
 		if ( 'purge' == $this->current_action() ) {
-			$queue = new WP_CriticalCSS_API_Background_Process();
-			$queue->purge();
+			WP_CriticalCSS::get_api_queue()->purge();
 			WP_CriticalCSS::reset_web_check_transients();
 		}
 	}
@@ -88,6 +88,29 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	 * @return false|mixed|string|\WP_Error
 	 */
 	protected function column_url( array $item ) {
+		$settings = WP_CriticalCSS::get_settings();
+		if ( 'on' == $settings['template_cache'] ) {
+			return __( 'N/A', WP_CriticalCSS::LANG_DOMAIN );
+		}
+
+		return WP_CriticalCSS::get_permalink( $item );
+	}
+
+	/**
+	 * @param array $item
+	 *
+	 * @return false|mixed|string|\WP_Error
+	 */
+	protected function column_template( array $item ) {
+		$settings = WP_CriticalCSS::get_settings();
+		if ( 'on' == $settings['template_cache'] ) {
+			if ( ! empty( $item['template'] ) ) {
+				return $item['template'];
+			}
+
+			return __( 'N/A', WP_CriticalCSS::LANG_DOMAIN );
+		}
+
 		return WP_CriticalCSS::get_permalink( $item );
 	}
 
@@ -98,29 +121,33 @@ class WP_CriticalCSS_Queue_List_Table extends WP_List_Table {
 	 */
 	protected function column_status( array $item ) {
 		$data = maybe_unserialize( $item['data'] );
-		if ( ! empty( $data ) && ! empty( $data['queue_id'] ) ) {
-			switch ( $data['status'] ) {
-				case WP_CriticalCSS_API::STATUS_UNKNOWN:
-					return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
-					break;
-				case WP_CriticalCSS_API::STATUS_QUEUED:
-					return __( 'Queued', WP_CriticalCSS::LANG_DOMAIN );
-					break;
-				case WP_CriticalCSS_API::STATUS_ONGOING:
-					return __( 'In Progress', WP_CriticalCSS::LANG_DOMAIN );
-					break;
-				case WP_CriticalCSS_API::STATUS_DONE:
-					return __( 'Completed', WP_CriticalCSS::LANG_DOMAIN );
-					break;
+		if ( ! empty( $data ) ) {
+			if ( ! empty( $data['queue_id'] ) ) {
+				switch ( $data['status'] ) {
+					case WP_CriticalCSS_API::STATUS_UNKNOWN:
+						return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
+						break;
+					case WP_CriticalCSS_API::STATUS_QUEUED:
+						return __( 'Queued', WP_CriticalCSS::LANG_DOMAIN );
+						break;
+					case WP_CriticalCSS_API::STATUS_ONGOING:
+						return __( 'In Progress', WP_CriticalCSS::LANG_DOMAIN );
+						break;
+					case WP_CriticalCSS_API::STATUS_DONE:
+						return __( 'Completed', WP_CriticalCSS::LANG_DOMAIN );
+						break;
+				}
+			} else {
+				switch ( $data['status'] ) {
+					case WP_CriticalCSS_API::STATUS_UNKNOWN:
+						return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
+						break;
+					default:
+						return __( 'Pending', WP_CriticalCSS::LANG_DOMAIN );
+				}
 			}
 		} else {
-			switch ( $data['status'] ) {
-				case WP_CriticalCSS_API::STATUS_UNKNOWN:
-					return __( 'Unknown', WP_CriticalCSS::LANG_DOMAIN );
-					break;
-				default:
-					return __( 'Pending', WP_CriticalCSS::LANG_DOMAIN );
-			}
+			return __( 'Pending', WP_CriticalCSS::LANG_DOMAIN );
 		}
 	}
 

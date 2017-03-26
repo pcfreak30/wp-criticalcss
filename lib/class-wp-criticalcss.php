@@ -26,7 +26,7 @@ class WP_CriticalCSS {
 	 */
 	public static $nocache = false;
 	/**
-	 * @var \WeDevs_Settings_API
+	 * @var \WP_Cr
 	 */
 	private static $_settings_ui;
 	/**
@@ -45,6 +45,8 @@ class WP_CriticalCSS {
 	 * @var array
 	 */
 	private static $_settings = array();
+
+	private static $_template;
 
 	public static function wp_head() {
 		if ( get_query_var( 'nocache' ) ):
@@ -197,6 +199,7 @@ class WP_CriticalCSS {
 
 		self::update_settings( array_merge( array(
 			'web_check_interval' => DAY_IN_SECONDS,
+			'template_cache'     => 'off',
 		), self::get_settings(), array( 'version' => self::VERSION ) ) );
 
 		self::init();
@@ -270,6 +273,10 @@ class WP_CriticalCSS {
 		add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
 		add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 		add_action( 'request', array( __CLASS__, 'update_request' ) );
+		add_action( 'admin_post_purge_wp_criticalcss_cache', array( __CLASS__, 'admin_purge' ) );
+		if ( 'on' == self::$_settings['template_cache'] ) {
+			add_action( 'template_include', array( __CLASS__, 'template_include' ), PHP_INT_MAX );
+		}
 		if ( is_admin() ) {
 			add_action( 'wp_loaded', array( __CLASS__, 'wp_action' ) );
 		} else {
@@ -500,10 +507,22 @@ class WP_CriticalCSS {
 			$hash  = self::get_item_hash( $type );
 			$check = self::get_cache_fragment( array( $hash ) );
 			if ( empty( $check ) ) {
-				if ( ! self::$_web_check_queue->get_item_exists( $type ) ) {
-					self::$_web_check_queue->push_to_queue( $type )->save();
+				$flag = false;
+				if ( 'on' == self::$_settings['template_cache'] ) {
+					if ( ! self::$_api_queue->get_item_exists( $type ) ) {
+						self::$_api_queue->push_to_queue( $type )->save();
+						$flag = true;
+					}
+				} else {
+					if ( ! self::$_web_check_queue->get_item_exists( $type ) ) {
+						self::$_web_check_queue->push_to_queue( $type )->save();
+						$flag = true;
+					}
+				}
+				if ( $flag ) {
 					self::update_cache_fragment( array( $hash ), true );
 				}
+
 			}
 
 		}
@@ -529,22 +548,27 @@ class WP_CriticalCSS {
 		if ( empty( $item ) ) {
 			$item = self::get_current_page_type();
 		}
-		if ( 'url' == $item['type'] ) {
-			$name  = "criticalcss_url_{$name}_" . md5( $item['url'] );
-			$value = get_transient( $name );
+		if ( 'on' == self::$_settings['template_cache'] && ! empty( $item['template'] ) ) {
+			$name = "criticalcss_{$name}_" . md5( $item['template'] );
+			get_transient( $name );
 		} else {
-			$name = "criticalcss_{$name}";
-			switch ( $item['type'] ) {
-				case 'post':
-					$value = get_post_meta( $item['object_id'], $name, true );
-					break;
-				case 'term':
-					$value = get_term_meta( $item['object_id'], $name, true );
-					break;
-				case 'author':
-					$value = get_user_meta( $item['object_id'], $name, true );
-					break;
+			if ( 'url' == $item['type'] ) {
+				$name  = "criticalcss_url_{$name}_" . md5( $item['url'] );
+				$value = get_transient( $name );
+			} else {
+				$name = "criticalcss_{$name}";
+				switch ( $item['type'] ) {
+					case 'post':
+						$value = get_post_meta( $item['object_id'], $name, true );
+						break;
+					case 'term':
+						$value = get_term_meta( $item['object_id'], $name, true );
+						break;
+					case 'author':
+						$value = get_user_meta( $item['object_id'], $name, true );
+						break;
 
+				}
 			}
 		}
 
@@ -590,17 +614,26 @@ class WP_CriticalCSS {
 		}
 		$object_id = absint( $object_id );
 
-		return compact( 'object_id', 'type', 'url' );
+		if ( 'on' == self::$_settings['template_cache'] ) {
+			$template = self::$_template;
+		}
+
+		return compact( 'object_id', 'type', 'url', 'template' );
 	}
 
 	public static function get_item_hash( $item ) {
 		extract( $item );
-		$type = compact( 'object_id', 'type', 'url' );
+		$parts = array( 'object_id', 'type', 'url' );
+		if ( 'on' == self::$_settings['template_cache'] ) {
+			$template = self::$_template;
+			$parts    = array( 'template' );
+		}
+		$type = compact( $parts );
 
 		return md5( serialize( $type ) );
 	}
 
-	protected function get_cache_fragment( $path ) {
+	protected static function get_cache_fragment( $path ) {
 		if ( ! in_array( 'cache', $path ) ) {
 			array_unshift( $path, 'cache' );
 		}
@@ -721,24 +754,30 @@ class WP_CriticalCSS {
 	 * @param int $expires
 	 */
 	public static function set_item_data( $item, $name, $value, $expires = 0 ) {
-		if ( 'url' == $item['type'] ) {
-			$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
+		if ( 'on' == self::$_settings['template_cache'] && ! empty( $item['template'] ) ) {
+			$name = "criticalcss_{$name}_" . md5( $item['template'] );
 			set_transient( $name, $value, $expires );
 		} else {
-			$name  = "criticalcss_{$name}";
-			$value = wp_slash( $value );
-			switch ( $item['type'] ) {
-				case 'post':
-					update_post_meta( $item['object_id'], $name, $value );
-					break;
-				case 'term':
-					update_term_meta( $item['object_id'], $name, $value );
-					break;
-				case 'author':
-					update_user_meta( $item['object_id'], $name, $value );
-					break;
+			if ( 'url' == $item['type'] ) {
+				$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
+				set_transient( $name, $value, $expires );
+			} else {
+				$name  = "criticalcss_{$name}";
+				$value = wp_slash( $value );
+				switch ( $item['type'] ) {
+					case 'post':
+						update_post_meta( $item['object_id'], $name, $value );
+						break;
+					case 'term':
+						update_term_meta( $item['object_id'], $name, $value );
+						break;
+					case 'author':
+						update_user_meta( $item['object_id'], $name, $value );
+						break;
+				}
 			}
 		}
+
 	}
 
 	/**
@@ -794,6 +833,12 @@ class WP_CriticalCSS {
 			'label' => 'Force Web Check',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', self::LANG_DOMAIN ),
+		) );
+		self::$_settings_ui->add_field( self::OPTIONNAME, array(
+			'name'  => 'template_cache',
+			'label' => 'Template Cache',
+			'type'  => 'checkbox',
+			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url.', self::LANG_DOMAIN ),
 		) );
 		if ( ! self::has_external_integration() ) {
 			self::$_settings_ui->add_field( self::OPTIONNAME, array(
@@ -979,21 +1024,16 @@ class WP_CriticalCSS {
 		self::$_queue_table = new WP_CriticalCSS_Queue_List_Table( self::$_api_queue );
 	}
 
+	public static function template_include( $template ) {
+		self::$_template = str_replace( trailingslashit( WP_CONTENT_DIR ), '', $template );
+
+		return $template;
+	}
+
 	/**
-	 * @param \WP_Admin_Bar $wp_admin_bar
+	 * @return \WP_CriticalCSS_API_Background_Process
 	 */
-	public static function admin_menu( WP_Admin_Bar $wp_admin_bar ) {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			return;
-		}
-		$action = 'purge_criticalcss_cache';
-		$wp_admin_bar->add_menu( array(
-			'id'    => "$action",
-			'title' => 'Purge CriticalCSS Cache',
-			'href'  => wp_nonce_url( add_query_arg( array(
-				'_wp_http_referer' => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
-				'action'           => $action,
-			), admin_url( 'admin-post.php' ) ), $action ),
-		) );
+	public static function get_api_queue() {
+		return self::$_api_queue;
 	}
 }
