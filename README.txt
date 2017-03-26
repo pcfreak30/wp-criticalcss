@@ -67,6 +67,15 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.5.0 ###
+
+* Bug: Replace purge lock with disable_external_integration method due to the order that the actions run
+* Bug: Disable external integration when purging cache from web check queue
+* Enhancement: Improve redirect_canonical logic
+* Enhancement: Rebuild cache system without using SQL
+* Cleanup: Clean up code and fix typo with cache
+
+
 ### 0.4.5 ###
 
 * Change: Generalize fix_woocommerce_rewrite to fix_rewrites
