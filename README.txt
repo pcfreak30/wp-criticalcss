@@ -67,6 +67,10 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.5.1 ###
+
+* Bug: Use get_expire_period not get_rocket_purge_cron_interval
+
 ### 0.5.0 ###
 
 * Bug: Replace purge lock with disable_external_integration method due to the order that the actions run
