@@ -260,7 +260,7 @@ class WP_CriticalCSS {
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		if ( is_plugin_active_for_network( plugin_basename( __FILE__ ) ) ) {
+		if ( is_plugin_active_for_network( plugin_basename( dirname( __DIR__ ) . '/wp-criticalcss.php' ) ) ) {
 			add_action( 'network_admin_menu', array( __CLASS__, 'settings_init' ) );
 		} else {
 			add_action( 'admin_menu', array( __CLASS__, 'settings_init' ) );
@@ -273,7 +273,6 @@ class WP_CriticalCSS {
 		add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
 		add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 		add_action( 'request', array( __CLASS__, 'update_request' ) );
-		add_action( 'admin_post_purge_wp_criticalcss_cache', array( __CLASS__, 'admin_purge' ) );
 		if ( 'on' == self::$_settings['template_cache'] ) {
 			add_action( 'template_include', array( __CLASS__, 'template_include' ), PHP_INT_MAX );
 		}
@@ -815,10 +814,17 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public static function settings_init() {
-		$hook = add_options_page( 'WP Critical CSS', 'WP Critical CSS', 'manage_options', 'wp_criticalcss', array(
-			__CLASS__,
-			'settings_ui',
-		) );
+		if ( is_multisite() ) {
+			$hook = add_submenu_page( 'settings.php', 'WP Critical CSS', 'WP Critical CSS', 'manage_network_options', 'wp_criticalcss', array(
+				__CLASS__,
+				'settings_ui',
+			) );
+		} else {
+			$hook = add_options_page( 'WP Critical CSS', 'WP Critical CSS', 'manage_options', 'wp_criticalcss', array(
+				__CLASS__,
+				'settings_ui',
+			) );
+		}
 		add_action( "load-$hook", array( __CLASS__, 'screen_option' ) );
 		self::$_settings_ui->add_section( array( 'id' => self::OPTIONNAME, 'title' => 'WP Critical CSS Options' ) );
 		self::$_settings_ui->add_field( self::OPTIONNAME, array(
