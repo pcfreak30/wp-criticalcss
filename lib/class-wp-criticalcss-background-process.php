@@ -112,17 +112,19 @@ abstract class WP_CriticalCSS_Background_Process extends WP_Background_Process {
 		$sql = "SELECT *
 			FROM `{$table}`
 			WHERE ";
-		if ( 'url' == $item['type'] ) {
-			$sql    .= '`url` = %s';
-			$args[] = $item['url'];
-		} else {
-			$sql    .= '`object_id` = %d AND `type` = %s';
-			$args[] = $item['object_id'];
-			$args[] = $item['type'];
-		}
+
 		if ( ! empty( $item['template'] ) ) {
-			$sql    .= ' AND `template` = %s';
+			$sql    .= '`template` = %s';
 			$args[] = $item['template'];
+		} else {
+			if ( 'url' == $item['type'] ) {
+				$sql    .= '`url` = %s';
+				$args[] = $item['url'];
+			} else {
+				$sql    .= '`object_id` = %d AND `type` = %s';
+				$args[] = $item['object_id'];
+				$args[] = $item['type'];
+			}
 		}
 		if ( is_multisite() ) {
 			$sql    .= ' AND `blog_id` = %d';
