@@ -73,6 +73,7 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 						WP_CriticalCSS::purge_page_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
 					}
 					WP_CriticalCSS::external_integration();
+					WP_CriticalCSS::set_cache( $item, $result->css );
 					WP_CriticalCSS::set_css_hash( $item, $item['css_hash'] );
 					WP_CriticalCSS::set_html_hash( $item, $item['html_hash'] );
 				}
