@@ -67,7 +67,16 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
-### 0.6.0 ###
+### 0.6.1 ###
+
+* Bug: Fix the queue item exists method to only query template if it exists
+* Bug: Correct data unset's in save and update queue methods
+* Bug: Don't try adding to API queue if no template exists
+* Bug: Purge all cache in template mode
+* Bug: Fix missing variable assignment for get_transient call in get_item_data
+* Bug: Restore set_cache call accidentally removed in 0.6.0
+
+ ### 0.6.0 ###
 
  * Bug: Fix multisite settings menu
  * Feature: Add new cache mode to process pages by the wordpress template
