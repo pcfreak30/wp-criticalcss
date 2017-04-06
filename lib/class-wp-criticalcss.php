@@ -512,7 +512,7 @@ class WP_CriticalCSS {
 			$check = self::get_cache_fragment( array( $hash ) );
 			if ( empty( $check ) ) {
 				$flag = false;
-				if ( 'on' == self::$_settings['template_cache'] ) {
+				if ( 'on' == self::$_settings['template_cache'] && ! empty( $type['template'] ) ) {
 					if ( ! self::$_api_queue->get_item_exists( $type ) ) {
 						self::$_api_queue->push_to_queue( $type )->save();
 						$flag = true;
