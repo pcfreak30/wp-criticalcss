@@ -275,11 +275,12 @@ class WP_CriticalCSS {
 
 		add_action( 'after_switch_theme', array( __CLASS__, 'reset_web_check_transients' ) );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'reset_web_check_transients' ) );
-		add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
-		add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 		add_action( 'request', array( __CLASS__, 'update_request' ) );
 		if ( 'on' == self::$_settings['template_cache'] ) {
 			add_action( 'template_include', array( __CLASS__, 'template_include' ), PHP_INT_MAX );
+		} else {
+			add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
+			add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 		}
 		if ( is_admin() ) {
 			add_action( 'wp_loaded', array( __CLASS__, 'wp_action' ) );
