@@ -422,12 +422,14 @@ class WP_CriticalCSS {
 	 * @param $object_id
 	 * @param $url
 	 */
-	public static function purge_page_cache( $type, $object_id, $url ) {
+	public static function purge_page_cache( $type = null, $object_id = null, $url = null ) {
 		global $wpe_varnish_servers;
 		$url = preg_replace( '#nocache/$#', '', $url );
 // WP Engine Support
 		if ( class_exists( 'WPECommon' ) ) {
-			if ( 'post' == $type ) {
+			if ( empty( $type ) ) {
+				WpeCommon::purge_varnish_cache();
+			} else if ( 'post' == $type ) {
 				WpeCommon::purge_varnish_cache( $object_id );
 			} else {
 				$blog_url       = home_url();
@@ -460,7 +462,7 @@ class WP_CriticalCSS {
 				$purge_domain_chunks = array_chunk( $purge_domains, 100 );
 				foreach ( $purge_domain_chunks as $chunk ) {
 					$purge_domain_regex = '^(' . join( '|', $chunk ) . ')$';
-// Tell Varnish.
+					// Tell Varnish.
 					foreach ( $wpe_varnish_servers as $varnish ) {
 						$headers = array( 'X-Purge-Path' => $path_regex, 'X-Purge-Host' => $purge_domain_regex );
 						WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
@@ -469,8 +471,9 @@ class WP_CriticalCSS {
 			}
 			sleep( 1 );
 		}
-// WP-Rocket Support
+		// WP-Rocket Support
 		if ( function_exists( 'rocket_clean_files' ) ) {
+
 			if ( 'post' == $type ) {
 				rocket_clean_post( $object_id );
 			}
@@ -480,6 +483,10 @@ class WP_CriticalCSS {
 			if ( 'url' == $type ) {
 				rocket_clean_files( $url );
 			}
+			if ( empty( $type ) ) {
+				rocket_clean_domain();
+			}
+
 		}
 	}
 
