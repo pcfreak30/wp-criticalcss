@@ -67,6 +67,10 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.6.2 ###
+
+* Bug: Don't clear web check flags for posts or terms on edit in template mode
+
 ### 0.6.1 ###
 
 * Bug: Fix the queue item exists method to only query template if it exists
