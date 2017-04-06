@@ -560,8 +560,8 @@ class WP_CriticalCSS {
 			$item = self::get_current_page_type();
 		}
 		if ( 'on' == self::$_settings['template_cache'] && ! empty( $item['template'] ) ) {
-			$name = "criticalcss_{$name}_" . md5( $item['template'] );
-			get_transient( $name );
+			$name  = "criticalcss_{$name}_" . md5( $item['template'] );
+			$value = get_transient( $name );
 		} else {
 			if ( 'url' == $item['type'] ) {
 				$name  = "criticalcss_url_{$name}_" . md5( $item['url'] );
