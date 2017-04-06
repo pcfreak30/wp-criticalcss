@@ -182,6 +182,7 @@ abstract class WP_CriticalCSS_Background_Process extends WP_Background_Process {
 			unset( $data['object_id'] );
 			unset( $data['type'] );
 			unset( $data['url'] );
+			unset( $data['template'] );
 			$item['data'] = maybe_serialize( $data );
 			$item         = array_diff_key( $item, $data );
 			if ( ! empty( $data ) ) {
