@@ -67,6 +67,12 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.6.3 ###
+
+* Bug: Ensure object_id is an integer in get_permalink
+* Bug: Disable rocket_clean_wpengine and rocket_clean_supercacher functions in after_rocket_clean_domain action when disabling integrations
+* Enhancement: Don't use web check transient in template mode
+
 ### 0.6.2 ###
 
 * Bug: Don't clear web check flags for posts or terms on edit in template mode
