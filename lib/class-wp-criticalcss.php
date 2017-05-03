@@ -153,6 +153,13 @@ class WP_CriticalCSS {
 			add_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
 			add_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 			add_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
+			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
+				add_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
+			}
+			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) ) {
+				add_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
+			}
+
 		}
 	}
 
@@ -163,6 +170,8 @@ class WP_CriticalCSS {
 			remove_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
 			remove_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 			remove_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
+			remove_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
+			remove_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
 		}
 	}
 
@@ -355,6 +364,9 @@ class WP_CriticalCSS {
 	 */
 	public static function get_permalink( array $object ) {
 		self::disable_relative_plugin_filters();
+		if ( ! empty( $object['object_id'] ) ) {
+			$object['object_id'] = absint( $object['object_id'] );
+		}
 		switch ( $object['type'] ) {
 			case 'post':
 				$url = get_permalink( $object['object_id'] );
@@ -518,25 +530,16 @@ class WP_CriticalCSS {
 			$type  = self::get_current_page_type();
 			$hash  = self::get_item_hash( $type );
 			$check = self::get_cache_fragment( array( $hash ) );
-			if ( empty( $check ) ) {
-				$flag = false;
-				if ( 'on' == self::$_settings['template_cache'] && ! empty( $type['template'] ) ) {
-					if ( ! self::$_api_queue->get_item_exists( $type ) ) {
-						self::$_api_queue->push_to_queue( $type )->save();
-						$flag = true;
-					}
-				} else {
-					if ( ! self::$_web_check_queue->get_item_exists( $type ) ) {
-						self::$_web_check_queue->push_to_queue( $type )->save();
-						$flag = true;
-					}
+			if ( 'on' == self::$_settings['template_cache'] && ! empty( $type['template'] ) ) {
+				if ( empty( $cache ) && ! self::$_api_queue->get_item_exists( $type ) ) {
+					self::$_api_queue->push_to_queue( $type )->save();
 				}
-				if ( $flag ) {
+			} else {
+				if ( empty( $check ) && ! self::$_web_check_queue->get_item_exists( $type ) ) {
+					self::$_web_check_queue->push_to_queue( $type )->save();
 					self::update_cache_fragment( array( $hash ), true );
 				}
-
 			}
-
 		}
 	}
 
