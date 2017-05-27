@@ -17,8 +17,9 @@ engines:
   phpmd:
     enabled: true
   phpcodesniffer:
+    enabled: true
   config:
-    standard: "WordPress-Core,WordPress-Docs"
+    standard: WordPress-Core,WordPress-Docs
 ratings:
   paths:
   - "**.css"
