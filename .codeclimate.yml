@@ -16,10 +16,12 @@ engines:
     enabled: true
   phpmd:
     enabled: true
+    config:
+      rulesets: "cleancode,codesize,design,naming,unusedcode"
   phpcodesniffer:
     enabled: true
-  config:
-    standard: WordPress-Core,WordPress-Docs
+    config:
+      standard: WordPress-Core,WordPress-Docs
 ratings:
   paths:
   - "**.css"
