@@ -137,6 +137,7 @@ class WP_CriticalCSS {
 	}
 
 	/**
+	 * @SuppressWarnings(PHPMD.ShortVariable)
 	 * @param \WP $wp
 	 */
 	public function parse_request( WP &$wp ) {
@@ -488,6 +489,7 @@ class WP_CriticalCSS {
 
 
 	/**
+	 * @SuppressWarnings(PHPMD.ShortVariable)
 	 * @return array
 	 */
 	public function get_current_page_type() {
