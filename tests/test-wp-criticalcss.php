@@ -17,7 +17,6 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 		$wp_rewrite->init();
 
 		update_option( 'home', $this->home_url );
-		WP_CriticalCSS_Test::reset();
 		parent::tearDown();
 	}
 
@@ -68,7 +67,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 		$wp->query_vars['nocache'] = true;
 		WPCCSS()->parse_request( $wp );
 		$this->assertArrayNotHasKey( 'nocache', $wp->query_vars );
-		$this->assertTrue( WPCCSS()->get_no_cache() );
+		$this->assertTrue( WPCCSS()->is_no_cache() );
 	}
 
 	public function test_query_vars() {
@@ -218,8 +217,8 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	public function test_get_current_page_type_url() {
 		$url = home_url();
 		$this->go_to( $url );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 'url', $type['type'] );
 		$this->assertEquals( $url, $type['url'] );
 	}
@@ -229,8 +228,8 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_for_posts', $post->ID );
 		$this->go_to( get_permalink( $post->ID ) );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 'post', $type['type'] );
 		$this->assertEquals( $post->ID, $type['object_id'] );
 	}
@@ -241,8 +240,8 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_on_front', $post->ID );
 		$this->go_to( get_permalink( $post->ID ) );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 'post', $type['type'] );
 		$this->assertEquals( $post->ID, $type['object_id'] );
 	}
@@ -250,8 +249,8 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	public function test_get_current_page_type_post() {
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 'post', $type['type'] );
 		$this->assertEquals( $post->ID, $type['object_id'] );
 	}
@@ -259,8 +258,8 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	public function test_get_current_page_type_tag() {
 		$term = $this->factory->term->create_and_get();
 		$this->go_to( get_term_link( $term->term_id ) );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 'term', $type['type'] );
 		$this->assertEquals( $term->term_id, $type['object_id'] );
 	}
@@ -268,8 +267,8 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	public function test_get_current_page_type_category() {
 		$term = $this->factory->category->create_and_get();
 		$this->go_to( get_term_link( $term->term_id ) );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 'term', $type['type'] );
 		$this->assertEquals( $term->term_id, $type['object_id'] );
 	}
@@ -277,43 +276,43 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	public function test_get_current_page_type_author() {
 		$this->factory->post->create( array( 'post_author' => 1 ) );
 		$this->go_to( get_author_posts_url( 1 ) );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 'author', $type['type'] );
 		$this->assertEquals( 1, $type['object_id'] );
 	}
 
 	public function test_get_current_page_type_template() {
 		$template = locate_template( 'index.php' );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'on' ) );
-		WP_CriticalCSS_Test::get_instance()->template_include( $template );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'on' ) );
+		WPCCSS()->template_include( $template );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( str_replace( trailingslashit( WP_CONTENT_DIR ), '', $template ), $type['template'] );
 	}
 
 	public function test_get_current_page_type_multisite() {
 		$this->require_multisite();
 
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		$type = WPCCSS()->get_current_page_type();
 		$this->assertEquals( 1, $type['blog_id'] );
 	}
 
 	public function test_update_cache_fragment() {
-		WP_CriticalCSS_Test::get_instance()->set_settings( array(
+		WPCCSS()->set_settings( array(
 			'template_cache'     => 'off',
 			'web_check_interval' => MINUTE_IN_SECONDS,
 		) );
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
-		$type = WP_CriticalCSS_Test::get_instance()->get_current_page_type();
-		$hash = WP_CriticalCSS_Test::get_instance()->get_item_hash( $type );
-		WP_CriticalCSS_Test::get_instance()->update_cache_fragment( array( $hash ), true );
-		$this->assertTrue( WP_CriticalCSS_Test::get_instance()->get_cache_fragment( array( $hash ) ) );
+		$type = WPCCSS()->get_current_page_type();
+		$hash = WPCCSS()->get_item_hash( $type );
+		WPCCSS()->update_cache_fragment( array( $hash ), true );
+		$this->assertTrue( WPCCSS()->get_cache_fragment( array( $hash ) ) );
 	}
 
 	public function test_set_item_data_post() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
@@ -322,7 +321,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_set_item_data_term() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$term = $this->factory->term->create_and_get();
 		$this->go_to( get_term_link( $term->term_id ) );
@@ -331,7 +330,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_set_item_data_author() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$this->factory->post->create( array( 'post_author' => 1 ) );
 		$this->go_to( get_author_posts_url( 1 ) );
@@ -340,7 +339,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_set_item_data_url() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$url = home_url();
 		$this->go_to( $url );
@@ -349,10 +348,10 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_set_item_data_template() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$template = locate_template( 'index.php' );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'on' ) );
-		WP_CriticalCSS_Test::get_instance()->template_include( $template );
+		WPCCSS()->set_settings( array( 'template_cache' => 'on' ) );
+		WPCCSS()->template_include( $template );
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
 		$instance->set_item_data( $instance->get_current_page_type(), 'test', true );
@@ -360,7 +359,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_get_item_data_post() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
@@ -369,7 +368,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_get_item_data_term() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$term = $this->factory->term->create_and_get();
 		$this->go_to( get_term_link( $term->term_id ) );
@@ -378,7 +377,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_get_item_data_author() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$this->factory->post->create( array( 'post_author' => 1 ) );
 		$this->go_to( get_author_posts_url( 1 ) );
@@ -387,7 +386,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_get_item_data_url() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$instance->set_settings( array( 'template_cache' => 'off' ) );
 		$url = home_url();
 		$this->go_to( $url );
@@ -396,10 +395,10 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_get_item_data_template() {
-		$instance = WP_CriticalCSS_Test::get_instance();
+		$instance = WPCCSS();
 		$template = locate_template( 'index.php' );
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'on' ) );
-		WP_CriticalCSS_Test::get_instance()->template_include( $template );
+		WPCCSS()->set_settings( array( 'template_cache' => 'on' ) );
+		WPCCSS()->template_include( $template );
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
 		$instance->set_item_data( $instance->get_current_page_type(), 'test', true );
@@ -407,7 +406,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_get_item_hash_object() {
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'off' ) );
+		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
 		$this->assertEquals( '2c4eebcf19a6fa7b1d5e085ee453571b', WPCCSS()->get_item_hash( array(
 			'object_id' => 1,
 			'type'      => 'post',
@@ -415,7 +414,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 	}
 
 	public function test_get_item_hash_template() {
-		WP_CriticalCSS_Test::get_instance()->set_settings( array( 'template_cache' => 'on' ) );
+		WPCCSS()->set_settings( array( 'template_cache' => 'on' ) );
 		$template = locate_template( 'index.php' );
 		$this->assertEquals( '998ff5ceec6be52c857c2f418933bef0', WPCCSS()->get_item_hash( array(
 			'template'  => $template,
