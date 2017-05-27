@@ -16,9 +16,6 @@ require_once $_tests_dir . '/includes/functions.php';
 // Initize composer
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
-// Include formatting.php
-require_once $_tests_dir . '/../wordpress/wp-includes/formatting.php';
-
 /**
  * Manually load the plugin being tested.
  */
@@ -29,6 +26,7 @@ function _manually_load_plugin() {
 
 function wp_criticalcss_test_autoloader( $class_name ) {
 	$file      = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
+	require_once ABSPATH . '/wp-includes/formatting.php';
 	$base_path = trailingslashit( __DIR__ );
 
 	$paths = array(
