@@ -34,10 +34,7 @@ before_script:
     else
       composer global require "phpunit/phpunit=4.8.*"
     fi
-  - |
-    composer global require wp-coding-standards/wpcs
-    phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
 
 script:
-  - phpcs --standard=phpcs.ruleset.xml $(find . -name '*.php')
-  - phpunit
+  - phpunit --coverage-clover build/logs/clover.xml
+  - CODECLIMATE_REPO_TOKEN=99562fb63677adccafefa012c7aed9e4e2763e144457e0c1769a8895280885d6 ./vendor/bin/test-reporter
