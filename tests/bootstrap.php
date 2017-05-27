@@ -21,6 +21,7 @@ require_once dirname( __DIR__ ) . '/vendor/autoload.php';
  */
 function _manually_load_plugin() {
 	require dirname( dirname( __FILE__ ) ) . '/wp-criticalcss.php';
+	require_once ABSPATH . '/wp-includes/formatting.php';
 	remove_action( 'plugins_loaded', 'wp_criticalcss_init' );
 }
 
