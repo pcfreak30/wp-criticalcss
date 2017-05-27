@@ -368,7 +368,7 @@ class WP_CriticalCSS {
                 <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
 				<?php
 			}
-			$type  = $this->get_current_page_type();
+			$type  = $this->request->get_current_page_type();
 			$hash  = $this->get_item_hash( $type );
 			$check = $this->cache_manager->get_cache_fragment( array( $hash ) );
 			if ( 'on' == $this->settings['template_cache'] && ! empty( $type['template'] ) ) {
@@ -384,58 +384,6 @@ class WP_CriticalCSS {
 
 			do_action( 'wp_criticalcss_after_print_styles' );
 		}
-	}
-
-
-	/**
-	 * @SuppressWarnings(PHPMD.ShortVariable)
-	 * @return array
-	 */
-	public function get_current_page_type() {
-		global $wp;
-		$object_id = 0;
-		if ( is_home() ) {
-			$page_for_posts = get_option( 'page_for_posts' );
-			if ( ! empty( $page_for_posts ) ) {
-				$object_id = $page_for_posts;
-				$type      = 'post';
-			}
-		} else if ( is_front_page() ) {
-			$page_on_front = get_option( 'page_on_front' );
-			if ( ! empty( $page_on_front ) ) {
-				$object_id = $page_on_front;
-				$type      = 'post';
-			}
-		} else if ( is_singular() ) {
-			$object_id = get_the_ID();
-			$type      = 'post';
-		} else if ( is_tax() || is_category() || is_tag() ) {
-			$object_id = get_queried_object()->term_id;
-			$type      = 'term';
-		} else if ( is_author() ) {
-			$object_id = get_the_author_meta( 'ID' );
-			$type      = 'author';
-
-		}
-
-		if ( ! isset( $type ) ) {
-			$this->disable_integrations();
-			$url = site_url( $wp->request );
-			$this->enable_integrations();
-
-			$type = 'url';
-		}
-		$object_id = absint( $object_id );
-
-		if ( 'on' == $this->settings['template_cache'] ) {
-			$template = $this->request->get_template();
-		}
-
-		if ( is_multisite() ) {
-			$blog_id = get_current_blog_id();
-		}
-
-		return compact( 'object_id', 'type', 'url', 'template', 'blog_id' );
 	}
 
 	/**

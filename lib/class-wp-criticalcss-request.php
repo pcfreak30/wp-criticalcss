@@ -14,10 +14,14 @@ class WP_CriticalCSS_Request {
 	 */
 	protected $template;
 
+
+	protected $settings;
+
 	/**
 	 * WP_CriticalCSS_Request constructor.
 	 */
 	public function __construct() {
+		$this->settings = &WPCCSS()->get_settings();
 		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
 		add_filter( 'rewrite_rules_array', array( $this, 'fix_rewrites' ), 11 );
 		add_action( 'template_include', array( $this, 'template_include' ), PHP_INT_MAX );
@@ -147,6 +151,58 @@ class WP_CriticalCSS_Request {
 	 */
 	public function get_template() {
 		return $this->template;
+	}
+
+
+	/**
+	 * @SuppressWarnings(PHPMD.ShortVariable)
+	 * @return array
+	 */
+	public function get_current_page_type() {
+		global $wp;
+		$object_id = 0;
+		if ( is_home() ) {
+			$page_for_posts = get_option( 'page_for_posts' );
+			if ( ! empty( $page_for_posts ) ) {
+				$object_id = $page_for_posts;
+				$type      = 'post';
+			}
+		} else if ( is_front_page() ) {
+			$page_on_front = get_option( 'page_on_front' );
+			if ( ! empty( $page_on_front ) ) {
+				$object_id = $page_on_front;
+				$type      = 'post';
+			}
+		} else if ( is_singular() ) {
+			$object_id = get_the_ID();
+			$type      = 'post';
+		} else if ( is_tax() || is_category() || is_tag() ) {
+			$object_id = get_queried_object()->term_id;
+			$type      = 'term';
+		} else if ( is_author() ) {
+			$object_id = get_the_author_meta( 'ID' );
+			$type      = 'author';
+
+		}
+
+		if ( ! isset( $type ) ) {
+			WPCCSS()->disable_integrations();
+			$url = site_url( $wp->request );
+			WPCCSS()->enable_integrations();
+
+			$type = 'url';
+		}
+		$object_id = absint( $object_id );
+
+		if ( 'on' == $this->settings['template_cache'] ) {
+			$template = $this->template;
+		}
+
+		if ( is_multisite() ) {
+			$blog_id = get_current_blog_id();
+		}
+
+		return compact( 'object_id', 'type', 'url', 'template', 'blog_id' );
 	}
 
 }
