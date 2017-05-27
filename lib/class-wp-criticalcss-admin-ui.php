@@ -21,6 +21,7 @@ class WP_CriticalCSS_Admin_UI {
 	public function __construct() {
 		add_action( 'network_admin_menu', array( $this, 'settings_init' ) );
 		add_action( 'admin_menu', array( $this, 'settings_init' ) );
+		add_action( 'pre_update_option_wp_criticalcss', array( $this, 'sync_options' ), 10, 2 );
 
 	}
 
@@ -158,5 +159,32 @@ class WP_CriticalCSS_Admin_UI {
 			'option'  => 'queue_items_per_page',
 		) );
 		$this->_queue_table = new WP_CriticalCSS_Queue_List_Table( WPCCSS()->get_api_queue() );
+	}
+
+	/**
+	 * @param $value
+	 * @param $old_value
+	 *
+	 * @return array
+	 */
+	public function sync_options( $value, $old_value ) {
+		$original_old_value = $old_value;
+		if ( ! is_array( $old_value ) ) {
+			$old_value = array();
+		}
+
+		$value = array_merge( $old_value, $value );
+
+		if ( isset( $value['force_web_check'] ) && 'on' == $value['force_web_check'] ) {
+			$value['force_web_check'] = 'off';
+			WPCCSS()->reset_web_check_transients();
+		}
+
+		if ( is_multisite() ) {
+			update_site_option( WP_CriticalCSS::OPTIONNAME, $value );
+			$value = $original_old_value;
+		}
+
+		return $value;
 	}
 }
