@@ -42,6 +42,12 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 		remove_filter( 'wp_criticalcss_cache_integration', '__return_true' );
 	}
 
+	/**
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+	 * @param null $type
+	 * @param null $object_id
+	 * @param null $url
+	 */
 	private function _purge_cache( $type = null, $object_id = null, $url = null ) {
 		if ( 'post' == $type ) {
 			rocket_clean_post( $object_id );
@@ -57,6 +63,12 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 		}
 	}
 
+	/**
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+	 * @param $cache
+	 *
+	 * @return mixed
+	 */
 	private function _print_styles( $cache ) {
 		$cache = rocket_cdn_css_properties( $cache );
 

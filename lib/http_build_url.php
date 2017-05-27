@@ -5,6 +5,7 @@
  * http_build_url()".
  *
  * @see http://us2.php.net/manual/en/http.constants.php#http.constants.url
+ * @SuppressWarnings(PHPMD)
  */
 if ( ! defined( 'HTTP_URL_REPLACE' ) ) {
 	define( 'HTTP_URL_REPLACE', 1 );

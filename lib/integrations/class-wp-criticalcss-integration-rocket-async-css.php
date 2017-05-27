@@ -1,8 +1,14 @@
 <?php
 
 
+/**
+ * Class WP_CriticalCSS_Integration_Rocket_Async_CSS
+ */
 class WP_CriticalCSS_Integration_Rocket_Async_CSS extends WP_CriticalCSS_Integration_Base {
 
+	/**
+	 * WP_CriticalCSS_Integration_Rocket_Async_CSS constructor.
+	 */
 	public function __construct() {
 		if ( class_exists( 'Rocket_Async_Css' ) ) {
 			parent::__construct();
@@ -33,6 +39,10 @@ class WP_CriticalCSS_Integration_Rocket_Async_CSS extends WP_CriticalCSS_Integra
 		remove_action( 'wp_criticalcss_print_styles_cache', array( $this, '_purge_cache' ) );
 	}
 
+	/**
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+	 * @param $cache
+	 */
 	private function _purge_cache( $cache ) {
 		if ( ! empty( $cache ) ) {
 			remove_action( 'wp_enqueue_scripts', array(

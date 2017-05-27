@@ -24,6 +24,9 @@ register_deactivation_hook( __FILE__, array( 'WP_CriticalCSS', 'deactivate' ) );
  * @param $class_name
  */
 if ( ! function_exists( 'wp_criticalcss_autoloader' ) ):
+	/**
+	 * @param $class_name
+	 */
 	function wp_criticalcss_autoloader( $class_name ) {
 		$file      = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
 		$base_path = plugin_dir_path( __FILE__ );
@@ -47,10 +50,17 @@ if ( ! function_exists( 'wp_criticalcss_autoloader' ) ):
 endif;
 
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ * @return \WP_CriticalCSS
+ */
 function WPCCSS() {
 	return WP_CriticalCSS::get_instance();
 }
 
+/**
+ *
+ */
 function wp_criticalcss_init() {
 	WPCCSS()->init();
 }

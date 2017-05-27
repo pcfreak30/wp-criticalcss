@@ -1,14 +1,23 @@
 <?php
 
 
+/**
+ * Class WP_CriticalCSS_Integration_WPEngine
+ */
 class WP_CriticalCSS_Integration_WPEngine extends WP_CriticalCSS_Integration_Base {
 
+	/**
+	 * WP_CriticalCSS_Integration_WPEngine constructor.
+	 */
 	public function __construct() {
 		if ( function_exists( 'get_rocket_option' ) ) {
 			parent::__construct();
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function enable() {
 		add_action( 'wp_criticalcss_purge_cache', array( $this, '_purge_cache' ) );
 	}
@@ -20,6 +29,12 @@ class WP_CriticalCSS_Integration_WPEngine extends WP_CriticalCSS_Integration_Bas
 		remove_action( 'wp_criticalcss_purge_cache', array( $this, '_purge_cache' ) );
 	}
 
+	/**
+	 * @SuppressWarnings(PHPMD)
+	 * @param null $type
+	 * @param null $object_id
+	 * @param null $url
+	 */
 	private function _purge_cache( $type = null, $object_id = null, $url = null ) {
 		global $wpe_varnish_servers;
 		if ( class_exists( 'WPECommon' ) ) {
