@@ -34,5 +34,7 @@ before_script:
 
 script:
   - phpunit --coverage-clover logs/clover.xml
+
+after_success:
   - ./vendor/bin/test-reporter -coverage-report=logs/clover.xml
   - bash <(curl -s https://codecov.io/bash) -f logs/clover.xml
