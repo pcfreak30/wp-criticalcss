@@ -21,13 +21,12 @@ require_once dirname( __DIR__ ) . '/vendor/autoload.php';
  */
 function _manually_load_plugin() {
 	require dirname( dirname( __FILE__ ) ) . '/wp-criticalcss.php';
-	require_once ABSPATH . '/wp-includes/formatting.php';
 	remove_action( 'plugins_loaded', 'wp_criticalcss_init' );
 }
 
 function wp_criticalcss_test_autoloader( $class_name ) {
 	$file      = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
-	$base_path = trailingslashit( __DIR__ );
+	$base_path = rtrim( __DIR__, '/\\' ) . '/';
 
 	$paths = array(
 		$base_path . $file,
