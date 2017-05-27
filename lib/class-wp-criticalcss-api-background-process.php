@@ -66,13 +66,13 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			}
 			if ( 'JOB_DONE' == $result->status ) {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
-					WPCCSS()->disable_external_integration();
+					WPCCSS()->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
 						WPCCSS()->purge_page_cache();
 					} else {
 						WPCCSS()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
 					}
-					WPCCSS()->external_integration();
+					WPCCSS()->enable_integrations();
 					WPCCSS()->set_cache( $item, $result->css );
 					WPCCSS()->set_css_hash( $item, $item['css_hash'] );
 					WPCCSS()->set_html_hash( $item, $item['html_hash'] );

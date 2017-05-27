@@ -19,8 +19,23 @@ class WP_CriticalCSS {
 	 */
 	const OPTIONNAME = 'wp_criticalcss';
 
+	/**
+	 *
+	 */
 	const TRANSIENT_PREFIX = 'wp_criticalcss_web_check_';
+	/**
+	 * @var
+	 */
 	protected static $instance;
+	/**
+	 * @var array
+	 */
+	protected static $integrations = array(
+		'WP_CriticalCSS_Integration_Rocket_Async_CSS',
+		'WP_CriticalCSS_Integration_Root_Relative_URLS',
+		'WP_CriticalCSS_Integration_WP_Rocket',
+		'WP_CriticalCSS_Integration_WPEngine',
+	);
 	/**
 	 * @var bool
 	 */
@@ -45,8 +60,14 @@ class WP_CriticalCSS {
 	 * @var array
 	 */
 	private $_settings = array();
+	/**
+	 * @var string
+	 */
 	private $_template;
 
+	/**
+	 * @return \WP_CriticalCSS
+	 */
 	public static function get_instance() {
 		if ( empty( self::$instance ) ) {
 			self::$instance = new self();
@@ -56,12 +77,22 @@ class WP_CriticalCSS {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function get_integrations() {
+		return self::$integrations;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function get_no_cache() {
 		return $this->nocache;
 	}
 
+	/**
+	 *
+	 */
 	public function wp_head() {
 		if ( get_query_var( 'nocache' ) ):
 			?>
@@ -123,70 +154,22 @@ class WP_CriticalCSS {
 	 */
 	public function wp_action() {
 		set_query_var( 'nocache', $this->nocache );
-		if ( $this->has_external_integration() ) {
-			$this->external_integration();
-		}
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function has_external_integration() {
-		// // Compatibility with WP Rocket ASYNC CSS preloader integration
-		if ( class_exists( 'Rocket_Async_Css_The_Preloader' ) ) {
-			return true;
-		}
-		// WP-Rocket integration
-		if ( function_exists( 'get_rocket_option' ) ) {
-			return true;
-		}
-
-		return false;
+		$this->enable_integrations();
 	}
 
 	/**
 	 *
 	 */
-	public function external_integration() {
-		if ( get_query_var( 'nocache' ) ) {
-			// Compatibility with WP Rocket ASYNC CSS preloader integration
-			if ( class_exists( 'Rocket_Async_Css_The_Preloader' ) ) {
-				remove_action( 'wp_enqueue_scripts', array(
-					'Rocket_Async_Css_The_Preloader',
-					'add_window_resize_js',
-				) );
-				remove_action( 'rocket_buffer', array( 'Rocket_Async_Css_The_Preloader', 'inject_div' ) );
-			}
-			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-				define( 'DONOTCACHEPAGE', true );
-			}
-		}
-		// Compatibility with WP Rocket
-		if ( function_exists( 'get_rocket_option' ) ) {
-			add_action( 'after_rocket_clean_domain', array( $this, 'reset_web_check_transients' ) );
-			add_action( 'after_rocket_clean_post', array( $this, 'reset_web_check_post_transient' ) );
-			add_action( 'after_rocket_clean_term', array( $this, 'reset_web_check_term_transient' ) );
-			add_action( 'after_rocket_clean_home', array( $this, 'reset_web_check_home_transient' ) );
-			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
-				add_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
-			}
-			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) ) {
-				add_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
-			}
+	public function enable_integrations() {
+		do_action( 'wp_criticalcss_enable_integrations' );
 
-		}
 	}
 
-	public function disable_external_integration() {
-		// Compatibility with WP Rocket
-		if ( function_exists( 'get_rocket_option' ) ) {
-			remove_action( 'after_rocket_clean_domain', array( $this, 'reset_web_check_transients' ) );
-			remove_action( 'after_rocket_clean_post', array( $this, 'reset_web_check_post_transient' ) );
-			remove_action( 'after_rocket_clean_term', array( $this, 'reset_web_check_term_transient' ) );
-			remove_action( 'after_rocket_clean_home', array( $this, 'reset_web_check_home_transient' ) );
-			remove_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
-			remove_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
-		}
+	/**
+	 *
+	 */
+	public function disable_integrations() {
+		do_action( 'wp_criticalcss_disable_integrations' );
 	}
 
 	/**
@@ -235,7 +218,7 @@ class WP_CriticalCSS {
 		), $this->get_settings(), array( 'version' => self::VERSION ) ) );
 
 		$this->init();
-		$this->init_action();
+		$this->add_rewrite_rules();
 
 		$this->_web_check_queue->create_table();
 		$this->_api_queue->create_table();
@@ -258,6 +241,13 @@ class WP_CriticalCSS {
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * @param array $settings
+	 */
+	public function set_settings( $settings ) {
+		$this->_settings = $settings;
 	}
 
 	/**
@@ -287,6 +277,12 @@ class WP_CriticalCSS {
 		if ( empty( $this->_api_queue ) ) {
 			$this->_api_queue = new WP_CriticalCSS_API_Background_Process();
 		}
+		$integrations = array();
+		foreach ( self::$integrations as $integration ) {
+			$integrations[ $integration ] = new $integration();
+		}
+		self::$integrations = $integrations;
+
 		if ( ! is_admin() ) {
 			add_action( 'wp_print_styles', array( $this, 'print_styles' ), 7 );
 		}
@@ -311,7 +307,7 @@ class WP_CriticalCSS {
 			add_action( 'wp', array( $this, 'wp_action' ) );
 			add_action( 'wp_head', array( $this, 'wp_head' ) );
 		}
-		add_action( 'init', array( $this, 'init_action' ) );
+		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
 		add_filter( 'rewrite_rules_array', array( $this, 'fix_rewrites' ), 11 );
 		/*
 		 * Prevent a 404 on homepage if a static page is set.
@@ -324,16 +320,9 @@ class WP_CriticalCSS {
 	}
 
 	/**
-	 * @param array $settings
-	 */
-	public function set_settings( $settings ) {
-		$this->_settings = $settings;
-	}
-
-	/**
 	 *
 	 */
-	public function init_action() {
+	public function add_rewrite_rules() {
 		add_rewrite_endpoint( 'nocache', E_ALL );
 		add_rewrite_rule( 'nocache/?$', 'index.php?nocache=1', 'top' );
 		$taxonomies = get_taxonomies( array(
@@ -385,7 +374,7 @@ class WP_CriticalCSS {
 	 * @return false|mixed|string|\WP_Error
 	 */
 	public function get_permalink( array $object ) {
-		$this->disable_relative_plugin_filters();
+		$this->disable_integrations();
 		if ( ! empty( $object['object_id'] ) ) {
 			$object['object_id'] = absint( $object['object_id'] );
 		}
@@ -405,7 +394,7 @@ class WP_CriticalCSS {
 			default:
 				$url = $object['url'];
 		}
-		$this->enable_relative_plugin_filters();
+		$this->enable_integrations();
 
 		if ( $url instanceof WP_Error ) {
 			return false;
@@ -427,31 +416,6 @@ class WP_CriticalCSS {
 		return $url;
 	}
 
-	/**
-	 *
-	 */
-	protected function disable_relative_plugin_filters() {
-		if ( class_exists( 'MP_WP_Root_Relative_URLS' ) ) {
-			remove_filter( 'post_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			remove_filter( 'page_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			remove_filter( 'attachment_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			remove_filter( 'post_type_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			remove_filter( 'get_the_author_url', array( 'MP_WP_Root_Relative_URLS', 'dynamic_rss_absolute_url' ), 1 );
-		}
-	}
-
-	/**
-	 *
-	 */
-	protected function enable_relative_plugin_filters() {
-		if ( class_exists( 'MP_WP_Root_Relative_URLS' ) ) {
-			add_filter( 'post_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			add_filter( 'page_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			add_filter( 'attachment_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			add_filter( 'post_type_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
-			add_filter( 'get_the_author_url', array( 'MP_WP_Root_Relative_URLS', 'dynamic_rss_absolute_url' ), 1, 2 );
-		}
-	}
 
 	/**
 	 * @param $type
@@ -459,75 +423,9 @@ class WP_CriticalCSS {
 	 * @param $url
 	 */
 	public function purge_page_cache( $type = null, $object_id = null, $url = null ) {
-		global $wpe_varnish_servers;
 		$url = preg_replace( '#nocache/$#', '', $url );
-// WP Engine Support
-		if ( class_exists( 'WPECommon' ) ) {
-			if ( empty( $type ) ) {
-				/** @noinspection PhpUndefinedClassInspection */
-				WpeCommon::purge_varnish_cache();
-			} else if ( 'post' == $type ) {
-				/** @noinspection PhpUndefinedClassInspection */
-				WpeCommon::purge_varnish_cache( $object_id );
-			} else {
-				$blog_url       = home_url();
-				$blog_url_parts = @parse_url( $blog_url );
-				$blog_domain    = $blog_url_parts['host'];
-				$purge_domains  = array( $blog_domain );
-				$object_parts   = parse_url( $url );
-				$object_uri     = rtrim( $object_parts   ['path'], '/' ) . "(.*)";
-				if ( ! empty( $object_parts['query'] ) ) {
-					$object_uri .= "?" . $object_parts['query'];
-				}
-				$paths = array( $object_uri );
-				/** @noinspection PhpUndefinedClassInspection */
-				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
-				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == "pod" ) {
-					$wpe_varnish_servers = array( "localhost" );
-				} // Ordinarily, the $wpe_varnish_servers are set during apply. Just in case, let's figure out a fallback plan.
-				else if ( ! isset( $wpe_varnish_servers ) ) {
-					if ( ! defined( 'WPE_CLUSTER_ID' ) || ! WPE_CLUSTER_ID ) {
-						$lbmaster = "lbmaster";
-					} else if ( WPE_CLUSTER_ID >= 4 ) {
-						$lbmaster = "localhost"; // so the current user sees the purge
-					} else {
-						$lbmaster = "lbmaster-" . WPE_CLUSTER_ID;
-					}
-					$wpe_varnish_servers = array( $lbmaster );
-				}
-				$path_regex          = '(' . join( '|', $paths ) . ')';
-				$hostname            = $purge_domains[0];
-				$purge_domains       = array_map( 'preg_quote', $purge_domains );
-				$purge_domain_chunks = array_chunk( $purge_domains, 100 );
-				foreach ( $purge_domain_chunks as $chunk ) {
-					$purge_domain_regex = '^(' . join( '|', $chunk ) . ')$';
-					// Tell Varnish.
-					foreach ( $wpe_varnish_servers as $varnish ) {
-						$headers = array( 'X-Purge-Path' => $path_regex, 'X-Purge-Host' => $purge_domain_regex );
-						/** @noinspection PhpUndefinedClassInspection */
-						WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
-					}
-				}
-			}
-			sleep( 1 );
-		}
-		// WP-Rocket Support
-		if ( function_exists( 'rocket_clean_files' ) ) {
 
-			if ( 'post' == $type ) {
-				rocket_clean_post( $object_id );
-			}
-			if ( 'term' == $type ) {
-				rocket_clean_term( $object_id, get_term( $object_id )->taxonomy );
-			}
-			if ( 'url' == $type ) {
-				rocket_clean_files( $url );
-			}
-			if ( empty( $type ) ) {
-				rocket_clean_domain();
-			}
-
-		}
+		do_action( 'wp_criticalcss_purge_cache', $type, $object_id, $url );
 	}
 
 	/**
@@ -537,19 +435,12 @@ class WP_CriticalCSS {
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
 			$cache        = $this->get_cache();
 			$style_handle = null;
+
+			$cache = apply_filters( 'wp_criticalcss_print_styles_cache', $cache );
+
+			do_action( 'wp_criticalcss_before_print_styles', $cache );
+
 			if ( ! empty( $cache ) ) {
-				// Enable CDN in CSS for WP-Rocket
-				if ( function_exists( 'rocket_cdn_css_properties' ) ) {
-					$cache = rocket_cdn_css_properties( $cache );
-				}
-				// Compatibility with WP Rocket ASYNC CSS preloader integration
-				if ( class_exists( 'Rocket_Async_Css_The_Preloader' ) ) {
-					remove_action( 'wp_enqueue_scripts', array(
-						'Rocket_Async_Css_The_Preloader',
-						'add_window_resize_js',
-					) );
-					remove_action( 'rocket_buffer', array( 'Rocket_Async_Css_The_Preloader', 'inject_div' ) );
-				}
 				?>
                 <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
 				<?php
@@ -567,6 +458,8 @@ class WP_CriticalCSS {
 					$this->update_cache_fragment( array( $hash ), true );
 				}
 			}
+
+			do_action( 'wp_criticalcss_after_print_styles' );
 		}
 	}
 
@@ -648,9 +541,9 @@ class WP_CriticalCSS {
 		}
 
 		if ( ! isset( $type ) ) {
-			$this->disable_relative_plugin_filters();
+			$this->disable_integrations();
 			$url = site_url( $wp->request );
-			$this->enable_relative_plugin_filters();
+			$this->enable_integrations();
 
 			$type = 'url';
 		}
@@ -667,6 +560,11 @@ class WP_CriticalCSS {
 		return compact( 'object_id', 'type', 'url', 'template', 'blog_id' );
 	}
 
+	/**
+	 * @param $item
+	 *
+	 * @return string
+	 */
 	public function get_item_hash( $item ) {
 		extract( $item );
 		$parts = array( 'object_id', 'type', 'url' );
@@ -679,6 +577,11 @@ class WP_CriticalCSS {
 		return md5( serialize( $type ) );
 	}
 
+	/**
+	 * @param $path
+	 *
+	 * @return mixed
+	 */
 	protected function get_cache_fragment( $path ) {
 		if ( ! in_array( 'cache', $path ) ) {
 			array_unshift( $path, 'cache' );
@@ -687,6 +590,9 @@ class WP_CriticalCSS {
 		return $this->get_transient( self::TRANSIENT_PREFIX . implode( '_', $path ) );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	protected function get_transient() {
 		if ( is_multisite() ) {
 			return call_user_func_array( 'get_site_transient', func_get_args() );
@@ -695,6 +601,10 @@ class WP_CriticalCSS {
 		}
 	}
 
+	/**
+	 * @param $path
+	 * @param $value
+	 */
 	protected function update_cache_fragment( $path, $value ) {
 		if ( ! in_array( 'cache', $path ) ) {
 			array_unshift( $path, 'cache' );
@@ -703,6 +613,9 @@ class WP_CriticalCSS {
 		$this->update_tree_branch( $path, $value );
 	}
 
+	/**
+	 * @param $path
+	 */
 	protected function build_cache_tree( $path ) {
 		$levels = count( $path );
 		$expire = $this->get_expire_period();
@@ -747,6 +660,9 @@ class WP_CriticalCSS {
 		return absint( $this->_settings['web_check_interval'] );
 	}
 
+	/**
+	 *
+	 */
 	protected function set_transient() {
 		if ( is_multisite() ) {
 			call_user_func_array( 'set_site_transient', func_get_args() );
@@ -755,6 +671,10 @@ class WP_CriticalCSS {
 		}
 	}
 
+	/**
+	 * @param $path
+	 * @param $value
+	 */
 	protected function update_tree_branch( $path, $value ) {
 		$branch            = self::TRANSIENT_PREFIX . implode( '_', $path );
 		$parent_path       = array_slice( $path, 0, count( $path ) - 1 );
@@ -909,7 +829,7 @@ class WP_CriticalCSS {
 			'type'  => 'checkbox',
 			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url.', self::LANG_DOMAIN ),
 		) );
-		if ( ! $this->has_external_integration() ) {
+		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
 			$this->_settings_ui->add_field( self::OPTIONNAME, array(
 				'name'  => 'web_check_interval',
 				'label' => 'Web Check Interval',
@@ -1018,6 +938,9 @@ class WP_CriticalCSS {
 		$this->delete_cache_branch();
 	}
 
+	/**
+	 * @param array $path
+	 */
 	protected function delete_cache_branch( $path = array() ) {
 		if ( is_array( $path ) ) {
 			if ( ! empty( $path ) ) {
@@ -1047,6 +970,9 @@ class WP_CriticalCSS {
 		$this->delete_transient( $counter_transient );
 	}
 
+	/**
+	 * @return mixed
+	 */
 	protected function delete_transient() {
 		if ( is_multisite() ) {
 			return call_user_func_array( 'delete_site_transient', func_get_args() );
@@ -1055,6 +981,9 @@ class WP_CriticalCSS {
 		}
 	}
 
+	/**
+	 * @param $post
+	 */
 	public function reset_web_check_post_transient( $post ) {
 		$post = get_post( $post );
 		$hash = $this->get_item_hash( array( 'object_id' => $post->ID, 'type' => 'post' ) );
@@ -1108,6 +1037,11 @@ class WP_CriticalCSS {
 		$this->_queue_table = new WP_CriticalCSS_Queue_List_Table( $this->_api_queue );
 	}
 
+	/**
+	 * @param $template
+	 *
+	 * @return mixed
+	 */
 	public function template_include( $template ) {
 		$this->_template = str_replace( trailingslashit( WP_CONTENT_DIR ), '', $template );
 

@@ -38,7 +38,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 
 	public function test_wp_head_with_nocache() {
 		WPCCSS()->init();
-		WPCCSS()->init_action();
+		WPCCSS()->add_rewrite_rules();
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/nocache' ) );
 		ob_start();
@@ -57,7 +57,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 
 	public function test_redirect_canonical_with_nocache_query_var() {
 		WPCCSS()->init();
-		WPCCSS()->init_action();
+		WPCCSS()->add_rewrite_rules();
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/nocache' ) );
 		$this->assertFalse( WPCCSS()->redirect_canonical( home_url() ) );
@@ -150,10 +150,10 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 		) ) );
 	}
 
-	public function test_init_action() {
+	public function test_add_rewrite_rules() {
 		$tax = rand_str();
 		register_taxonomy( $tax, 'post' );
-		WPCCSS()->init_action();
+		WPCCSS()->add_rewrite_rules();
 		$this->assertContains( 'nocache', $GLOBALS['wp']->public_query_vars );
 		$this->assertArrayHasKey( 'nocache/?$', $GLOBALS['wp_rewrite']->extra_rules_top );
 		$this->assertArrayHasKey( $tax . '/(.+?)/nocache/?$', $GLOBALS['wp_rewrite']->extra_rules_top );
@@ -163,7 +163,7 @@ class Test_WP_CriticalCSS extends WP_UnitTestCase {
 		$tax = rand_str();
 		register_taxonomy( $tax, 'post' );
 		WPCCSS()->init();
-		WPCCSS()->init_action();
+		WPCCSS()->add_rewrite_rules();
 		flush_rewrite_rules();
 		$tokens = get_taxonomies( array(
 			'public'   => true,
