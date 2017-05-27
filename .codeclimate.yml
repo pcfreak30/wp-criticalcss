@@ -33,3 +33,4 @@ ratings:
 exclude_paths:
 - tests/
 - vendor/
+- web/
