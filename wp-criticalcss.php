@@ -54,7 +54,7 @@ endif;
  * @SuppressWarnings(PHPMD.StaticAccess)
  * @return \WP_CriticalCSS
  */
-function WPCCSS() {
+function wpccss() {
 	return WP_CriticalCSS::get_instance();
 }
 
