@@ -37,5 +37,5 @@ before_script:
   - composer install
 
 script:
-  - phpunit --coverage-clover build/logs/clover.xml
+  - phpunit
   - CODECLIMATE_REPO_TOKEN=99562fb63677adccafefa012c7aed9e4e2763e144457e0c1769a8895280885d6 ./vendor/bin/test-reporter
