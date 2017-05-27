@@ -26,6 +26,7 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 		add_action( 'wp_criticalcss_purge_cache', array( $this, '_purge_cache' ) );
 		add_filter( 'wp_criticalcss_print_styles_cache', array( $this, '_print_styles' ) );
 		add_filter( 'wp_criticalcss_cache_integration', '__return_true' );
+		add_filter( 'wp_criticalcss_cache_expire_period', array( $this, '_get_cache_expire_period' ) );
 	}
 
 	/**
@@ -73,5 +74,13 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 		$cache = rocket_cdn_css_properties( $cache );
 
 		return $cache;
+	}
+
+	/**
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+	 * @return int
+	 */
+	protected function _get_cache_expire_period() {
+		return get_rocket_purge_cron_interval();
 	}
 }
