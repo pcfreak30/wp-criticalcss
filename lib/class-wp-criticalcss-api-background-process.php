@@ -18,7 +18,7 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		$settings = WP_CriticalCSS::get_settings();
+		$settings = WPCCSS()->get_settings();
 
 		if ( empty( $settings ) || empty( $settings['apikey'] ) ) {
 			return false;
@@ -37,7 +37,7 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			}
 		}
 		$item['timestamp'] = time();
-		$url               = WP_CriticalCSS::get_permalink( $item );
+		$url               = WPCCSS()->get_permalink( $item );
 		if ( empty( $url ) ) {
 			return false;
 		}
@@ -66,16 +66,16 @@ class WP_CriticalCSS_API_Background_Process extends WP_CriticalCSS_Background_Pr
 			}
 			if ( 'JOB_DONE' == $result->status ) {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
-					WP_CriticalCSS::disable_external_integration();
+					WPCCSS()->disable_external_integration();
 					if ( ! empty( $item['template'] ) ) {
-						WP_CriticalCSS::purge_page_cache();
+						WPCCSS()->purge_page_cache();
 					} else {
-						WP_CriticalCSS::purge_page_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
+						WPCCSS()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
 					}
-					WP_CriticalCSS::external_integration();
-					WP_CriticalCSS::set_cache( $item, $result->css );
-					WP_CriticalCSS::set_css_hash( $item, $item['css_hash'] );
-					WP_CriticalCSS::set_html_hash( $item, $item['html_hash'] );
+					WPCCSS()->external_integration();
+					WPCCSS()->set_cache( $item, $result->css );
+					WPCCSS()->set_css_hash( $item, $item['css_hash'] );
+					WPCCSS()->set_html_hash( $item, $item['html_hash'] );
 				}
 			}
 		} else {

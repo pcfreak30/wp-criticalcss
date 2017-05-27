@@ -46,4 +46,12 @@ if ( ! function_exists( 'wp_criticalcss_autoloader' ) ):
 endif;
 
 
-add_action( 'plugins_loaded', array( 'WP_CriticalCSS', 'init' ) );
+function WPCCSS() {
+	return WP_CriticalCSS::get_instance();
+}
+
+function wp_criticalcss_init() {
+	WPCCSS()->init();
+}
+
+add_action( 'plugins_loaded', 'wp_criticalcss_init' );

@@ -20,35 +20,49 @@ class WP_CriticalCSS {
 	const OPTIONNAME = 'wp_criticalcss';
 
 	const TRANSIENT_PREFIX = 'wp_criticalcss_web_check_';
-
+	protected static $instance;
 	/**
 	 * @var bool
 	 */
-	public static $nocache = false;
+	protected $nocache = false;
 	/**
 	 * @var \WP_CriticalCSS_Settings_API
 	 */
-	private static $_settings_ui;
+	private $_settings_ui;
 	/**
 	 * @var WP_CriticalCSS_Web_Check_Background_Process
 	 */
-	private static $_web_check_queue;
+	private $_web_check_queue;
 	/**
 	 * @var WP_CriticalCSS_API_Background_Process
 	 */
-	private static $_api_queue;
+	private $_api_queue;
 	/**
-	 * @var
+	 * @var \WP_CriticalCSS_Queue_List_Table
 	 */
-	private static $_queue_table;
+	private $_queue_table;
 	/**
 	 * @var array
 	 */
-	private static $_settings = array();
+	private $_settings = array();
+	private $_template;
 
-	private static $_template;
+	public static function get_instance() {
+		if ( empty( self::$instance ) ) {
+			self::$instance = new self();
+		}
 
-	public static function wp_head() {
+		return self::$instance;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function get_no_cache() {
+		return $this->nocache;
+	}
+
+	public function wp_head() {
 		if ( get_query_var( 'nocache' ) ):
 			?>
             <meta name="robots" content="noindex, nofollow"/>
@@ -61,7 +75,7 @@ class WP_CriticalCSS {
 	 *
 	 * @return bool
 	 */
-	public static function redirect_canonical( $redirect_url ) {
+	public function redirect_canonical( $redirect_url ) {
 		global $wp_query;
 		if ( ! array_diff( array_keys( $wp_query->query ), array( 'nocache' ) ) || get_query_var( 'nocache' ) ) {
 			$redirect_url = false;
@@ -73,9 +87,9 @@ class WP_CriticalCSS {
 	/**
 	 * @param \WP $wp
 	 */
-	public static function parse_request( WP &$wp ) {
+	public function parse_request( WP &$wp ) {
 		if ( isset( $wp->query_vars['nocache'] ) ) {
-			self::$nocache = $wp->query_vars['nocache'];
+			$this->nocache = $wp->query_vars['nocache'];
 			unset( $wp->query_vars['nocache'] );
 		}
 	}
@@ -85,7 +99,7 @@ class WP_CriticalCSS {
 	 *
 	 * @return array
 	 */
-	public static function query_vars( $vars ) {
+	public function query_vars( $vars ) {
 		$vars[] = 'nocache';
 
 		return $vars;
@@ -96,7 +110,7 @@ class WP_CriticalCSS {
 	 *
 	 * @return mixed
 	 */
-	public static function update_request( $vars ) {
+	public function update_request( $vars ) {
 		if ( isset( $vars['nocache'] ) ) {
 			$vars['nocache'] = true;
 		}
@@ -107,17 +121,17 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function wp_action() {
-		set_query_var( 'nocache', self::$nocache );
-		if ( self::has_external_integration() ) {
-			self::external_integration();
+	public function wp_action() {
+		set_query_var( 'nocache', $this->nocache );
+		if ( $this->has_external_integration() ) {
+			$this->external_integration();
 		}
 	}
 
 	/**
 	 * @return bool
 	 */
-	public static function has_external_integration() {
+	public function has_external_integration() {
 		// // Compatibility with WP Rocket ASYNC CSS preloader integration
 		if ( class_exists( 'Rocket_Async_Css_The_Preloader' ) ) {
 			return true;
@@ -133,7 +147,7 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function external_integration() {
+	public function external_integration() {
 		if ( get_query_var( 'nocache' ) ) {
 			// Compatibility with WP Rocket ASYNC CSS preloader integration
 			if ( class_exists( 'Rocket_Async_Css_The_Preloader' ) ) {
@@ -149,10 +163,10 @@ class WP_CriticalCSS {
 		}
 		// Compatibility with WP Rocket
 		if ( function_exists( 'get_rocket_option' ) ) {
-			add_action( 'after_rocket_clean_domain', array( __CLASS__, 'reset_web_check_transients' ) );
-			add_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
-			add_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
-			add_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
+			add_action( 'after_rocket_clean_domain', array( $this, 'reset_web_check_transients' ) );
+			add_action( 'after_rocket_clean_post', array( $this, 'reset_web_check_post_transient' ) );
+			add_action( 'after_rocket_clean_term', array( $this, 'reset_web_check_term_transient' ) );
+			add_action( 'after_rocket_clean_home', array( $this, 'reset_web_check_home_transient' ) );
 			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
 				add_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 			}
@@ -163,13 +177,13 @@ class WP_CriticalCSS {
 		}
 	}
 
-	public static function disable_external_integration() {
+	public function disable_external_integration() {
 		// Compatibility with WP Rocket
 		if ( function_exists( 'get_rocket_option' ) ) {
-			remove_action( 'after_rocket_clean_domain', array( __CLASS__, 'reset_web_check_transients' ) );
-			remove_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
-			remove_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
-			remove_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
+			remove_action( 'after_rocket_clean_domain', array( $this, 'reset_web_check_transients' ) );
+			remove_action( 'after_rocket_clean_post', array( $this, 'reset_web_check_post_transient' ) );
+			remove_action( 'after_rocket_clean_term', array( $this, 'reset_web_check_term_transient' ) );
+			remove_action( 'after_rocket_clean_home', array( $this, 'reset_web_check_home_transient' ) );
 			remove_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 			remove_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
 		}
@@ -178,9 +192,9 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function activate() {
+	public function activate() {
 		global $wpdb;
-		$settings    = self::get_settings();
+		$settings    = $this->get_settings();
 		$no_version  = ! empty( $settings ) && empty( $settings['version'] );
 		$version_0_3 = false;
 		$version_0_4 = false;
@@ -192,14 +206,14 @@ class WP_CriticalCSS {
 			$version_0_5 = version_compare( '0.5.0', $version ) === 1;
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 ) {
-			remove_action( 'update_option_criticalcss', array( __CLASS__, 'after_options_updated' ) );
+			remove_action( 'update_option_criticalcss', array( $this, 'after_options_updated' ) );
 			if ( isset( $settings['disable_autopurge'] ) ) {
 				unset( $settings['disable_autopurge'] );
-				self::update_settings( $settings );
+				$this->update_settings( $settings );
 			}
 			if ( isset( $settings['expire'] ) ) {
 				unset( $settings['expire'] );
-				self::update_settings( $settings );
+				$this->update_settings( $settings );
 			}
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 || $version_0_5 ) {
@@ -215,16 +229,16 @@ class WP_CriticalCSS {
 			}
 		}
 
-		self::update_settings( array_merge( array(
+		$this->update_settings( array_merge( array(
 			'web_check_interval' => DAY_IN_SECONDS,
 			'template_cache'     => 'off',
-		), self::get_settings(), array( 'version' => self::VERSION ) ) );
+		), $this->get_settings(), array( 'version' => self::VERSION ) ) );
 
-		self::init();
-		self::init_action();
+		$this->init();
+		$this->init_action();
 
-		self::$_web_check_queue->create_table();
-		self::$_api_queue->create_table();
+		$this->_web_check_queue->create_table();
+		$this->_api_queue->create_table();
 
 		flush_rewrite_rules();
 	}
@@ -232,7 +246,7 @@ class WP_CriticalCSS {
 	/**
 	 * @return array
 	 */
-	public static function get_settings() {
+	public function get_settings() {
 		$settings = array();
 		if ( is_multisite() ) {
 			$settings = get_site_option( self::OPTIONNAME, array() );
@@ -251,7 +265,7 @@ class WP_CriticalCSS {
 	 *
 	 * @return bool
 	 */
-	public static function update_settings( array $settings ) {
+	public function update_settings( array $settings ) {
 		if ( is_multisite() ) {
 			return update_site_option( self::OPTIONNAME, $settings );
 		} else {
@@ -262,56 +276,64 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function init() {
-		self::$_settings = self::get_settings();
-		if ( empty( self::$_settings_ui ) ) {
-			self::$_settings_ui = new WP_CriticalCSS_Settings_API();
+	public function init() {
+		$this->_settings = $this->get_settings();
+		if ( empty( $this->_settings_ui ) ) {
+			$this->_settings_ui = new WP_CriticalCSS_Settings_API();
 		}
-		if ( empty( self::$_web_check_queue ) ) {
-			self::$_web_check_queue = new WP_CriticalCSS_Web_Check_Background_Process();
+		if ( empty( $this->_web_check_queue ) ) {
+			$this->_web_check_queue = new WP_CriticalCSS_Web_Check_Background_Process();
 		}
-		if ( empty( self::$_api_queue ) ) {
-			self::$_api_queue = new WP_CriticalCSS_API_Background_Process();
+		if ( empty( $this->_api_queue ) ) {
+			$this->_api_queue = new WP_CriticalCSS_API_Background_Process();
 		}
 		if ( ! is_admin() ) {
-			add_action( 'wp_print_styles', array( __CLASS__, 'print_styles' ), 7 );
+			add_action( 'wp_print_styles', array( $this, 'print_styles' ), 7 );
 		}
 
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		add_action( 'network_admin_menu', array( __CLASS__, 'settings_init' ) );
-		add_action( 'admin_menu', array( __CLASS__, 'settings_init' ) );
-		add_action( 'pre_update_option_wp_criticalcss', array( __CLASS__, 'sync_options' ), 10, 2 );
+		add_action( 'network_admin_menu', array( $this, 'settings_init' ) );
+		add_action( 'admin_menu', array( $this, 'settings_init' ) );
+		add_action( 'pre_update_option_wp_criticalcss', array( $this, 'sync_options' ), 10, 2 );
 
-		add_action( 'after_switch_theme', array( __CLASS__, 'reset_web_check_transients' ) );
-		add_action( 'upgrader_process_complete', array( __CLASS__, 'reset_web_check_transients' ) );
-		add_action( 'request', array( __CLASS__, 'update_request' ) );
-		if ( 'on' == self::$_settings['template_cache'] ) {
-			add_action( 'template_include', array( __CLASS__, 'template_include' ), PHP_INT_MAX );
+		add_action( 'after_switch_theme', array( $this, 'reset_web_check_transients' ) );
+		add_action( 'upgrader_process_complete', array( $this, 'reset_web_check_transients' ) );
+		add_action( 'request', array( $this, 'update_request' ) );
+		if ( ! empty( $this->_settings['template_cache'] ) && 'on' == $this->_settings['template_cache'] ) {
+			add_action( 'template_include', array( $this, 'template_include' ), PHP_INT_MAX );
 		} else {
-			add_action( 'post_updated', array( __CLASS__, 'reset_web_check_post_transient' ) );
-			add_action( 'edited_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
+			add_action( 'post_updated', array( $this, 'reset_web_check_post_transient' ) );
+			add_action( 'edited_term', array( $this, 'reset_web_check_term_transient' ) );
 		}
 		if ( is_admin() ) {
-			add_action( 'wp_loaded', array( __CLASS__, 'wp_action' ) );
+			add_action( 'wp_loaded', array( $this, 'wp_action' ) );
 		} else {
-			add_action( 'wp', array( __CLASS__, 'wp_action' ) );
-			add_action( 'wp_head', array( __CLASS__, 'wp_head' ) );
+			add_action( 'wp', array( $this, 'wp_action' ) );
+			add_action( 'wp_head', array( $this, 'wp_head' ) );
 		}
-		add_action( 'init', array( __CLASS__, 'init_action' ) );
-		add_filter( 'rewrite_rules_array', array( __CLASS__, 'fix_rewrites' ), 11 );
+		add_action( 'init', array( $this, 'init_action' ) );
+		add_filter( 'rewrite_rules_array', array( $this, 'fix_rewrites' ), 11 );
 		/*
 		 * Prevent a 404 on homepage if a static page is set.
 		 * Will store query_var outside \WP_Query temporarily so we don't need to do any extra routing logic and will appear as if it was not set.
 		 */
-		add_action( 'parse_request', array( __CLASS__, 'parse_request' ) );
+		add_action( 'query_vars', array( $this, 'query_vars' ) );
+		add_action( 'parse_request', array( $this, 'parse_request' ) );
 		// Don't fix url or try to guess url if we are using nocache on the homepage
-		add_filter( 'redirect_canonical', array( __CLASS__, 'redirect_canonical' ) );
+		add_filter( 'redirect_canonical', array( $this, 'redirect_canonical' ) );
+	}
+
+	/**
+	 * @param array $settings
+	 */
+	public function set_settings( $settings ) {
+		$this->_settings = $settings;
 	}
 
 	/**
 	 *
 	 */
-	public static function init_action() {
+	public function init_action() {
 		add_rewrite_endpoint( 'nocache', E_ALL );
 		add_rewrite_rule( 'nocache/?$', 'index.php?nocache=1', 'top' );
 		$taxonomies = get_taxonomies( array(
@@ -329,7 +351,7 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function fix_rewrites( $rules ) {
+	public function fix_rewrites( $rules ) {
 		$nocache_rules = array(
 			// Fix page archives
 			'(.?.+?)/page(?:/([0-9]+))?/nocache/?' => 'index.php?pagename=$matches[1]&paged=$matches[2]&nocache',
@@ -353,7 +375,7 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function deactivate() {
+	public function deactivate() {
 		flush_rewrite_rules();
 	}
 
@@ -362,8 +384,8 @@ class WP_CriticalCSS {
 	 *
 	 * @return false|mixed|string|\WP_Error
 	 */
-	public static function get_permalink( array $object ) {
-		self::disable_relative_plugin_filters();
+	public function get_permalink( array $object ) {
+		$this->disable_relative_plugin_filters();
 		if ( ! empty( $object['object_id'] ) ) {
 			$object['object_id'] = absint( $object['object_id'] );
 		}
@@ -383,7 +405,7 @@ class WP_CriticalCSS {
 			default:
 				$url = $object['url'];
 		}
-		self::enable_relative_plugin_filters();
+		$this->enable_relative_plugin_filters();
 
 		if ( $url instanceof WP_Error ) {
 			return false;
@@ -392,6 +414,7 @@ class WP_CriticalCSS {
 		$url_parts         = parse_url( $url );
 		$url_parts['path'] = trailingslashit( $url_parts['path'] ) . 'nocache/';
 		if ( class_exists( 'http\Url' ) ) {
+			/** @noinspection PhpUndefinedClassInspection */
 			$url = new \http\Url( $url_parts );
 			$url = $url->toString();
 		} else {
@@ -407,7 +430,7 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	protected static function disable_relative_plugin_filters() {
+	protected function disable_relative_plugin_filters() {
 		if ( class_exists( 'MP_WP_Root_Relative_URLS' ) ) {
 			remove_filter( 'post_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
 			remove_filter( 'page_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
@@ -420,7 +443,7 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	protected static function enable_relative_plugin_filters() {
+	protected function enable_relative_plugin_filters() {
 		if ( class_exists( 'MP_WP_Root_Relative_URLS' ) ) {
 			add_filter( 'post_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
 			add_filter( 'page_link', array( 'MP_WP_Root_Relative_URLS', 'proper_root_relative_url' ), 1 );
@@ -435,14 +458,16 @@ class WP_CriticalCSS {
 	 * @param $object_id
 	 * @param $url
 	 */
-	public static function purge_page_cache( $type = null, $object_id = null, $url = null ) {
+	public function purge_page_cache( $type = null, $object_id = null, $url = null ) {
 		global $wpe_varnish_servers;
 		$url = preg_replace( '#nocache/$#', '', $url );
 // WP Engine Support
 		if ( class_exists( 'WPECommon' ) ) {
 			if ( empty( $type ) ) {
+				/** @noinspection PhpUndefinedClassInspection */
 				WpeCommon::purge_varnish_cache();
 			} else if ( 'post' == $type ) {
+				/** @noinspection PhpUndefinedClassInspection */
 				WpeCommon::purge_varnish_cache( $object_id );
 			} else {
 				$blog_url       = home_url();
@@ -454,7 +479,8 @@ class WP_CriticalCSS {
 				if ( ! empty( $object_parts['query'] ) ) {
 					$object_uri .= "?" . $object_parts['query'];
 				}
-				$paths         = array( $object_uri );
+				$paths = array( $object_uri );
+				/** @noinspection PhpUndefinedClassInspection */
 				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
 				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == "pod" ) {
 					$wpe_varnish_servers = array( "localhost" );
@@ -478,6 +504,7 @@ class WP_CriticalCSS {
 					// Tell Varnish.
 					foreach ( $wpe_varnish_servers as $varnish ) {
 						$headers = array( 'X-Purge-Path' => $path_regex, 'X-Purge-Host' => $purge_domain_regex );
+						/** @noinspection PhpUndefinedClassInspection */
 						WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
 					}
 				}
@@ -506,9 +533,9 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function print_styles() {
+	public function print_styles() {
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
-			$cache        = self::get_cache();
+			$cache        = $this->get_cache();
 			$style_handle = null;
 			if ( ! empty( $cache ) ) {
 				// Enable CDN in CSS for WP-Rocket
@@ -527,17 +554,17 @@ class WP_CriticalCSS {
                 <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
 				<?php
 			}
-			$type  = self::get_current_page_type();
-			$hash  = self::get_item_hash( $type );
-			$check = self::get_cache_fragment( array( $hash ) );
-			if ( 'on' == self::$_settings['template_cache'] && ! empty( $type['template'] ) ) {
-				if ( empty( $cache ) && ! self::$_api_queue->get_item_exists( $type ) ) {
-					self::$_api_queue->push_to_queue( $type )->save();
+			$type  = $this->get_current_page_type();
+			$hash  = $this->get_item_hash( $type );
+			$check = $this->get_cache_fragment( array( $hash ) );
+			if ( 'on' == $this->_settings['template_cache'] && ! empty( $type['template'] ) ) {
+				if ( empty( $cache ) && ! $this->_api_queue->get_item_exists( $type ) ) {
+					$this->_api_queue->push_to_queue( $type )->save();
 				}
 			} else {
-				if ( empty( $check ) && ! self::$_web_check_queue->get_item_exists( $type ) ) {
-					self::$_web_check_queue->push_to_queue( $type )->save();
-					self::update_cache_fragment( array( $hash ), true );
+				if ( empty( $check ) && ! $this->_web_check_queue->get_item_exists( $type ) ) {
+					$this->_web_check_queue->push_to_queue( $type )->save();
+					$this->update_cache_fragment( array( $hash ), true );
 				}
 			}
 		}
@@ -548,8 +575,8 @@ class WP_CriticalCSS {
 	 *
 	 * @return string
 	 */
-	public static function get_cache( $item = array() ) {
-		return self::get_item_data( $item, 'cache' );
+	public function get_cache( $item = array() ) {
+		return $this->get_item_data( $item, 'cache' );
 	}
 
 	/**
@@ -558,12 +585,12 @@ class WP_CriticalCSS {
 	 *
 	 * @return mixed|null
 	 */
-	public static function get_item_data( $item = array(), $name ) {
+	public function get_item_data( $item = array(), $name ) {
 		$value = null;
 		if ( empty( $item ) ) {
-			$item = self::get_current_page_type();
+			$item = $this->get_current_page_type();
 		}
-		if ( 'on' == self::$_settings['template_cache'] && ! empty( $item['template'] ) ) {
+		if ( 'on' == $this->_settings['template_cache'] && ! empty( $item['template'] ) ) {
 			$name  = "criticalcss_{$name}_" . md5( $item['template'] );
 			$value = get_transient( $name );
 		} else {
@@ -593,7 +620,7 @@ class WP_CriticalCSS {
 	/**
 	 * @return array
 	 */
-	protected static function get_current_page_type() {
+	protected function get_current_page_type() {
 		global $wp;
 		$object_id = 0;
 		if ( is_home() ) {
@@ -621,16 +648,16 @@ class WP_CriticalCSS {
 		}
 
 		if ( ! isset( $type ) ) {
-			self::disable_relative_plugin_filters();
+			$this->disable_relative_plugin_filters();
 			$url = site_url( $wp->request );
-			self::enable_relative_plugin_filters();
+			$this->enable_relative_plugin_filters();
 
 			$type = 'url';
 		}
 		$object_id = absint( $object_id );
 
-		if ( 'on' == self::$_settings['template_cache'] ) {
-			$template = self::$_template;
+		if ( 'on' == $this->_settings['template_cache'] ) {
+			$template = $this->_template;
 		}
 
 		if ( is_multisite() ) {
@@ -640,11 +667,11 @@ class WP_CriticalCSS {
 		return compact( 'object_id', 'type', 'url', 'template', 'blog_id' );
 	}
 
-	public static function get_item_hash( $item ) {
+	public function get_item_hash( $item ) {
 		extract( $item );
 		$parts = array( 'object_id', 'type', 'url' );
-		if ( 'on' == self::$_settings['template_cache'] ) {
-			$template = self::$_template;
+		if ( 'on' == $this->_settings['template_cache'] ) {
+			$template = $this->_template;
 			$parts    = array( 'template' );
 		}
 		$type = compact( $parts );
@@ -652,15 +679,15 @@ class WP_CriticalCSS {
 		return md5( serialize( $type ) );
 	}
 
-	protected static function get_cache_fragment( $path ) {
+	protected function get_cache_fragment( $path ) {
 		if ( ! in_array( 'cache', $path ) ) {
 			array_unshift( $path, 'cache' );
 		}
 
-		return self::get_transient( self::TRANSIENT_PREFIX . implode( '_', $path ) );
+		return $this->get_transient( self::TRANSIENT_PREFIX . implode( '_', $path ) );
 	}
 
-	protected static function get_transient() {
+	protected function get_transient() {
 		if ( is_multisite() ) {
 			return call_user_func_array( 'get_site_transient', func_get_args() );
 		} else {
@@ -668,17 +695,17 @@ class WP_CriticalCSS {
 		}
 	}
 
-	protected static function update_cache_fragment( $path, $value ) {
+	protected function update_cache_fragment( $path, $value ) {
 		if ( ! in_array( 'cache', $path ) ) {
 			array_unshift( $path, 'cache' );
 		}
-		self::build_cache_tree( array_slice( $path, 0, count( $path ) - 1 ) );
-		self::update_tree_branch( $path, $value );
+		$this->build_cache_tree( array_slice( $path, 0, count( $path ) - 1 ) );
+		$this->update_tree_branch( $path, $value );
 	}
 
-	protected static function build_cache_tree( $path ) {
+	protected function build_cache_tree( $path ) {
 		$levels = count( $path );
-		$expire = self::get_expire_period();
+		$expire = $this->get_expire_period();
 		for ( $i = 0; $i < $levels; $i ++ ) {
 			$transient_id       = self::TRANSIENT_PREFIX . implode( '_', array_slice( $path, 0, $i + 1 ) );
 			$transient_cache_id = $transient_id;
@@ -686,7 +713,7 @@ class WP_CriticalCSS {
 				$transient_cache_id .= '_cache';
 			}
 			$transient_cache_id .= '_1';
-			$cache              = self::get_transient( $transient_cache_id );
+			$cache              = $this->get_transient( $transient_cache_id );
 			$transient_value    = array();
 			if ( $i + 1 < $levels ) {
 				$transient_value[] = self::TRANSIENT_PREFIX . implode( '_', array_slice( $path, 0, $i + 2 ) );
@@ -694,15 +721,15 @@ class WP_CriticalCSS {
 			if ( ! is_null( $cache ) && false !== $cache ) {
 				$transient_value = array_unique( array_merge( $cache, $transient_value ) );
 			}
-			self::set_transient( $transient_cache_id, $transient_value, $expire );
+			$this->set_transient( $transient_cache_id, $transient_value, $expire );
 			$transient_counter_id = $transient_id;
 			if ( 'cache' != $path[ $i ] ) {
 				$transient_counter_id .= '_cache';
 			}
 			$transient_counter_id .= '_count';
-			$transient_counter    = self::get_transient( $transient_counter_id );
+			$transient_counter    = $this->get_transient( $transient_counter_id );
 			if ( is_null( $transient_counter ) || false === $transient_counter ) {
-				self::set_transient( $transient_counter_id, 1, $expire );
+				$this->set_transient( $transient_counter_id, 1, $expire );
 			}
 		}
 	}
@@ -710,17 +737,17 @@ class WP_CriticalCSS {
 	/**
 	 * @return int
 	 */
-	public static function get_expire_period() {
+	public function get_expire_period() {
 // WP-Rocket integration
 		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
 			return get_rocket_purge_cron_interval();
 		}
-		$settings = self::get_settings();
+		$settings = $this->get_settings();
 
-		return absint( self::$_settings['web_check_interval'] );
+		return absint( $this->_settings['web_check_interval'] );
 	}
 
-	protected static function set_transient() {
+	protected function set_transient() {
 		if ( is_multisite() ) {
 			call_user_func_array( 'set_site_transient', func_get_args() );
 		} else {
@@ -728,7 +755,7 @@ class WP_CriticalCSS {
 		}
 	}
 
-	protected static function update_tree_branch( $path, $value ) {
+	protected function update_tree_branch( $path, $value ) {
 		$branch            = self::TRANSIENT_PREFIX . implode( '_', $path );
 		$parent_path       = array_slice( $path, 0, count( $path ) - 1 );
 		$parent            = self::TRANSIENT_PREFIX . implode( '_', $parent_path );
@@ -739,16 +766,16 @@ class WP_CriticalCSS {
 			$cache_transient   .= '_cache';
 		}
 		$counter_transient .= '_count';
-		$counter           = (int) self::get_transient( $counter_transient );
+		$counter           = (int) $this->get_transient( $counter_transient );
 		$cache_transient   .= "_{$counter}";
-		$cache             = self::get_transient( $cache_transient );
+		$cache             = $this->get_transient( $cache_transient );
 		$count             = count( $cache );
 		$cache_keys        = array_flip( $cache );
-		$expire            = self::get_expire_period();
+		$expire            = $this->get_expire_period();
 		if ( ! isset( $cache_keys[ $branch ] ) ) {
 			if ( $count >= apply_filters( 'rocket_async_css_max_branch_length', 50 ) ) {
 				$counter ++;
-				self::set_transient( $counter_transient, $counter, $expire );
+				$this->set_transient( $counter_transient, $counter, $expire );
 				$cache_transient = $parent;
 				if ( 'cache' != end( $parent_path ) ) {
 					$cache_transient .= '_cache';
@@ -757,9 +784,9 @@ class WP_CriticalCSS {
 				$cache           = array();
 			}
 			$cache[] = $branch;
-			self::set_transient( $cache_transient, $cache, $expire );
+			$this->set_transient( $cache_transient, $cache, $expire );
 		}
-		self::set_transient( $branch, $value, $expire );
+		$this->set_transient( $branch, $value, $expire );
 	}
 
 	/**
@@ -767,8 +794,8 @@ class WP_CriticalCSS {
 	 *
 	 * @return string
 	 */
-	public static function get_html_hash( $item = array() ) {
-		return self::get_item_data( $item, 'html_hash' );
+	public function get_html_hash( $item = array() ) {
+		return $this->get_item_data( $item, 'html_hash' );
 	}
 
 	/**
@@ -778,8 +805,8 @@ class WP_CriticalCSS {
 	 * @return void
 	 * @internal param array $type
 	 */
-	public static function set_cache( $item, $css ) {
-		self::set_item_data( $item, 'cache', $css );
+	public function set_cache( $item, $css ) {
+		$this->set_item_data( $item, 'cache', $css );
 	}
 
 	/**
@@ -788,8 +815,8 @@ class WP_CriticalCSS {
 	 * @param     $value
 	 * @param int $expires
 	 */
-	public static function set_item_data( $item, $name, $value, $expires = 0 ) {
-		if ( 'on' == self::$_settings['template_cache'] && ! empty( $item['template'] ) ) {
+	public function set_item_data( $item, $name, $value, $expires = 0 ) {
+		if ( 'on' == $this->_settings['template_cache'] && ! empty( $item['template'] ) ) {
 			$name = "criticalcss_{$name}_" . md5( $item['template'] );
 			set_transient( $name, $value, $expires );
 		} else {
@@ -820,8 +847,8 @@ class WP_CriticalCSS {
 	 *
 	 * @return string
 	 */
-	public static function get_css_hash( $item = array() ) {
-		return self::get_item_data( $item, 'css_hash' );
+	public function get_css_hash( $item = array() ) {
+		return $this->get_item_data( $item, 'css_hash' );
 	}
 
 	/**
@@ -831,8 +858,8 @@ class WP_CriticalCSS {
 	 * @return void
 	 * @internal param array $type
 	 */
-	public static function set_css_hash( $item, $hash ) {
-		self::set_item_data( $item, 'css_hash', $hash );
+	public function set_css_hash( $item, $hash ) {
+		$this->set_item_data( $item, 'css_hash', $hash );
 	}
 
 	/**
@@ -842,63 +869,63 @@ class WP_CriticalCSS {
 	 * @return void
 	 * @internal param array $type
 	 */
-	public static function set_html_hash( $item, $hash ) {
-		self::set_item_data( $item, 'html_hash', $hash );
+	public function set_html_hash( $item, $hash ) {
+		$this->set_item_data( $item, 'html_hash', $hash );
 	}
 
 	/**
 	 *
 	 */
-	public static function settings_init() {
+	public function settings_init() {
 		if ( is_multisite() ) {
 			$hook = add_submenu_page( 'settings.php', 'WP Critical CSS', 'WP Critical CSS', 'manage_network_options', 'wp_criticalcss', array(
-				__CLASS__,
+				$this,
 				'settings_ui',
 			) );
 		} else {
 			$hook = add_options_page( 'WP Critical CSS', 'WP Critical CSS', 'manage_options', 'wp_criticalcss', array(
-				__CLASS__,
+				$this,
 				'settings_ui',
 			) );
 		}
-		add_action( "load-$hook", array( __CLASS__, 'screen_option' ) );
-		self::$_settings_ui->add_section( array( 'id' => self::OPTIONNAME, 'title' => 'WP Critical CSS Options' ) );
-		self::$_settings_ui->add_field( self::OPTIONNAME, array(
+		add_action( "load-$hook", array( $this, 'screen_option' ) );
+		$this->_settings_ui->add_section( array( 'id' => self::OPTIONNAME, 'title' => 'WP Critical CSS Options' ) );
+		$this->_settings_ui->add_field( self::OPTIONNAME, array(
 			'name'              => 'apikey',
 			'label'             => 'API Key',
 			'type'              => 'text',
-			'sanitize_callback' => array( __CLASS__, 'validate_criticalcss_apikey' ),
+			'sanitize_callback' => array( $this, 'validate_criticalcss_apikey' ),
 			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', self::LANG_DOMAIN ),
 		) );
-		self::$_settings_ui->add_field( self::OPTIONNAME, array(
+		$this->_settings_ui->add_field( self::OPTIONNAME, array(
 			'name'  => 'force_web_check',
 			'label' => 'Force Web Check',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', self::LANG_DOMAIN ),
 		) );
-		self::$_settings_ui->add_field( self::OPTIONNAME, array(
+		$this->_settings_ui->add_field( self::OPTIONNAME, array(
 			'name'  => 'template_cache',
 			'label' => 'Template Cache',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url.', self::LANG_DOMAIN ),
 		) );
-		if ( ! self::has_external_integration() ) {
-			self::$_settings_ui->add_field( self::OPTIONNAME, array(
+		if ( ! $this->has_external_integration() ) {
+			$this->_settings_ui->add_field( self::OPTIONNAME, array(
 				'name'  => 'web_check_interval',
 				'label' => 'Web Check Interval',
 				'type'  => 'number',
 				'desc'  => __( 'How often in seconds web pages should be checked for changes to re-generate CSS', self::LANG_DOMAIN ),
 			) );
 		}
-		self::$_settings_ui->admin_init();
+		$this->_settings_ui->admin_init();
 	}
 
 	/**
 	 *
 	 */
-	public static function settings_ui() {
+	public function settings_ui() {
 		require ABSPATH . 'wp-admin/options-head.php';
-		self::$_settings_ui->add_section( array(
+		$this->_settings_ui->add_section( array(
 			'id'    => 'wp_criticalcss_queue',
 			'title' => 'WP Critical CSS Queue',
 			'form'  => false,
@@ -914,21 +941,21 @@ class WP_CriticalCSS {
         </style>
         <form method="post">
 			<?php
-			self::$_queue_table->prepare_items();
-			self::$_queue_table->display();
+			$this->_queue_table->prepare_items();
+			$this->_queue_table->display();
 			?>
         </form>
 		<?php
-		self::$_settings_ui->add_field( 'wp_criticalcss_queue', array(
+		$this->_settings_ui->add_field( 'wp_criticalcss_queue', array(
 			'name'  => 'queue',
 			'label' => null,
 			'type'  => 'html',
 			'desc'  => ob_get_clean(),
 		) );
 
-		self::$_settings_ui->admin_init();
-		self::$_settings_ui->show_navigation();
-		self::$_settings_ui->show_forms();
+		$this->_settings_ui->admin_init();
+		$this->_settings_ui->show_navigation();
+		$this->_settings_ui->show_forms();
 		?>
 
 		<?php
@@ -939,7 +966,7 @@ class WP_CriticalCSS {
 	 *
 	 * @return bool
 	 */
-	public static function validate_criticalcss_apikey( $options ) {
+	public function validate_criticalcss_apikey( $options ) {
 		$valid = true;
 		if ( empty( $options['apikey'] ) ) {
 			$valid = false;
@@ -963,7 +990,7 @@ class WP_CriticalCSS {
 	 *
 	 * @return array
 	 */
-	public static function sync_options( $value, $old_value ) {
+	public function sync_options( $value, $old_value ) {
 		$original_old_value = $old_value;
 		if ( ! is_array( $old_value ) ) {
 			$old_value = array();
@@ -973,7 +1000,7 @@ class WP_CriticalCSS {
 
 		if ( isset( $value['force_web_check'] ) && 'on' == $value['force_web_check'] ) {
 			$value['force_web_check'] = 'off';
-			self::reset_web_check_transients();
+			$this->reset_web_check_transients();
 		}
 
 		if ( is_multisite() ) {
@@ -987,11 +1014,11 @@ class WP_CriticalCSS {
 	/**
 	 *
 	 */
-	public static function reset_web_check_transients() {
-		self::delete_cache_branch();
+	public function reset_web_check_transients() {
+		$this->delete_cache_branch();
 	}
 
-	protected static function delete_cache_branch( $path = array() ) {
+	protected function delete_cache_branch( $path = array() ) {
 		if ( is_array( $path ) ) {
 			if ( ! empty( $path ) ) {
 				$path = self::TRANSIENT_PREFIX . implode( '_', $path ) . '_';
@@ -1003,7 +1030,7 @@ class WP_CriticalCSS {
 		$counter           = get_transient( $counter_transient );
 
 		if ( is_null( $counter ) || false === $counter ) {
-			self::delete_transient( rtrim( $path, '_' ) );
+			$this->delete_transient( rtrim( $path, '_' ) );
 
 			return;
 		}
@@ -1012,15 +1039,15 @@ class WP_CriticalCSS {
 			$cache          = get_transient( "{$path}cache_{$i}" );
 			if ( ! empty( $cache ) ) {
 				foreach ( $cache as $sub_branch ) {
-					self::delete_cache_branch( "{$sub_branch}_" );
+					$this->delete_cache_branch( "{$sub_branch}_" );
 				}
-				self::delete_transient( $transient_name );
+				$this->delete_transient( $transient_name );
 			}
 		}
-		self::delete_transient( $counter_transient );
+		$this->delete_transient( $counter_transient );
 	}
 
-	protected static function delete_transient() {
+	protected function delete_transient() {
 		if ( is_multisite() ) {
 			return call_user_func_array( 'delete_site_transient', func_get_args() );
 		} else {
@@ -1028,10 +1055,10 @@ class WP_CriticalCSS {
 		}
 	}
 
-	public static function reset_web_check_post_transient( $post ) {
+	public function reset_web_check_post_transient( $post ) {
 		$post = get_post( $post );
-		$hash = self::get_item_hash( array( 'object_id' => $post->ID, 'type' => 'post' ) );
-		self::delete_cache_branch( array( $hash ) );
+		$hash = $this->get_item_hash( array( 'object_id' => $post->ID, 'type' => 'post' ) );
+		$this->delete_cache_branch( array( $hash ) );
 	}
 
 	/**
@@ -1039,16 +1066,16 @@ class WP_CriticalCSS {
 	 *
 	 * @internal param \WP_Term $post
 	 */
-	public static function reset_web_check_term_transient( $term ) {
+	public function reset_web_check_term_transient( $term ) {
 		$term = get_term( $term );
-		$hash = self::get_item_hash( array( 'object_id' => $term->term_id, 'type' => 'term' ) );
-		self::delete_cache_branch( array( $hash ) );
+		$hash = $this->get_item_hash( array( 'object_id' => $term->term_id, 'type' => 'term' ) );
+		$this->delete_cache_branch( array( $hash ) );
 	}
 
 	/**
 	 * @internal param \WP_Term $post
 	 */
-	public static function reset_web_check_home_transient() {
+	public function reset_web_check_home_transient() {
 		$page_for_posts = get_option( 'page_for_posts' );
 		if ( ! empty( $page_for_posts ) ) {
 			$post_id = $page_for_posts;
@@ -1062,27 +1089,27 @@ class WP_CriticalCSS {
 			}
 		}
 		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
-			$hash = self::get_item_hash( array( 'object_id' => $post_id, 'type' => 'post' ) );
+			$hash = $this->get_item_hash( array( 'object_id' => $post_id, 'type' => 'post' ) );
 		} else {
-			$hash = self::get_item_hash( array( 'type' => 'url', 'url' => site_url() ) );
+			$hash = $this->get_item_hash( array( 'type' => 'url', 'url' => site_url() ) );
 		}
-		self::delete_cache_branch( array( $hash ) );
+		$this->delete_cache_branch( array( $hash ) );
 	}
 
 	/**
 	 *
 	 */
-	public static function screen_option() {
+	public function screen_option() {
 		add_screen_option( 'per_page', array(
 			'label'   => 'Queue Items',
 			'default' => 20,
 			'option'  => 'queue_items_per_page',
 		) );
-		self::$_queue_table = new WP_CriticalCSS_Queue_List_Table( self::$_api_queue );
+		$this->_queue_table = new WP_CriticalCSS_Queue_List_Table( $this->_api_queue );
 	}
 
-	public static function template_include( $template ) {
-		self::$_template = str_replace( trailingslashit( WP_CONTENT_DIR ), '', $template );
+	public function template_include( $template ) {
+		$this->_template = str_replace( trailingslashit( WP_CONTENT_DIR ), '', $template );
 
 		return $template;
 	}
@@ -1090,7 +1117,7 @@ class WP_CriticalCSS {
 	/**
 	 * @return \WP_CriticalCSS_API_Background_Process
 	 */
-	public static function get_api_queue() {
-		return self::$_api_queue;
+	public function get_api_queue() {
+		return $this->_api_queue;
 	}
 }

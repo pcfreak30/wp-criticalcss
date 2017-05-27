@@ -19,23 +19,23 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		$url = WP_CriticalCSS::get_permalink( $item );
+		$url = WPCCSS()->get_permalink( $item );
 		if ( isset( $this->_processed_urls[ $url ] ) ) {
 			return false;
 		}
-		$api_queue = WP_CriticalCSS::get_api_queue();
+		$api_queue = WPCCSS()->get_api_queue();
 
 		if ( $api_queue->get_item_exists( $item ) ) {
 			return false;
 		}
 
-		$css_hash  = WP_CriticalCSS::get_css_hash( $item );
-		$html_hash = WP_CriticalCSS::get_html_hash( $item );
-		$url       = WP_CriticalCSS::get_permalink( $item );
+		$css_hash  = WPCCSS()->get_css_hash( $item );
+		$html_hash = WPCCSS()->get_html_hash( $item );
+		$url       = WPCCSS()->get_permalink( $item );
 		if ( empty( $url ) ) {
 			return false;
 		}
-		$result = wp_remote_get( WP_CriticalCSS::get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', array(), $item ) );
+		$result = wp_remote_get( WPCCSS()->get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', array(), $item ) );
 
 		if ( $result instanceof WP_Error ) {
 			if ( empty( $item['error'] ) ) {
@@ -143,10 +143,10 @@ class WP_CriticalCSS_Web_Check_Background_Process extends WP_CriticalCSS_Backgro
 		if ( $changed ) {
 			$item['css_hash']  = $css_hash;
 			$item['html_hash'] = $html_hash;
-			WP_CriticalCSS::disable_external_integration();
-			WP_CriticalCSS::purge_page_cache( $item['type'], $item['object_id'], WP_CriticalCSS::get_permalink( $item ) );
-			WP_CriticalCSS::external_integration();
-			WP_CriticalCSS::set_cache( $item, '' );
+			WPCCSS()->disable_external_integration();
+			WPCCSS()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
+			WPCCSS()->external_integration();
+			WPCCSS()->set_cache( $item, '' );
 			$api_queue->push_to_queue( $item )->save();
 
 		}

@@ -1,0 +1,24 @@
+<phpunit
+        bootstrap="tests/bootstrap.php"
+        backupGlobals="false"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        processIsolation="true"
+>
+    <testsuites>
+        <testsuite>
+            <directory prefix="test-" suffix=".php">./tests/</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./lib/</directory>
+            <file>./wp-criticalcss.php</file>
+        </whitelist>
+    </filter>
+    <php>
+        <!--<const name="WP_TESTS_MULTISITE" value="1"/>-->
+    </php>
+</phpunit>
