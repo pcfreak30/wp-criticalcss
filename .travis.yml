@@ -12,7 +12,10 @@ branches:
 
 php:
   - 5.3
+  - 5.4
   - 5.6
+  - 7.0
+  - 7.1
 
 env:
   - WP_VERSION=latest WP_MULTISITE=0
