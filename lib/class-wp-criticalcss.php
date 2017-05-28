@@ -30,7 +30,7 @@ class WP_CriticalCSS {
 	/**
 	 * @var array
 	 */
-	protected static $integrations = array(
+	protected $integrations = array(
 		'WP_CriticalCSS_Integration_Rocket_Async_CSS',
 		'WP_CriticalCSS_Integration_Root_Relative_URLS',
 		'WP_CriticalCSS_Integration_WP_Rocket',
@@ -77,6 +77,10 @@ class WP_CriticalCSS {
 	 */
 	protected $request;
 
+	protected $integrations_setup = false;
+
+	protected $components_setup = false;
+
 	/**
 	 * @return \WP_CriticalCSS
 	 */
@@ -106,7 +110,7 @@ class WP_CriticalCSS {
 	 * @return array
 	 */
 	public function get_integrations() {
-		return self::$integrations;
+		return $this->integrations;
 	}
 
 
@@ -126,7 +130,7 @@ class WP_CriticalCSS {
 	 *
 	 */
 	public function wp_action() {
-		set_query_var( 'nocache', $this->nocache );
+		set_query_var( 'nocache', $this->request->is_no_cache() );
 		$this->enable_integrations();
 	}
 
@@ -184,7 +188,7 @@ class WP_CriticalCSS {
 		), $this->get_settings(), array( 'version' => self::VERSION ) ) );
 
 		$this->init();
-		$this->add_rewrite_rules();
+		$this->request->add_rewrite_rules();
 
 		$this->web_check_queue->create_table();
 		$this->api_queue->create_table();
@@ -222,6 +226,7 @@ class WP_CriticalCSS {
 	 * @return bool
 	 */
 	public function update_settings( array $settings ) {
+		$this->set_settings( $settings );
 		if ( is_multisite() ) {
 			return update_site_option( self::OPTIONNAME, $settings );
 		} else {
@@ -234,33 +239,15 @@ class WP_CriticalCSS {
 	 */
 	public function init() {
 		$this->settings = $this->get_settings();
-		if ( empty( $this->admin_ui ) ) {
-			$this->admin_ui = new WP_CriticalCSS_Admin_UI();
+		if ( ! $this->components_setup ) {
+			$this->setup_components();
 		}
-		if ( empty( $this->web_check_queue ) ) {
-			$this->web_check_queue = new WP_CriticalCSS_Web_Check_Background_Process();
-		}
-		if ( empty( $this->api_queue ) ) {
-			$this->api_queue = new WP_CriticalCSS_API_Background_Process();
-		}
-		if ( empty( $this->data_manager ) ) {
-			$this->data_manager = new WP_CriticalCSS_Data_Manager();
-		}
-		if ( empty( $this->cache_manager ) ) {
-			$this->cache_manager = new WP_CriticalCSS_Cache_Manager();
-		}
-		if ( empty( $this->request ) ) {
-			$this->request = new WP_CriticalCSS_Request();
-		}
-		$integrations = array();
-		foreach ( self::$integrations as $integration ) {
-			$integrations[ $integration ] = new $integration();
-		}
-		self::$integrations = $integrations;
 
 		if ( ! is_admin() ) {
 			add_action( 'wp_print_styles', array( $this, 'print_styles' ), 7 );
 		}
+
+		$this->setup_integrations();
 
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
@@ -477,5 +464,31 @@ class WP_CriticalCSS {
 	 */
 	public function get_request() {
 		return $this->request;
+	}
+
+	public function setup_integrations( $force = false ) {
+
+		if ( ! $this->integrations_setup || $force ) {
+			$integrations = array();
+			foreach ( $this->integrations as $integration ) {
+				if ( $this->integrations_setup ) {
+					$integration = get_class( $integration );
+				}
+				$integrations[ $integration ] = new $integration();
+			}
+			$this->integrations       = $integrations;
+			$this->integrations_setup = true;
+		}
+
+	}
+
+	public function setup_components() {
+		$this->admin_ui         = new WP_CriticalCSS_Admin_UI();
+		$this->web_check_queue  = new WP_CriticalCSS_Web_Check_Background_Process();
+		$this->api_queue        = new WP_CriticalCSS_API_Background_Process();
+		$this->data_manager     = new WP_CriticalCSS_Data_Manager();
+		$this->cache_manager    = new WP_CriticalCSS_Cache_Manager();
+		$this->request          = new WP_CriticalCSS_Request();
+		$this->components_setup = true;
 	}
 }
