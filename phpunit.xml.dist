@@ -15,7 +15,6 @@
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./lib/</directory>
             <file>./wp-criticalcss.php</file>
-            <file>./tests/wp-criticalcss-testcase.php</file>
         </whitelist>
     </filter>
     <php>
