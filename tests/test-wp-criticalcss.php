@@ -19,6 +19,7 @@ class Test_WP_CriticalCSS extends WP_CriticalCSS_TestCase {
 
 	public function test_wp_head_with_nocache() {
 		WPCCSS()->init();
+		WPCCSS()->setup_components();
 		WPCCSS()->get_request()->add_rewrite_rules();
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/nocache' ) );
@@ -41,7 +42,7 @@ class Test_WP_CriticalCSS extends WP_CriticalCSS_TestCase {
 		WPCCSS()->get_request()->add_rewrite_rules();
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/nocache' ) );
-		$this->assertFalse( WPCCSS()->redirect_canonical( home_url() ) );
+		$this->assertFalse( WPCCSS()->get_request()->redirect_canonical( home_url() ) );
 	}
 
 	public function test_parse_request() {
@@ -109,7 +110,11 @@ class Test_WP_CriticalCSS extends WP_CriticalCSS_TestCase {
 	public function test_init_template_cache_on() {
 		WPCCSS()->update_settings( array( 'template_cache' => 'on' ) );
 		WPCCSS()->init();
-		$this->assertEquals( PHP_INT_MAX, has_action( 'template_include', array( WPCCSS(), 'template_include' ) ) );
+		WPCCSS()->setup_components();
+		$this->assertEquals( PHP_INT_MAX, has_action( 'template_include', array(
+			WPCCSS()->get_request(),
+			'template_include',
+		) ) );
 	}
 
 	public function test_init_template_cache_off() {
