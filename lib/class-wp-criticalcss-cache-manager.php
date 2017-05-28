@@ -9,6 +9,7 @@ class WP_CriticalCSS_Cache_Manager {
 	}
 
 	public function delete_cache_branch( $path = array() ) {
+		$result = false;
 		if ( is_array( $path ) ) {
 			if ( ! empty( $path ) ) {
 				$path = WP_CriticalCSS::TRANSIENT_PREFIX . implode( '_', $path ) . '_';
@@ -31,10 +32,12 @@ class WP_CriticalCSS_Cache_Manager {
 				foreach ( $cache as $sub_branch ) {
 					$this->delete_cache_branch( "{$sub_branch}_" );
 				}
-				$this->delete_transient( $transient_name );
+				$result = $this->delete_cache_leaf( $transient_name );
 			}
 		}
 		$this->delete_transient( $counter_transient );
+
+		return $result;
 	}
 
 	/**
@@ -46,6 +49,21 @@ class WP_CriticalCSS_Cache_Manager {
 		} else {
 			return call_user_func_array( 'delete_transient', func_get_args() );
 		}
+	}
+
+	public function delete_cache_leaf( $path = array() ) {
+		if ( is_array( $path ) ) {
+			if ( ! empty( $path ) ) {
+				if ( ! in_array( 'cache', $path ) ) {
+					array_unshift( $path, 'cache' );
+				}
+				$path = WP_CriticalCSS::TRANSIENT_PREFIX . implode( '_', $path );
+			} else {
+				return false;
+			}
+		}
+
+		return $this->delete_transient( $path );
 	}
 
 	/**
@@ -81,7 +99,8 @@ class WP_CriticalCSS_Cache_Manager {
 			array_unshift( $path, 'cache' );
 		}
 		$this->build_cache_tree( array_slice( $path, 0, count( $path ) - 1 ) );
-		$this->update_tree_branch( $path, $value );
+
+		return $this->update_tree_leaf( $path, $value );
 	}
 
 	/**
@@ -130,9 +149,9 @@ class WP_CriticalCSS_Cache_Manager {
 	 */
 	protected function set_transient() {
 		if ( is_multisite() ) {
-			call_user_func_array( 'set_site_transient', func_get_args() );
+			return call_user_func_array( 'set_site_transient', func_get_args() );
 		} else {
-			call_user_func_array( 'set_transient', func_get_args() );
+			return call_user_func_array( 'set_transient', func_get_args() );
 		}
 	}
 
@@ -140,8 +159,8 @@ class WP_CriticalCSS_Cache_Manager {
 	 * @param $path
 	 * @param $value
 	 */
-	protected function update_tree_branch( $path, $value ) {
-		$branch            = WP_CriticalCSS::TRANSIENT_PREFIX . implode( '_', $path );
+	protected function update_tree_leaf( $path, $value ) {
+		$leaf              = WP_CriticalCSS::TRANSIENT_PREFIX . implode( '_', $path );
 		$parent_path       = array_slice( $path, 0, count( $path ) - 1 );
 		$parent            = WP_CriticalCSS::TRANSIENT_PREFIX . implode( '_', $parent_path );
 		$counter_transient = $parent;
@@ -157,7 +176,7 @@ class WP_CriticalCSS_Cache_Manager {
 		$count             = count( $cache );
 		$cache_keys        = array_flip( $cache );
 		$expire            = $this->get_expire_period();
-		if ( ! isset( $cache_keys[ $branch ] ) ) {
+		if ( ! isset( $cache_keys[ $leaf ] ) ) {
 			if ( $count >= apply_filters( 'rocket_async_css_max_branch_length', 50 ) ) {
 				$counter ++;
 				$this->set_transient( $counter_transient, $counter, $expire );
@@ -168,9 +187,10 @@ class WP_CriticalCSS_Cache_Manager {
 				$cache_transient .= "_{$counter}";
 				$cache           = array();
 			}
-			$cache[] = $branch;
+			$cache[] = $leaf;
 			$this->set_transient( $cache_transient, $cache, $expire );
 		}
-		$this->set_transient( $branch, $value, $expire );
+
+		return $this->set_transient( $leaf, $value, $expire );
 	}
 }
