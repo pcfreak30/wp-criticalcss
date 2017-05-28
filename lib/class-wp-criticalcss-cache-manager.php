@@ -5,7 +5,7 @@ class WP_CriticalCSS_Cache_Manager {
 	protected $settings;
 
 	public function __construct() {
-		$this->settings = &WPCCSS()->get_settings();
+		$this->settings = WPCCSS()->get_settings();
 	}
 
 	public function delete_cache_branch( $path = array() ) {

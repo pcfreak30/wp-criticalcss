@@ -6,7 +6,7 @@ class WP_CriticalCSS_Data_Manager {
 	protected $settings;
 
 	public function __construct() {
-		$this->settings = &WPCCSS()->get_settings();
+		$this->settings = WPCCSS()->get_settings();
 	}
 
 

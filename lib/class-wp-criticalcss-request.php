@@ -21,7 +21,7 @@ class WP_CriticalCSS_Request {
 	 * WP_CriticalCSS_Request constructor.
 	 */
 	public function __construct() {
-		$this->settings = &WPCCSS()->get_settings();
+		$this->settings = WPCCSS()->get_settings();
 		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
 		add_filter( 'rewrite_rules_array', array( $this, 'fix_rewrites' ), 11 );
 		add_action( 'template_include', array( $this, 'template_include' ), PHP_INT_MAX );
