@@ -29,14 +29,14 @@ class WP_CriticalCSS_Integration_Rocket_Async_CSS extends WP_CriticalCSS_Integra
 				define( 'DONOTCACHEPAGE', true );
 			}
 		}
-		add_action( 'wp_criticalcss_print_styles_cache', array( $this, '_purge_cache' ) );
+		add_action( 'wp_criticalcss_before_print_styles', array( $this, '_purge_cache' ) );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function disable() {
-		remove_action( 'wp_criticalcss_print_styles_cache', array( $this, '_purge_cache' ) );
+		remove_action( 'wp_criticalcss_before_print_styles', array( $this, '_purge_cache' ) );
 	}
 
 	/**
