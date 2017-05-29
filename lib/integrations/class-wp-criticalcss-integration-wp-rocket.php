@@ -39,8 +39,8 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 		remove_action( 'after_rocket_clean_home', array( WPCCSS(), 'reset_web_check_home_transient' ) );
 		remove_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 		remove_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
-		remove_filter( 'wp_criticalcss_print_styles_cache', array( $this, '_purge_cache' ) );
-		remove_filter( 'wp_criticalcss_cache_integration', '__return_true' );
+		remove_filter( 'wp_criticalcss_print_styles_cache', array( $this, 'purge_cache' ) );
+		remove_filter( 'wp_criticalcss_cache_integration', '_return_true' );
 	}
 
 	/**
