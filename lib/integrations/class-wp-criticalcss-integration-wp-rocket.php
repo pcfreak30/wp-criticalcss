@@ -23,10 +23,10 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 		if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) ) {
 			add_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
 		}
-		add_action( 'wp_criticalcss_purge_cache', array( $this, '_purge_cache' ) );
-		add_filter( 'wp_criticalcss_print_styles_cache', array( $this, '_print_styles' ) );
+		add_action( 'wp_criticalcss_purge_cache', array( $this, 'purge_cache' ) );
+		add_filter( 'wp_criticalcss_print_styles_cache', array( $this, 'print_styles' ) );
 		add_filter( 'wp_criticalcss_cache_integration', '__return_true' );
-		add_filter( 'wp_criticalcss_cache_expire_period', array( $this, '_get_cache_expire_period' ) );
+		add_filter( 'wp_criticalcss_cache_expire_period', array( $this, 'get_cache_expire_period' ) );
 	}
 
 	/**
@@ -49,7 +49,7 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 	 * @param null $object_id
 	 * @param null $url
 	 */
-	private function _purge_cache( $type = null, $object_id = null, $url = null ) {
+	public function purge_cache( $type = null, $object_id = null, $url = null ) {
 		if ( 'post' == $type ) {
 			rocket_clean_post( $object_id );
 		}
@@ -70,7 +70,7 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 	 *
 	 * @return mixed
 	 */
-	private function _print_styles( $cache ) {
+	public function print_styles( $cache ) {
 		$cache = rocket_cdn_css_properties( $cache );
 
 		return $cache;
@@ -80,7 +80,7 @@ class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Ba
 	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 * @return int
 	 */
-	protected function _get_cache_expire_period() {
+	public function get_cache_expire_period() {
 		return get_rocket_purge_cron_interval();
 	}
 }
