@@ -10,6 +10,12 @@ if ( ! $_tests_dir ) {
 	$_tests_dir = '/tmp/wordpress-tests-lib';
 }
 
+global $wp_tests_options;
+$_test_plugin = getenv( 'TEST_PLUGIN' );
+if ( $_test_plugin ) {
+	$wp_tests_options = array( 'active_plugins' => array_map( 'trim', array_filter( explode( ',', $_test_plugin ) ) ) );
+}
+
 // Give access to tests_add_filter() function.
 require_once $_tests_dir . '/includes/functions.php';
 
