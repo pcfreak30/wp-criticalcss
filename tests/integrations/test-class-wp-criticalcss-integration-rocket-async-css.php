@@ -31,7 +31,6 @@ class Test_WP_CriticalCSS_Integration_Rocket_Async_CSS extends WP_CriticalCSS_Te
 	 * @runInSeparateProcess
 	 */
 	public function test_nocache_page() {
-		global $wp;
 		WPCCSS()->init();
 		do_action( 'init' );
 		WPCCSS()->setup_integrations( true );
