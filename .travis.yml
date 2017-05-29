@@ -36,7 +36,7 @@ before_script:
   - cd /tmp/wordpress/wp-content/plugins/ && git clone https://github.com/pcfreak30/rocket-async-css
   - git clone https://github.com/wp-media/wp-rocket
   - git clone https://github.com/Hube2/root-relative-urls
-  - svn checkout http://plugins.svn.wordpress.org/the-preloader/trunk the-preloader -qq && cd ~
+  - svn checkout http://plugins.svn.wordpress.org/the-preloader/trunk the-preloader -qq && cd ~/pcfreak30/wp-criticalcss
 
 script:
   - phpunit --coverage-php logs/standalone.cov
