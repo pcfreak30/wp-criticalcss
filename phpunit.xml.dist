@@ -20,4 +20,9 @@
     <php>
         <!--<const name="WP_TESTS_MULTISITE" value="1"/>-->
     </php>
+    <groups>
+        <exclude>
+            <group>rocket-async-css</group>
+        </exclude>
+    </groups>
 </phpunit>
