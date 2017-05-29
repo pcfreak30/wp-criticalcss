@@ -30,11 +30,17 @@ before_script:
     else
       composer global require "phpunit/phpunit=4.8.*"
     fi
+    composer global require "phpunit/phpcov" "*"
   - composer install
+  - cd /tmp/wordpress/wp-content/plugins/ && git clone https://github.com/pcfreak30/rocket-async-css
+  - git clone https://github.com/wp-media/wp-rocket
+  - git clone https://github.com/Hube2/root-relative-urls
+  - svn checkout http://plugins.svn.wordpress.org/the-preloader/trunk the-preloader -qq && cd ~
 
 script:
-  - phpunit --coverage-clover logs/clover.xml
+  - phpunit --coverage-php logs/standalone.cov
+  - TEST_PLUGIN="rocket-async-css/rocket-async-css.php,wp-rocket/wp-rocket.php,the-preloader/preloader.php" phpunit --coverage-php logs/rocket-async-css.cov --group rocket-async-css
 
 after_success:
+  - phpcov merge --clover=logs/clover.xml logs/
   - ./vendor/bin/test-reporter -coverage-report=logs/clover.xml
-  - bash <(curl -s https://codecov.io/bash) -f logs/clover.xml
