@@ -41,6 +41,7 @@ before_script:
 script:
   - phpunit --coverage-php logs/standalone.cov
   - TEST_PLUGIN="rocket-async-css/rocket-async-css.php,wp-rocket/wp-rocket.php,the-preloader/preloader.php" phpunit --coverage-php logs/rocket-async-css.cov --group rocket-async-css
+  - TEST_PLUGIN="root-relative-urls/sb_root_relative_urls.php" phpunit --coverage-php logs/rocket-async-css.cov --group root-relative-urls
 
 after_success:
   - phpcov merge --clover=logs/clover.xml logs/
