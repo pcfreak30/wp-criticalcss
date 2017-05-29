@@ -10,7 +10,7 @@ class WP_CriticalCSS_Integration_WPEngine extends WP_CriticalCSS_Integration_Bas
 	 * WP_CriticalCSS_Integration_WPEngine constructor.
 	 */
 	public function __construct() {
-		if ( function_exists( 'get_rocket_option' ) ) {
+		if ( class_exists( 'WPECommon' ) ) {
 			parent::__construct();
 		}
 	}

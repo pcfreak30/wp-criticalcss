@@ -4,7 +4,7 @@
 class WP_CriticalCSS_Integration_WP_Rocket extends WP_CriticalCSS_Integration_Base {
 
 	public function __construct() {
-		if ( class_exists( 'WPECommon' ) ) {
+		if ( function_exists( 'get_rocket_option' ) ) {
 			parent::__construct();
 		}
 	}
