@@ -10,6 +10,7 @@ class Test_WP_CriticalCSS_Cache_Manager extends WP_CriticalCSS_TestCase {
 		) );
 		WPCCSS()->setup_components();
 		$this->assertTrue( WPCCSS()->get_cache_manager()->update_cache_fragment( array( 'test' ), true ) );
+		$this->assertTrue( WPCCSS()->get_cache_manager()->get_cache_fragment( array( 'test' ) ) );
 	}
 
 	public function test_delete_cache_branch() {
