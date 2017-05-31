@@ -23,6 +23,8 @@
     <groups>
         <exclude>
             <group>rocket-async-css</group>
+            <group>root-relative-urls</group>
+            <group>wp-rocket</group>
         </exclude>
     </groups>
 </phpunit>
