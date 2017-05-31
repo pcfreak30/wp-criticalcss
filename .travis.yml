@@ -44,7 +44,7 @@ script:
   - phpunit --coverage-php logs/standalone.cov
   - TEST_PLUGIN="rocket-async-css/rocket-async-css.php,wp-rocket/wp-rocket.php,the-preloader/preloader.php" phpunit --coverage-php logs/rocket-async-css.cov --group rocket-async-css
   - TEST_PLUGIN="root-relative-urls/sb_root_relative_urls.php" phpunit --coverage-php logs/root-relative-urls.cov --group root-relative-urls
-  - TEST_PLUGIN="wp-rocket/wp-rocket.php" phpunit --coverage-php logs/root-relative-urls.cov --group wp-rocket
+  - TEST_PLUGIN="wp-rocket/wp-rocket.php" phpunit --coverage-php logs/wp-rocket.cov --group wp-rocket
 
 after_success:
   - phpcov merge --clover=logs/clover.xml logs/
