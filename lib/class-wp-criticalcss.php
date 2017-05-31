@@ -312,7 +312,7 @@ class WP_CriticalCSS {
 			$url = $url->toString();
 		} else {
 			if ( ! function_exists( 'http_build_url' ) ) {
-				require_once plugin_dir_path( __FILE__ ) . 'http_build_url.php';
+				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'vendors/http_build_url.php';
 			}
 			$url = http_build_url( $url_parts );
 		}

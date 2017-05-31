@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
  * @author  Tareq Hasan <tareq@weDevs.com>
  * @link    https://tareq.co Tareq Hasan
  * @example example/oop-example.php How to use the class
- * @codeCoverageIgnore
  */
 if ( ! class_exists( 'WP_CriticalCSS_Settings_API' ) ):
 	class WP_CriticalCSS_Settings_API {

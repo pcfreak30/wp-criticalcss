@@ -35,6 +35,7 @@ if ( ! function_exists( 'wp_criticalcss_autoloader' ) ):
 			$base_path . $file,
 			$base_path . 'lib/' . $file,
 			$base_path . 'lib/integrations/' . $file,
+			$base_path . 'vendors/' . $file,
 		);
 		foreach ( $paths as $path ) {
 

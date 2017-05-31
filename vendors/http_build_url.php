@@ -6,7 +6,7 @@
  *
  * @see http://us2.php.net/manual/en/http.constants.php#http.constants.url
  * @SuppressWarnings(PHPMD)
- * @codeCoverageIgnore
+ * @codeCoverageIgnoreStart
  */
 if ( ! defined( 'HTTP_URL_REPLACE' ) ) {
 	define( 'HTTP_URL_REPLACE', 1 );
@@ -59,6 +59,7 @@ if ( ! function_exists( 'http_build_url' ) ) {
 	 *                       composed url like parse_url() would return
 	 *
 	 * @return string
+	 * @codeCoverageIgnore
 	 */
 	function http_build_url( $url, $parts = array(), $flags = HTTP_URL_REPLACE, &$new_url = array() ) {
 		is_array( $url ) || $url = parse_url( $url );
@@ -174,3 +175,4 @@ if ( ! function_exists( 'http_build_url' ) ) {
 		return $parsed_string;
 	}
 }
+// @codeCoverageIgnoreEnd
