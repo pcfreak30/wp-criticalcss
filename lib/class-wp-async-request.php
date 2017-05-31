@@ -4,6 +4,7 @@
  *
  * @package WP-Background-Processing
  * @SuppressWarnings(PHPMD)
+ * @codeCoverageIgnore
  */
 defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 if ( ! class_exists( 'WP_Async_Request' ) ) {

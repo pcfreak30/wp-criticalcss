@@ -6,6 +6,7 @@
  *
  * @see http://us2.php.net/manual/en/http.constants.php#http.constants.url
  * @SuppressWarnings(PHPMD)
+ * @codeCoverageIgnore
  */
 if ( ! defined( 'HTTP_URL_REPLACE' ) ) {
 	define( 'HTTP_URL_REPLACE', 1 );
