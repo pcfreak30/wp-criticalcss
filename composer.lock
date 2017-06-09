@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "9678a4a1ed11cf5444f6c6c24619b0fe",
+    "content-hash": "6f342075b868cc2c2d391ea0d1e92441",
     "packages": [
         {
             "name": "a5hleyrich/wp-background-processing",
@@ -126,12 +126,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp_mock.git",
-              "reference": "792cc1b006fea2c80a0f7370445667bb37a0de26"
+                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/10up/wp_mock/zipball/792cc1b006fea2c80a0f7370445667bb37a0de26",
-              "reference": "792cc1b006fea2c80a0f7370445667bb37a0de26",
+                "url": "https://api.github.com/repos/10up/wp_mock/zipball/01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
+                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
                 "shasum": ""
             },
             "require": {
@@ -165,7 +165,7 @@
                 "GPL-2.0+"
             ],
             "description": "A mocking library to take the pain out of unit testing for WordPress",
-            "time": "2017-06-01 16:49:53"
+            "time": "2017-06-01T16:49:53+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -233,7 +233,14 @@
             "time": "2017-02-28T12:52:32+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "0.1.1",
+            "alias_normalized": "0.1.1.0",
+            "version": "dev-dev",
+            "package": "10up/wp_mock"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "a5hleyrich/wp-background-processing": 20,
