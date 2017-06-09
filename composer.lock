@@ -1525,7 +1525,7 @@
             "description": "Library that helps with managing the version number of Git-hosted PHP projects",
             "homepage": "https://github.com/sebastianbergmann/version",
             "time": "2016-10-03T07:35:21+00:00"
-        },
+        }
     ],
     "aliases": [],
     "minimum-stability": "stable",
