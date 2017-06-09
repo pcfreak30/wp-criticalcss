@@ -17,7 +17,6 @@ class RootRelativeURLSTest extends TestCase {
 			'proper_root_relative_url',
 		) ) );
 		WPCCSS()->init();
-		WPCCSS()->setup_integrations( true );
 		do_action_ref_array( 'wp', array( &$wp ) );
 		$this->assertFalse( has_action( 'post_link', array(
 			'MP_WP_Root_Relative_URLS',
@@ -32,13 +31,12 @@ class RootRelativeURLSTest extends TestCase {
 			'proper_root_relative_url',
 		) ) );
 		WPCCSS()->init();
-		WPCCSS()->setup_integrations( true );
 		do_action_ref_array( 'wp', array( &$wp ) );
 		$this->assertFalse( has_action( 'post_link', array(
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
 		) ) );
-		WPCCSS()->disable_integrations();
+		WPCCSS()->get_integration_manager()->disable_integrations();
 		$this->assertEquals( 1, has_action( 'post_link', array(
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
