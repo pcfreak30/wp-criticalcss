@@ -1,2 +1,21 @@
 {
+  "require": {
+    "jakeasmith/http_build_url": "^1",
+    "a5hleyrich/wp-background-processing": "dev-master",
+    "level-2/dice": "dev-v2.0-PHP5.4-5.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "": "lib/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "": "tests/"
+    }
+  },
+  "require-dev": {
+    "mockery/mockery": "^0.9.9",
+    "10up/wp_mock": "dev-dev"
+  }
 }

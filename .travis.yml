@@ -26,12 +26,12 @@ before_script:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - |
     if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.0" ]]; then
-      composer global require "phpunit/phpunit=5.6.*"
+      composer require "phpunit/phpunit=5.6.*"
     else
-      composer global require "phpunit/phpunit=4.8.*"
+      composer require "phpunit/phpunit=4.8.*"
     fi
-    composer global require "phpunit/phpcov"
-    composer global require "codeclimate/php-test-reporter"
+    composer require "phpunit/phpcov"
+    composer require "codeclimate/php-test-reporter"
   - composer install
   - mkdir logs
   - export PLUGIN_HOME=$PWD
@@ -41,11 +41,12 @@ before_script:
   - svn checkout http://plugins.svn.wordpress.org/the-preloader/trunk the-preloader -qq && cd $PLUGIN_HOME
 
 script:
-  - phpunit --coverage-php logs/standalone.cov
-  - TEST_PLUGIN="rocket-async-css/rocket-async-css.php,wp-rocket/wp-rocket.php,the-preloader/preloader.php" phpunit --coverage-php logs/rocket-async-css.cov --group rocket-async-css
-  - TEST_PLUGIN="root-relative-urls/sb_root_relative_urls.php" phpunit --coverage-php logs/root-relative-urls.cov --group root-relative-urls
-  - TEST_PLUGIN="wp-rocket/wp-rocket.php" phpunit --coverage-php logs/wp-rocket.cov --group wp-rocket
+  - ./vendor/bin/phpunit --coverage-php logs/standalone_unit.cov
+  - ./vendor/bin/phpunit --coverage-php logs/standalone_integration.cov --configuration phpunit_integration.xml.dist
+  - TEST_PLUGIN="rocket-async-css/rocket-async-css.php,wp-rocket/wp-rocket.php,the-preloader/preloader.php" ./vendor/bin/phpunit --coverage-php logs/rocket-async-css.cov --group rocket-async-css  --configuration phpunit_integration.xml.dist
+  - TEST_PLUGIN="root-relative-urls/sb_root_relative_urls.php" ./vendor/bin/phpunit --coverage-php logs/root-relative-urls.cov --group root-relative-urls  --configuration phpunit_integration.xml.dist
+  - TEST_PLUGIN="wp-rocket/wp-rocket.php" ./vendor/bin/phpunit --coverage-php logs/wp-rocket.cov --group wp-rocket  --configuration phpunit_integration.xml.dist
 
 after_success:
-  - phpcov merge --clover=logs/clover.xml logs/
-  - test-reporter -coverage-report=logs/clover.xml
+  - ./vendor/bin/phpcov merge --clover=logs/clover.xml logs/
+  - ./vendor/bin/test-reporter -coverage-report=logs/clover.xml

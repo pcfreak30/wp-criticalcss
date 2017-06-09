@@ -13,50 +13,27 @@ License: GPL3
 /**
  * Activation hooks
  */
-register_activation_hook( __FILE__, array( 'WP_CriticalCSS', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'WP_CriticalCSS', 'deactivate' ) );
 
-/**
- * Autoloader function
- *
- * Will search both plugin root and lib folder for class
- *
- * @param $class_name
- */
-if ( ! function_exists( 'wp_criticalcss_autoloader' ) ):
-	/**
-	 * @param $class_name
-	 */
-	function wp_criticalcss_autoloader( $class_name ) {
-		$file      = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
-		$base_path = plugin_dir_path( __FILE__ );
-
-		$paths = array(
-			$base_path . $file,
-			$base_path . 'lib/' . $file,
-			$base_path . 'lib/integrations/' . $file,
-			$base_path . 'vendors/' . $file,
-		);
-		foreach ( $paths as $path ) {
-
-			if ( is_readable( $path ) ) {
-				include_once( $path );
-
-				return;
-			}
-		}
-	}
-
-	spl_autoload_register( 'wp_criticalcss_autoloader' );
-endif;
+use Dice\Dice;
 
 
 /**
  * @SuppressWarnings(PHPMD.StaticAccess)
- * @return \WP_CriticalCSS
+ * @return \WP\CriticalCSS
+ * @alias WPCCSS()
  */
 function wpccss() {
-	return WP_CriticalCSS::get_instance();
+	return wpccss_container()->create( 'WP\CriticalCSS' );
+}
+
+function wpccss_container( $env = 'prod' ) {
+	static $container;
+	if ( empty( $container ) ) {
+		$container = new Dice();
+		include __DIR__ . "/config_{$env}.php";
+	}
+
+	return $container;
 }
 
 /**
@@ -66,4 +43,27 @@ function wp_criticalcss_init() {
 	WPCCSS()->init();
 }
 
-add_action( 'plugins_loaded', 'wp_criticalcss_init' );
+function wp_criticalcss_php_upgrade_notice() {
+	$info = get_plugin_data( __FILE__ );
+	_e( sprintf( '
+	<div class="error notice">
+		<p>Opps! %s requires a minimum PHP version of 5.4.0. Your current version is: %s. Please contact your host to upgrade.</p>
+	</div>', $info['Name'], PHP_VERSION ) );
+}
+
+if ( version_compare( PHP_VERSION, '5.4.0' ) >= 0 ) {
+	add_action( 'admin_notices', 'wp_criticalcss_php_upgrade_notice' );
+} else {
+	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+		require_once __DIR__ . '/vendor/autoload.php';
+		add_action( 'plugins_loaded', 'wp_criticalcss_init' );
+	} else {
+		require_once __DIR__ . '/wordpress-web-composer/class-wordpress-web-composer.php';
+		$web_composer = new WordPress_Web_Composer( 'wp_criticalcss' );
+		$web_composer->set_install_target( __DIR__ );
+		if ( $web_composer->run() ) {
+			require_once __DIR__ . '/vendor/autoload.php';
+			define( 'WP_CRITICALCSS_COMPOSER_RAN', true );
+		}
+	}
+}

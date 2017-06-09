@@ -1,5 +1,5 @@
 <phpunit
-        bootstrap="tests/bootstrap_unit.php"
+        bootstrap="tests/bootstrap_integration.php"
         backupGlobals="false"
         colors="true"
         convertErrorsToExceptions="true"
@@ -8,13 +8,22 @@
 >
     <testsuites>
         <testsuite>
-            <directory suffix="Test.php">./tests/WP/CriticalCSS/Testing/Unit</directory>
+            <directory suffix="Test.php">./tests/WP/CriticalCSS/Testing/Integration</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./lib/</directory>
-            <file>./wp-criticalcss.php</file>
         </whitelist>
     </filter>
+    <php>
+        <!--<const name="WP_TESTS_MULTISITE" value="1"/>-->
+    </php>
+    <groups>
+        <exclude>
+            <group>rocket-async-css</group>
+            <group>root-relative-urls</group>
+            <group>wp-rocket</group>
+        </exclude>
+    </groups>
 </phpunit>
