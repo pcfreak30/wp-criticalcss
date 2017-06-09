@@ -126,12 +126,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp_mock.git",
-              "reference": "792cc1b006fea2c80a0f7370445667bb37a0de26"
+                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/10up/wp_mock/zipball/792cc1b006fea2c80a0f7370445667bb37a0de26",
-              "reference": "792cc1b006fea2c80a0f7370445667bb37a0de26",
+                "url": "https://api.github.com/repos/10up/wp_mock/zipball/01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
+                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
                 "shasum": ""
             },
             "require": {
