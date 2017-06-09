@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4c3a51d7b7f1c0aa5a92cc02b473a62",
+    "content-hash": "6f342075b868cc2c2d391ea0d1e92441",
     "packages": [
         {
             "name": "a5hleyrich/wp-background-processing",
@@ -40,7 +40,7 @@
                 }
             ],
             "description": "WP Background Processing can be used to fire off non-blocking asynchronous requests or as a background processing tool, allowing you to queue tasks.",
-            "time": "2016-09-13T12:24:02+00:00"
+            "time": "2016-09-13 12:24:02"
         },
         {
             "name": "jakeasmith/http_build_url",
@@ -116,39 +116,48 @@
                 "di",
                 "ioc"
             ],
-            "time": "2015-11-30T17:19:11+00:00"
+            "time": "2015-11-30 17:19:11"
         }
     ],
     "packages-dev": [
         {
             "name": "10up/wp_mock",
-            "version": "0.1.1",
+            "version": "dev-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp_mock.git",
-                "reference": "04e1e14fdcc4240a07f9f6c2e45029de5714dd3e"
+                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/10up/wp_mock/zipball/04e1e14fdcc4240a07f9f6c2e45029de5714dd3e",
-                "reference": "04e1e14fdcc4240a07f9f6c2e45029de5714dd3e",
+                "url": "https://api.github.com/repos/10up/wp_mock/zipball/01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
+                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
                 "shasum": ""
             },
             "require": {
-                "antecedent/patchwork": "~1.2",
-                "mockery/mockery": "~0.8",
-                "php": ">=5.3.2"
+                "antecedent/patchwork": "~2.0.3",
+                "mockery/mockery": "^0.9.5",
+                "php": ">=5.6",
+                "phpunit/phpunit": ">=4.3"
+            },
+            "conflict": {
+                "phpunit/phpunit": ">=6.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~3.7"
+                "behat/behat": "^3.0"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-dev": "1.0.x-dev"
+                }
+            },
             "autoload": {
-                "psr-0": {
-                    "WP_Mock\\": "./"
+                "psr-4": {
+                    "WP_Mock\\": "./php/WP_Mock"
                 },
                 "classmap": [
-                    "WP_Mock.php"
+                    "php/WP_Mock.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -156,7 +165,7 @@
                 "GPL-2.0+"
             ],
             "description": "A mocking library to take the pain out of unit testing for WordPress",
-            "time": "2015-03-31T18:55:45+00:00"
+            "time": "2017-06-01T16:49:53+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -224,11 +233,19 @@
             "time": "2017-02-28T12:52:32+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "0.1.1",
+            "alias_normalized": "0.1.1.0",
+            "version": "dev-dev",
+            "package": "10up/wp_mock"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "a5hleyrich/wp-background-processing": 20,
-        "level-2/dice": 20
+        "level-2/dice": 20,
+        "10up/wp_mock": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
