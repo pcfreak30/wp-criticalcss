@@ -16,6 +16,6 @@
   },
   "require-dev": {
     "mockery/mockery": "^0.9.9",
-    "10up/wp_mock": "dev-dev"
+    "10up/wp_mock": "dev-dev#792cc1b006fea2c80a0f7370445667bb37a0de26"
   }
 }
