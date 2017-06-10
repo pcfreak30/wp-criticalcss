@@ -16,7 +16,7 @@ class TestCase extends \WP_UnitTestCase {
 		$this->home_url = get_option( 'home' );
 		WPCCSS()->get_integration_manager()->reset();
 		WPCCSS()->get_request()->set_nocache( null );
-		WPCCSS()->update_settings( [ 'version' => CriticalCSS::VERSION ] );
+		WPCCSS()->get_settings_manager()->update_settings( [ 'version' => CriticalCSS::VERSION ] );
 		\WP_Mock::setUp();
 	}
 

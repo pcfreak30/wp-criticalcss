@@ -19,7 +19,7 @@ class CriticalCSSTest extends TestCase {
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/nocache' ) );
 		ob_start();
-		WPCCSS()->wp_head();
+		WPCCSS()->get_frontend()->wp_head();
 		$result = ob_get_clean();
 		$this->assertEquals( '<meta name="robots" content="noindex, nofollow"/>', trim( $result ) );
 	}
@@ -29,7 +29,7 @@ class CriticalCSSTest extends TestCase {
 		WPCCSS()->get_request()->add_rewrite_rules();
 		$this->go_to( home_url() );
 		ob_start();
-		WPCCSS()->wp_head();
+		WPCCSS()->get_frontend()->wp_head();
 		$result = ob_get_clean();
 		$this->assertEmpty( $result );
 	}
@@ -57,19 +57,19 @@ class CriticalCSSTest extends TestCase {
 
 	public function test_get_settings() {
 		update_option( CriticalCSS::OPTIONNAME, [ 'version' => CriticalCSS::VERSION ] );
-		$result = WPCCSS()->get_settings();
+		$result = WPCCSS()->get_settings_manager()->get_settings();
 		$this->assertInternalType( 'array', $result );
 		$this->assertNotEmpty( 'array', $result );
 	}
 
 	public function test_get_settings_empty() {
-		WPCCSS()->update_settings( [] );
+		WPCCSS()->get_settings_manager()->update_settings( [] );
 		$this->assertEmpty( WPCCSS()->get_settings() );
 	}
 
 	public function test_get_settings_multisite() {
 		update_site_option( CriticalCSS::OPTIONNAME, [ 'version' => CriticalCSS::VERSION ] );
-		$result = WPCCSS()->get_settings();
+		$result = WPCCSS()->get_settings_manager()->get_settings();
 		$this->assertInternalType( 'array', $result );
 		$this->assertNotEmpty( 'array', $result );
 	}
@@ -78,7 +78,7 @@ class CriticalCSSTest extends TestCase {
 		$this->require_normal();
 		$settings = [ 'version' => CriticalCSS::VERSION ];
 		delete_option( CriticalCSS::OPTIONNAME );
-		WPCCSS()->update_settings( $settings );
+		WPCCSS()->get_settings_manager()->update_settings( $settings );
 		$this->assertEquals( $settings, get_option( CriticalCSS::OPTIONNAME ) );
 	}
 
@@ -87,7 +87,7 @@ class CriticalCSSTest extends TestCase {
 		$this->require_multisite();
 		$settings = [ 'version' => CriticalCSS::VERSION ];
 		delete_site_option( CriticalCSS::OPTIONNAME );
-		WPCCSS()->update_settings( $settings );
+		WPCCSS()->get_settings_manager()->update_settings( $settings );
 		$this->assertEquals( $settings, get_site_option( CriticalCSS::OPTIONNAME ) );
 	}
 
@@ -113,7 +113,7 @@ class CriticalCSSTest extends TestCase {
 	}
 
 	public function test_init_template_cache_on() {
-		WPCCSS()->update_settings( [ 'template_cache' => 'on' ] );
+		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
 		WPCCSS()->init();
 		$this->assertEquals(
 			PHP_INT_MAX, has_action(

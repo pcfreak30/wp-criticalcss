@@ -8,7 +8,7 @@ class Manager extends TestCase {
 
 
 	public function test_update_cache_fragment() {
-		WPCCSS()->update_settings(
+		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
 				'web_check_interval' => MINUTE_IN_SECONDS,
@@ -20,7 +20,7 @@ class Manager extends TestCase {
 	}
 
 	public function test_delete_cache_branch() {
-		WPCCSS()->update_settings(
+		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
 				'web_check_interval' => MINUTE_IN_SECONDS,
@@ -33,7 +33,7 @@ class Manager extends TestCase {
 	}
 
 	public function test_delete_cache_leaf() {
-		WPCCSS()->update_settings(
+		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
 				'web_check_interval' => MINUTE_IN_SECONDS,
@@ -46,7 +46,7 @@ class Manager extends TestCase {
 	}
 
 	public function test_get_cache_fragment() {
-		WPCCSS()->update_settings(
+		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
 				'web_check_interval' => MINUTE_IN_SECONDS,
@@ -58,7 +58,7 @@ class Manager extends TestCase {
 	}
 
 	public function test_get_expire_period() {
-		WPCCSS()->update_settings(
+		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'web_check_interval' => MINUTE_IN_SECONDS,
 			]
