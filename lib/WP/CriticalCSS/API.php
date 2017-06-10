@@ -53,7 +53,7 @@ class API extends ComponentAbstract {
 		$query_args = array_merge( $query_args, array(
 			'version' => CriticalCSS::VERSION,
 		) );
-		$response   = $func( add_query_arg( $query_args, "https://criticalcss.com/api/premium/${endpoint}" ), array_merge_recursive( array(
+		$response   = $func( add_query_arg( $query_args, "https://criticalcss.com/api/premium/{$endpoint}" ), array_merge_recursive( array(
 			'headers' => array(
 				'Authorization' => 'JWT ' . $this->api_key,
 			),
