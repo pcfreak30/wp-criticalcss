@@ -102,7 +102,7 @@ class CriticalCSS {
 		$this->integration_manager = $integration_manager;
 		$this->api_queue           = $api_queue;
 		$this->web_check_queue     = $web_check_queue;
-		$this->frontend            = $frontend;;
+		$this->frontend            = $frontend;
 		$this->set_parent();
 	}
 
