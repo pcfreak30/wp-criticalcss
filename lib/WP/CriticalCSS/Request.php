@@ -14,15 +14,11 @@ class Request extends ComponentAbstract {
 	 * @var
 	 */
 	protected $template;
-
-
-	protected $settings;
-
 	/**
 	 * WP_CriticalCSS_Request constructor.
 	 */
 	public function init() {
-		$this->settings = $this->app->get_settings();
+		parent::init();
 		add_action( 'init', array(
 			$this,
 			'add_rewrite_rules',

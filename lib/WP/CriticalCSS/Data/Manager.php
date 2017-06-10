@@ -6,14 +6,6 @@ use WP\CriticalCSS;
 
 class Manager extends CriticalCSS\ComponentAbstract {
 
-	protected $settings;
-
-	public function init() {
-		$this->settings = $this->app->get_settings();
-		parent::init();
-	}
-
-
 	/**
 	 * @param array $item
 	 *

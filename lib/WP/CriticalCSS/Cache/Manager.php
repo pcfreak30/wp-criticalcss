@@ -5,12 +5,6 @@ namespace WP\CriticalCSS\Cache;
 use WP\CriticalCSS;
 
 class Manager extends CriticalCSS\ComponentAbstract {
-	protected $settings;
-
-	public function init() {
-		$this->settings = $this->app->get_settings();
-		parent::init();
-	}
 
 	public function delete_cache_branch( $path = array() ) {
 		$result = false;

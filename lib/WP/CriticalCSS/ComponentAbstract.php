@@ -16,11 +16,13 @@ abstract class ComponentAbstract {
 	 */
 	protected $app;
 
+	protected $settings = array();
+
 	/**
 	 *
 	 */
 	public function init() {
-
+		$this->settings = $this->app->get_settings();
 	}
 
 	/**
