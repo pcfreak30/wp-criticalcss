@@ -7,9 +7,7 @@ namespace WP\CriticalCSS;
 class Frontend extends ComponentAbstract {
 	public function init() {
 		parent::init();
-		if ( is_admin() ) {
-
-		} else {
+		if ( ! is_admin() ) {
 			add_action(
 				'wp_print_styles', [
 				$this,
