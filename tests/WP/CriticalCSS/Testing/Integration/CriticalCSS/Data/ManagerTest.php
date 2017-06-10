@@ -127,7 +127,7 @@ class ManagerTest extends TestCase {
 		WPCCSS()->init();
 		$template = locate_template( 'index.php' );
 		$this->assertEquals(
-			'998ff5ceec6be52c857c2f418933bef0', WPCCSS()->get_data_manager()->get_item_hash(
+			'ccdec35a9d8b3fd7e5a079b4512d3c08', WPCCSS()->get_data_manager()->get_item_hash(
 			[
 				'template'  => $template,
 				'object_id' => 1,
