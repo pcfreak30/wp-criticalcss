@@ -58,16 +58,17 @@ class Manager extends CriticalCSS\ComponentAbstract {
 		$counter           = $this->get_transient( $counter_transient );
 
 		if ( is_null( $counter ) || false === $counter ) {
-			return $this->delete_transient( rtrim( $path, '_' ) );
+			return $this->delete_cache_leaf( rtrim( $path, '_' ) );
 		}
 		for ( $i = 1; $i <= $counter; $i ++ ) {
 			$transient_name = "{$path}cache_{$i}";
 			$cache          = $this->get_transient( "{$path}cache_{$i}" );
 			if ( ! empty( $cache ) ) {
+				$branch_result = false;
 				foreach ( $cache as $sub_branch ) {
-					$this->delete_cache_branch( "{$sub_branch}_" );
+					$branch_result = $this->delete_cache_branch( "{$sub_branch}_" );
 				}
-				$result = $this->delete_cache_leaf( $transient_name );
+				$result = $branch_result && $this->delete_cache_leaf( $transient_name );
 			}
 		}
 		$this->delete_transient( $counter_transient );
@@ -122,7 +123,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 			return false;
 		}
 
-		return false;
+		return $this->delete_transient( $path );
 	}
 
 	/**
@@ -142,7 +143,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 */
 	public function update_cache_fragment( $path, $value ) {
 		$path = $this->set_path_defaults( $path );
-		$this->build_cache_tree( $path );
+		$this->build_cache_tree( array_slice( $path, 0, - 1 ) );
 
 		return $this->update_tree_leaf( $path, $value );
 	}
@@ -207,7 +208,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	protected function update_tree_leaf( $path, $value ) {
 
 		$leaf              = CriticalCSS::TRANSIENT_PREFIX . implode( '_', $path );
-		$parent_path       = array_slice( $path, 0, count( $path ) - ( is_multisite() ? 2 : 1 ) );
+		$parent_path       = array_slice( $path, 0, is_multisite() ? - 2 : - 1 );
 		$parent            = CriticalCSS::TRANSIENT_PREFIX . implode( '_', $parent_path );
 		$counter_transient = $parent;
 		$cache_transient   = $parent;
