@@ -8,7 +8,10 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	 */
 	public function __construct() {
 		parent::__construct();
-		add_filter( $this->cron_interval_identifier, array( $this, 'cron_interval' ) );
+		add_filter( $this->cron_interval_identifier, array(
+			$this,
+			'cron_interval',
+		) );
 		$this->schedule_event();
 	}
 

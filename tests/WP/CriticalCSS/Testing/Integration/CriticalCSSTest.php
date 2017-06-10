@@ -109,22 +109,34 @@ class CriticalCSSTest extends TestCase {
 	public function test_init_template_cache_on() {
 		WPCCSS()->update_settings( array( 'template_cache' => 'on' ) );
 		WPCCSS()->init();
-		$this->assertEquals( PHP_INT_MAX, has_action( 'template_include', array(
-			WPCCSS()->get_request(),
-			'template_include',
-		) ) );
+		$this->assertEquals(
+			PHP_INT_MAX, has_action(
+				'template_include', array(
+					WPCCSS()->get_request(),
+					'template_include',
+				)
+			)
+		);
 	}
 
 	public function test_init_template_cache_off() {
 		WPCCSS()->init();
-		$this->assertEquals( 10, has_action( 'post_updated', array(
-			WPCCSS(),
-			'reset_web_check_post_transient',
-		) ) );
-		$this->assertEquals( 10, has_action( 'edited_term', array(
-			WPCCSS(),
-			'reset_web_check_term_transient',
-		) ) );
+		$this->assertEquals(
+			10, has_action(
+				'post_updated', array(
+					WPCCSS(),
+					'reset_web_check_post_transient',
+				)
+			)
+		);
+		$this->assertEquals(
+			10, has_action(
+				'edited_term', array(
+					WPCCSS(),
+					'reset_web_check_term_transient',
+				)
+			)
+		);
 	}
 
 	public function test_get_permalink_post() {
@@ -148,10 +160,12 @@ class CriticalCSSTest extends TestCase {
 	}
 
 	public function test_get_permalink_url() {
-		$permalink = WPCCSS()->get_permalink( array(
-			'type' => 'url',
-			'url'  => home_url( '/testabc/testabc/testabc/' ),
-		) );
+		$permalink = WPCCSS()->get_permalink(
+			array(
+				'type' => 'url',
+				'url'  => home_url( '/testabc/testabc/testabc/' ),
+			)
+		);
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}

@@ -45,24 +45,28 @@ function wp_criticalcss_init() {
 
 function wp_criticalcss_php_upgrade_notice() {
 	$info = get_plugin_data( __FILE__ );
-	_e( sprintf( '
+	_e(
+		sprintf(
+			'
 	<div class="error notice">
 		<p>Opps! %s requires a minimum PHP version of 5.4.0. Your current version is: %s. Please contact your host to upgrade.</p>
-	</div>', $info['Name'], PHP_VERSION ) );
+	</div>', $info['Name'], PHP_VERSION
+		)
+	);
 }
 
 if ( version_compare( PHP_VERSION, '5.4.0' ) >= 0 ) {
 	add_action( 'admin_notices', 'wp_criticalcss_php_upgrade_notice' );
 } else {
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
-		require_once __DIR__ . '/vendor/autoload.php';
+		include_once __DIR__ . '/vendor/autoload.php';
 		add_action( 'plugins_loaded', 'wp_criticalcss_init' );
 	} else {
-		require_once __DIR__ . '/wordpress-web-composer/class-wordpress-web-composer.php';
+		include_once __DIR__ . '/wordpress-web-composer/class-wordpress-web-composer.php';
 		$web_composer = new WordPress_Web_Composer( 'wp_criticalcss' );
 		$web_composer->set_install_target( __DIR__ );
 		if ( $web_composer->run() ) {
-			require_once __DIR__ . '/vendor/autoload.php';
+			include_once __DIR__ . '/vendor/autoload.php';
 			define( 'WP_CRITICALCSS_COMPOSER_RAN', true );
 		}
 	}

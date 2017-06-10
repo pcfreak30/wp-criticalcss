@@ -23,21 +23,42 @@ class Request extends ComponentAbstract {
 	 */
 	public function init() {
 		$this->settings = $this->app->get_settings();
-		add_action( 'init', array( $this, 'add_rewrite_rules' ) );
-		add_filter( 'rewrite_rules_array', array( $this, 'fix_rewrites' ), 11 );
-		add_action( 'request', array( $this, 'update_request' ) );
+		add_action( 'init', array(
+			$this,
+			'add_rewrite_rules',
+		) );
+		add_filter( 'rewrite_rules_array', array(
+			$this,
+			'fix_rewrites',
+		), 11 );
+		add_action( 'request', array(
+			$this,
+			'update_request',
+		) );
 		if ( ! empty( $this->settings['template_cache'] ) && 'on' == $this->settings['template_cache'] ) {
-			add_action( 'template_include', array( $this, 'template_include' ), PHP_INT_MAX );
+			add_action( 'template_include', array(
+				$this,
+				'template_include',
+			), PHP_INT_MAX );
 		}
 
 		/*
 		 * Prevent a 404 on homepage if a static page is set.
 		 * Will store query_var outside \WP_Query temporarily so we don't need to do any extra routing logic and will appear as if it was not set.
 		 */
-		add_action( 'query_vars', array( $this, 'query_vars' ) );
-		add_action( 'parse_request', array( $this, 'parse_request' ) );
+		add_action( 'query_vars', array(
+			$this,
+			'query_vars',
+		) );
+		add_action( 'parse_request', array(
+			$this,
+			'parse_request',
+		) );
 		// Don't fix url or try to guess url if we are using nocache on the homepage
-		add_filter( 'redirect_canonical', array( $this, 'redirect_canonical' ) );
+		add_filter( 'redirect_canonical', array(
+			$this,
+			'redirect_canonical',
+		) );
 	}
 
 	/**

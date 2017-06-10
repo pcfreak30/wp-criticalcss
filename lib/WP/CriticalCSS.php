@@ -146,9 +146,9 @@ class CriticalCSS {
 	 *
 	 */
 	public function wp_head() {
-		if ( get_query_var( 'nocache' ) ):
+		if ( get_query_var( 'nocache' ) ) :
 			?>
-            <meta name="robots" content="noindex, nofollow"/>
+			<meta name="robots" content="noindex, nofollow"/>
 			<?php
 		endif;
 	}
@@ -178,7 +178,12 @@ class CriticalCSS {
 			$version_0_5 = version_compare( '0.5.0', $version ) === 1;
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 ) {
-			remove_action( 'update_option_criticalcss', array( $this, 'after_options_updated' ) );
+			remove_action(
+				'update_option_criticalcss', array(
+					$this,
+					'after_options_updated',
+				)
+			);
 			if ( isset( $settings['disable_autopurge'] ) ) {
 				unset( $settings['disable_autopurge'] );
 				$this->update_settings( $settings );
@@ -193,7 +198,14 @@ class CriticalCSS {
 		}
 
 		if ( is_multisite() ) {
-			foreach ( get_sites( array( 'fields' => 'ids', 'site__not_in' => array( 1 ) ) ) as $blog_id ) {
+			foreach (
+				get_sites(
+					array(
+						'fields'       => 'ids',
+						'site__not_in' => array( 1 ),
+					)
+				) as $blog_id
+			) {
 				switch_to_blog( $blog_id );
 				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_web_check_queue IF EXISTS" );
 				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_api_queue IF EXISTS" );
@@ -201,10 +213,16 @@ class CriticalCSS {
 			}
 		}
 
-		$this->update_settings( array_merge( array(
-			'web_check_interval' => DAY_IN_SECONDS,
-			'template_cache'     => 'off',
-		), $this->get_settings(), array( 'version' => self::VERSION ) ) );
+		$this->update_settings(
+			array_merge(
+				array(
+					'web_check_interval' => DAY_IN_SECONDS,
+					'template_cache'     => 'off',
+				), $this->get_settings(), array(
+					'version' => self::VERSION,
+				)
+			)
+		);
 
 		$this->init();
 		$this->request->add_rewrite_rules();
@@ -236,22 +254,61 @@ class CriticalCSS {
 		$this->init_components();
 
 		if ( ! is_admin() ) {
-			add_action( 'wp_print_styles', array( $this, 'print_styles' ), 7 );
+			add_action(
+				'wp_print_styles', array(
+				$this,
+				'print_styles',
+			), 7 );
 		}
 
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		include_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-		add_action( 'after_switch_theme', array( $this, 'reset_web_check_transients' ) );
-		add_action( 'upgrader_process_complete', array( $this, 'reset_web_check_transients' ) );
+		add_action(
+			'after_switch_theme', array(
+				$this,
+				'reset_web_check_transients',
+			)
+		);
+		add_action(
+			'upgrader_process_complete', array(
+				$this,
+				'reset_web_check_transients',
+			)
+		);
 		if ( ! ( ! empty( $this->settings['template_cache'] ) && 'on' == $this->settings['template_cache'] ) ) {
-			add_action( 'post_updated', array( $this, 'reset_web_check_post_transient' ) );
-			add_action( 'edited_term', array( $this, 'reset_web_check_term_transient' ) );
+			add_action(
+				'post_updated', array(
+					$this,
+					'reset_web_check_post_transient',
+				)
+			);
+			add_action(
+				'edited_term', array(
+					$this,
+					'reset_web_check_term_transient',
+				)
+			);
 		}
 		if ( is_admin() ) {
-			add_action( 'wp_loaded', array( $this, 'wp_action' ) );
+			add_action(
+				'wp_loaded', array(
+					$this,
+					'wp_action',
+				)
+			);
 		} else {
-			add_action( 'wp', array( $this, 'wp_action' ) );
-			add_action( 'wp_head', array( $this, 'wp_head' ) );
+			add_action(
+				'wp', array(
+					$this,
+					'wp_action',
+				)
+			);
+			add_action(
+				'wp_head', array(
+					$this,
+					'wp_head',
+				)
+			);
 		}
 	}
 
@@ -305,7 +362,9 @@ class CriticalCSS {
 		$url_parts         = parse_url( $url );
 		$url_parts['path'] = trailingslashit( $url_parts['path'] ) . 'nocache/';
 		if ( class_exists( 'http\Url' ) ) {
-			/** @noinspection PhpUndefinedClassInspection */
+			/**
+			 * @noinspection PhpUndefinedClassInspection
+			 */
 			$url = new \http\Url( $url_parts );
 			$url = $url->toString();
 		} else {
@@ -340,7 +399,7 @@ class CriticalCSS {
 
 			if ( ! empty( $cache ) ) {
 				?>
-                <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
+				<style type="text/css" id="criticalcss" data-no-minify="1"><?php echo $cache ?></style>
 				<?php
 			}
 			$type  = $this->request->get_current_page_type();
@@ -368,7 +427,11 @@ class CriticalCSS {
 	 */
 	public function get_item_hash( $item ) {
 		extract( $item );
-		$parts = array( 'object_id', 'type', 'url' );
+		$parts = array(
+			'object_id',
+			'type',
+			'url',
+		);
 		if ( 'on' == $this->settings['template_cache'] ) {
 			$template = $this->template;
 			$parts    = array( 'template' );
@@ -394,7 +457,12 @@ class CriticalCSS {
 	 */
 	public function reset_web_check_post_transient( $post ) {
 		$post = get_post( $post );
-		$hash = $this->get_item_hash( array( 'object_id' => $post->ID, 'type' => 'post' ) );
+		$hash = $this->get_item_hash(
+			array(
+				'object_id' => $post->ID,
+				'type'      => 'post',
+			)
+		);
 		$this->cache_manager->delete_cache_branch( array( $hash ) );
 	}
 
@@ -405,7 +473,12 @@ class CriticalCSS {
 	 */
 	public function reset_web_check_term_transient( $term ) {
 		$term = get_term( $term );
-		$hash = $this->get_item_hash( array( 'object_id' => $term->term_id, 'type' => 'term' ) );
+		$hash = $this->get_item_hash(
+			array(
+				'object_id' => $term->term_id,
+				'type'      => 'term',
+			)
+		);
 		$this->cache_manager->delete_cache_branch( array( $hash ) );
 	}
 
@@ -430,9 +503,19 @@ class CriticalCSS {
 			}
 		}
 		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
-			$hash = $this->get_item_hash( array( 'object_id' => $post_id, 'type' => 'post' ) );
+			$hash = $this->get_item_hash(
+				array(
+					'object_id' => $post_id,
+					'type'      => 'post',
+				)
+			);
 		} else {
-			$hash = $this->get_item_hash( array( 'type' => 'url', 'url' => site_url() ) );
+			$hash = $this->get_item_hash(
+				array(
+					'type' => 'url',
+					'url'  => site_url(),
+				)
+			);
 		}
 		$this->cache_manager->delete_cache_branch( array( $hash ) );
 	}

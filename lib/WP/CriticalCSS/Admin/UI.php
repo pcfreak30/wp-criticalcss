@@ -19,9 +19,18 @@ class UI extends CriticalCSS\ComponentAbstract {
 	 * UI constructor.
 	 */
 	public function __construct() {
-		add_action( 'network_admin_menu', array( $this, 'settings_init' ) );
-		add_action( 'admin_menu', array( $this, 'settings_init' ) );
-		add_action( 'pre_update_option_wp_criticalcss', array( $this, 'sync_options' ), 10, 2 );
+		add_action( 'network_admin_menu', array(
+			$this,
+			'settings_init',
+		) );
+		add_action( 'admin_menu', array(
+			$this,
+			'settings_init',
+		) );
+		add_action( 'pre_update_option_wp_criticalcss', array(
+			$this,
+			'sync_options',
+		), 10, 2 );
 
 	}
 
@@ -40,7 +49,10 @@ class UI extends CriticalCSS\ComponentAbstract {
 				'settings_ui',
 			) );
 		}
-		add_action( "load-$hook", array( $this, 'screen_option' ) );
+		add_action( "load-$hook", array(
+			$this,
+			'screen_option',
+		) );
 		$this->settings_ui->add_section( array(
 			'id'    => CriticalCSS::OPTIONNAME,
 			'title' => 'WP Critical CSS Options',
@@ -49,7 +61,10 @@ class UI extends CriticalCSS\ComponentAbstract {
 			'name'              => 'apikey',
 			'label'             => 'API Key',
 			'type'              => 'text',
-			'sanitize_callback' => array( $this, 'validate_criticalcss_apikey' ),
+			'sanitize_callback' => array(
+				$this,
+				'validate_criticalcss_apikey',
+			),
 			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', CriticalCSS::LANG_DOMAIN ),
 		) );
 		$this->settings_ui->add_field( CriticalCSS::OPTIONNAME, array(
@@ -89,17 +104,17 @@ class UI extends CriticalCSS\ComponentAbstract {
 		ob_start();
 
 		?>
-        <style type="text/css">
-            .queue > th {
-                display: none;
-            }
-        </style>
-        <form method="post">
+		<style type="text/css">
+			.queue > th {
+				display: none;
+			}
+		</style>
+		<form method="post">
 			<?php
 			$this->queue_table->prepare_items();
 			$this->queue_table->display();
 			?>
-        </form>
+		</form>
 		<?php
 		$this->settings_ui->add_field( 'wp_criticalcss_queue', array(
 			'name'  => 'queue',

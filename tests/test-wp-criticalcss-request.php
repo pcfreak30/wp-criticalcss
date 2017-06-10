@@ -16,10 +16,12 @@ class Test_WP_CriticalCSS_Request extends WP_CriticalCSS_TestCase {
 		WPCCSS()->setup_components();
 		WPCCSS()->get_request()->add_rewrite_rules();
 		flush_rewrite_rules();
-		$tokens = get_taxonomies( array(
-			'public'   => true,
-			'_builtin' => false,
-		) );
+		$tokens = get_taxonomies(
+			array(
+				'public'   => true,
+				'_builtin' => false,
+			)
+		);
 		$rules  = $GLOBALS['wp_rewrite']->rules;
 
 		$count = 0;

@@ -19,14 +19,20 @@ class WPEngine extends IntegrationAbstract {
 	 *
 	 */
 	public function enable() {
-		add_action( 'wp_criticalcss_purge_cache', array( $this, '_purge_cache' ) );
+		add_action( 'wp_criticalcss_purge_cache', array(
+			$this,
+			'_purge_cache',
+		) );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function disable() {
-		remove_action( 'wp_criticalcss_purge_cache', array( $this, '_purge_cache' ) );
+		remove_action( 'wp_criticalcss_purge_cache', array(
+			$this,
+			'_purge_cache',
+		) );
 	}
 
 	/**
@@ -78,7 +84,10 @@ class WPEngine extends IntegrationAbstract {
 					$purge_domain_regex = '^(' . join( '|', $chunk ) . ')$';
 					// Tell Varnish.
 					foreach ( $wpe_varnish_servers as $varnish ) {
-						$headers = array( 'X-Purge-Path' => $path_regex, 'X-Purge-Host' => $purge_domain_regex );
+						$headers = array(
+							'X-Purge-Path' => $path_regex,
+							'X-Purge-Host' => $purge_domain_regex,
+						);
 						/** @noinspection PhpUndefinedClassInspection */
 						WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
 					}

@@ -14,33 +14,69 @@ class WPRocket extends IntegrationAbstract {
 	 * @return void
 	 */
 	public function enable() {
-		add_action( 'after_rocket_clean_domain', array( WPCCSS(), 'reset_web_check_transients' ) );
-		add_action( 'after_rocket_clean_post', array( WPCCSS(), 'reset_web_check_post_transient' ) );
-		add_action( 'after_rocket_clean_term', array( WPCCSS(), 'reset_web_check_term_transient' ) );
-		add_action( 'after_rocket_clean_home', array( WPCCSS(), 'reset_web_check_home_transient' ) );
+		add_action( 'after_rocket_clean_domain', array(
+			WPCCSS(),
+			'reset_web_check_transients',
+		) );
+		add_action( 'after_rocket_clean_post', array(
+			WPCCSS(),
+			'reset_web_check_post_transient',
+		) );
+		add_action( 'after_rocket_clean_term', array(
+			WPCCSS(),
+			'reset_web_check_term_transient',
+		) );
+		add_action( 'after_rocket_clean_home', array(
+			WPCCSS(),
+			'reset_web_check_home_transient',
+		) );
 		if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
 			add_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 		}
 		if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) ) {
 			add_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
 		}
-		add_action( 'wp_criticalcss_purge_cache', array( $this, 'purge_cache' ) );
-		add_filter( 'wp_criticalcss_print_styles_cache', array( $this, 'print_styles' ) );
+		add_action( 'wp_criticalcss_purge_cache', array(
+			$this,
+			'purge_cache',
+		) );
+		add_filter( 'wp_criticalcss_print_styles_cache', array(
+			$this,
+			'print_styles',
+		) );
 		add_filter( 'wp_criticalcss_cache_integration', '__return_true' );
-		add_filter( 'wp_criticalcss_cache_expire_period', array( $this, 'get_cache_expire_period' ) );
+		add_filter( 'wp_criticalcss_cache_expire_period', array(
+			$this,
+			'get_cache_expire_period',
+		) );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function disable() {
-		remove_action( 'after_rocket_clean_domain', array( WPCCSS(), 'reset_web_check_transients' ) );
-		remove_action( 'after_rocket_clean_post', array( WPCCSS(), 'reset_web_check_post_transient' ) );
-		remove_action( 'after_rocket_clean_term', array( WPCCSS(), 'reset_web_check_term_transient' ) );
-		remove_action( 'after_rocket_clean_home', array( WPCCSS(), 'reset_web_check_home_transient' ) );
+		remove_action( 'after_rocket_clean_domain', array(
+			WPCCSS(),
+			'reset_web_check_transients',
+		) );
+		remove_action( 'after_rocket_clean_post', array(
+			WPCCSS(),
+			'reset_web_check_post_transient',
+		) );
+		remove_action( 'after_rocket_clean_term', array(
+			WPCCSS(),
+			'reset_web_check_term_transient',
+		) );
+		remove_action( 'after_rocket_clean_home', array(
+			WPCCSS(),
+			'reset_web_check_home_transient',
+		) );
 		remove_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 		remove_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
-		remove_filter( 'wp_criticalcss_print_styles_cache', array( $this, 'purge_cache' ) );
+		remove_filter( 'wp_criticalcss_print_styles_cache', array(
+			$this,
+			'purge_cache',
+		) );
 		remove_filter( 'wp_criticalcss_cache_integration', '_return_true' );
 	}
 

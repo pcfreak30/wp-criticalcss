@@ -20,10 +20,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		\WP_Mock::userFunction( 'is_multisite', [ 'times' => 1, 'return' => false ] );
 		\WP_Mock::userFunction( 'site_url', [ 'times' => 1, 'return' => 'http://example.org' ] );
 		$GLOBALS['wp'] = (object) [ 'request' => '' ];
-		$this->assertEquals( [
-			'url'  => 'http://example.org',
-			'type' => 'url',
-		], WPCCSS()->get_request()->get_current_page_type() );
+		$this->assertEquals(
+			[
+				'url'  => 'http://example.org',
+				'type' => 'url',
+			], WPCCSS()->get_request()->get_current_page_type()
+		);
 	}
 
 	public function test_get_current_page_type_is_front_page_page_on_front_set() {
@@ -45,10 +47,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		\WP_Mock::userFunction( 'is_multisite', [ 'times' => 1, 'return' => false ] );
 		\WP_Mock::userFunction( 'site_url', [ 'times' => 1, 'return' => 'http://example.org' ] );
 		$GLOBALS['wp'] = (object) [ 'request' => '' ];
-		$this->assertEquals( [
-			'url'  => 'http://example.org',
-			'type' => 'url',
-		], WPCCSS()->get_request()->get_current_page_type() );
+		$this->assertEquals(
+			[
+				'url'  => 'http://example.org',
+				'type' => 'url',
+			], WPCCSS()->get_request()->get_current_page_type()
+		);
 	}
 
 	public function test_get_current_page_type_is_singular() {
@@ -113,10 +117,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		\WP_Mock::userFunction( 'is_author', [ 'times' => 1, 'return' => true ] );
 		\WP_Mock::userFunction( 'get_the_author_meta', [ 'args' => 'ID', 'times' => 1, 'return' => 1 ] );
 		\WP_Mock::userFunction( 'is_multisite', [ 'times' => 1, 'return' => false ] );
-		$this->assertEquals( [
-			'object_id' => 1,
-			'type'      => 'author',
-		], WPCCSS()->get_request()->get_current_page_type() );
+		$this->assertEquals(
+			[
+				'object_id' => 1,
+				'type'      => 'author',
+			], WPCCSS()->get_request()->get_current_page_type()
+		);
 	}
 
 	public function test_get_current_page_type_url() {
@@ -132,10 +138,12 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		\WP_Mock::userFunction( 'is_multisite', [ 'times' => 1, 'return' => false ] );
 		\WP_Mock::userFunction( 'site_url', [ 'times' => 1, 'return' => 'http://example.org' ] );
 		$GLOBALS['wp'] = (object) [ 'request' => '' ];
-		$this->assertEquals( [
-			'url'  => 'http://example.org',
-			'type' => 'url',
-		], WPCCSS()->get_request()->get_current_page_type() );
+		$this->assertEquals(
+			[
+				'url'  => 'http://example.org',
+				'type' => 'url',
+			], WPCCSS()->get_request()->get_current_page_type()
+		);
 	}
 
 	public function test_get_current_page_type_posts_template_cache() {
@@ -145,11 +153,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		\WP_Mock::userFunction( 'is_multisite', [ 'times' => 1, 'return' => false ] );
 		WPCCSS()->get_request()->set_template( 'index.php' );
 		WPCCSS()->get_request()->init();
-		$this->assertEquals( [
-			'object_id' => 1,
-			'type'      => 'post',
-			'template'  => 'index.php',
-		], WPCCSS()->get_request()->get_current_page_type() );
+		$this->assertEquals(
+			[
+				'object_id' => 1,
+				'type'      => 'post',
+				'template'  => 'index.php',
+			], WPCCSS()->get_request()->get_current_page_type()
+		);
 	}
 
 	public function test_get_current_page_type_posts_multisite() {
@@ -159,11 +169,13 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		\WP_Mock::userFunction( 'get_option', [ 'args' => 'page_for_posts', 'times' => 1, 'return' => 1 ] );
 		\WP_Mock::userFunction( 'is_multisite', [ 'times' => 1, 'return' => true ] );
 		\WP_Mock::userFunction( 'get_current_blog_id', [ 'times' => 1, 'return' => 1 ] );
-		$this->assertEquals( [
-			'object_id' => 1,
-			'type'      => 'post',
-			'blog_id'   => 1,
-		], WPCCSS()->get_request()->get_current_page_type() );
+		$this->assertEquals(
+			[
+				'object_id' => 1,
+				'type'      => 'post',
+				'blog_id'   => 1,
+			], WPCCSS()->get_request()->get_current_page_type()
+		);
 	}
 
 	protected function setUp() {
@@ -172,21 +184,27 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		WPCCSS()->set_settings( [] );
 		WPCCSS()->get_request()->set_template( null );
 		WPCCSS()->get_request()->init();
-		\WP_Mock::userFunction( 'absint', [
-			'return' => function ( $maybeint ) {
-				return abs( intval( $maybeint ) );
-			},
-		] );
-		\WP_Mock::userFunction( 'trailingslashit', [
-			'return' => function ( $string ) {
-				return untrailingslashit( $string ) . '/';
-			},
-		] );
-		\WP_Mock::userFunction( 'untrailingslashit', [
-			'return' => function ( $string ) {
-				return rtrim( $string, '/\\' );
-			},
-		] );
+		\WP_Mock::userFunction(
+			'absint', [
+				'return' => function ( $maybeint ) {
+					return abs( intval( $maybeint ) );
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'trailingslashit', [
+				'return' => function ( $string ) {
+					return untrailingslashit( $string ) . '/';
+				},
+			]
+		);
+		\WP_Mock::userFunction(
+			'untrailingslashit', [
+				'return' => function ( $string ) {
+					return rtrim( $string, '/\\' );
+				},
+			]
+		);
 	}
 
 	protected function tearDown() {

@@ -26,7 +26,7 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/wp-criticalcss.php';
+	include dirname( dirname( __FILE__ ) ) . '/wp-criticalcss.php';
 	remove_action( 'plugins_loaded', 'wp_criticalcss_init' );
 	function wp_criticalcss_init_integration() {
 		wpccss_container( 'integration_test' );

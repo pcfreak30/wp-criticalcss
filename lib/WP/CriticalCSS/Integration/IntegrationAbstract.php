@@ -9,8 +9,14 @@ abstract class IntegrationAbstract {
 	 * WP_CriticalCSS_Integration_Base constructor.
 	 */
 	public function __construct() {
-		add_action( 'wp_criticalcss_enable_integrations', array( $this, 'enable' ) );
-		add_action( 'wp_criticalcss_disable_integrations', array( $this, 'disable' ) );
+		add_action( 'wp_criticalcss_enable_integrations', array(
+			$this,
+			'enable',
+		) );
+		add_action( 'wp_criticalcss_disable_integrations', array(
+			$this,
+			'disable',
+		) );
 	}
 
 	/**

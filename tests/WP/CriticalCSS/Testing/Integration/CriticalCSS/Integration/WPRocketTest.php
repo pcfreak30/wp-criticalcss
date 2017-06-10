@@ -14,28 +14,44 @@ class WPRocketTest extends TestCase {
 		global $wp;
 		WPCCSS()->init();
 		do_action_ref_array( 'wp', array( &$wp ) );
-		$this->assertEquals( 10, has_action( 'after_rocket_clean_domain', array(
-			WPCCSS(),
-			'reset_web_check_transients',
-		) ) );
+		$this->assertEquals(
+			10, has_action(
+				'after_rocket_clean_domain', array(
+					WPCCSS(),
+					'reset_web_check_transients',
+				)
+			)
+		);
 	}
 
 	public function test_disable() {
 		global $wp;
-		$this->assertFalse( has_action( 'after_rocket_clean_domain', array(
-			WPCCSS(),
-			'reset_web_check_transients',
-		) ) );
+		$this->assertFalse(
+			has_action(
+				'after_rocket_clean_domain', array(
+					WPCCSS(),
+					'reset_web_check_transients',
+				)
+			)
+		);
 		WPCCSS()->init();
 		do_action_ref_array( 'wp', array( &$wp ) );
-		$this->assertEquals( 10, has_action( 'after_rocket_clean_domain', array(
-			WPCCSS(),
-			'reset_web_check_transients',
-		) ) );
+		$this->assertEquals(
+			10, has_action(
+				'after_rocket_clean_domain', array(
+					WPCCSS(),
+					'reset_web_check_transients',
+				)
+			)
+		);
 		WPCCSS()->get_integration_manager()->disable_integrations();
-		$this->assertFalse( has_action( 'after_rocket_clean_domain', array(
-			WPCCSS(),
-			'reset_web_check_transients',
-		) ) );
+		$this->assertFalse(
+			has_action(
+				'after_rocket_clean_domain', array(
+					WPCCSS(),
+					'reset_web_check_transients',
+				)
+			)
+		);
 	}
 }

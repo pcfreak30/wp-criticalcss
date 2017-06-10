@@ -91,26 +91,32 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 	}
 
 	public function test_get_permalink_author() {
-		\WP_Mock::userFunction( 'get_author_posts_url', [
-			'args'   => 1,
-			'return' => 'http://example.org/author/admin/nocache/',
-		] );
+		\WP_Mock::userFunction(
+			'get_author_posts_url', [
+				'args'   => 1,
+				'return' => 'http://example.org/author/admin/nocache/',
+			]
+		);
 		$permalink = WPCCSS()->get_permalink( array( 'type' => 'author', 'object_id' => 1 ) );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
 
 	public function test_get_permalink_url() {
-		\WP_Mock::userFunction( 'home_url', [
-			'times'  => 1,
-			'return' => function ( $input ) {
-				return 'http://example.org' . $input;
-			},
-		] );
-		$permalink = WPCCSS()->get_permalink( array(
-			'type' => 'url',
-			'url'  => home_url( '/testabc/testabc/testabc/' ),
-		) );
+		\WP_Mock::userFunction(
+			'home_url', [
+				'times'  => 1,
+				'return' => function ( $input ) {
+					return 'http://example.org' . $input;
+				},
+			]
+		);
+		$permalink = WPCCSS()->get_permalink(
+			array(
+				'type' => 'url',
+				'url'  => home_url( '/testabc/testabc/testabc/' ),
+			)
+		);
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}

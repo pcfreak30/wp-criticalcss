@@ -14,12 +14,14 @@ class ListTableTest extends TestCase {
 			'queue_position',
 		];
 		\WP_Mock::userFunction( 'add_screen_option', [ 'times' => 1 ] );
-		\WP_Mock::userFunction( 'is_multisite', [
-			'times'  => count( $keys ),
-			'return' => function () {
-				return false;
-			},
-		] );
+		\WP_Mock::userFunction(
+			'is_multisite', [
+				'times'  => count( $keys ),
+				'return' => function () {
+					return false;
+				},
+			]
+		);
 		WPCCSS()->get_admin_ui()->screen_option();
 		foreach (
 			$keys as $key
@@ -37,12 +39,14 @@ class ListTableTest extends TestCase {
 			'blog_id',
 		];
 		\WP_Mock::userFunction( 'add_screen_option', [ 'times' => 1 ] );
-		\WP_Mock::userFunction( 'is_multisite', [
-			'times'  => count( $keys ),
-			'return' => function () {
-				return true;
-			},
-		] );
+		\WP_Mock::userFunction(
+			'is_multisite', [
+				'times'  => count( $keys ),
+				'return' => function () {
+					return true;
+				},
+			]
+		);
 		WPCCSS()->get_admin_ui()->screen_option();
 		foreach (
 			$keys as $key

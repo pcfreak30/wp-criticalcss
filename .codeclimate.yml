@@ -21,8 +21,7 @@ engines:
   phpcodesniffer:
     enabled: true
     config:
-      standard: WordPress-Core
-      exclude: FileNameSniff,I18nSniff
+      standard: phpcs.ruleset.xml
 ratings:
   paths:
   - "**.css"
@@ -36,6 +35,5 @@ ratings:
 exclude_paths:
 - tests/
 - vendor/
-- vendors/
 - web/
 - wordpress-web-composer/

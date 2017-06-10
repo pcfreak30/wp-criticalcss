@@ -112,20 +112,28 @@ class Manager extends TestCase {
 	public function test_get_item_hash_object() {
 		WPCCSS()->update_settings( array( 'template_cache' => 'off' ) );
 		WPCCSS()->init();
-		$this->assertEquals( '2c4eebcf19a6fa7b1d5e085ee453571b', WPCCSS()->get_item_hash( array(
-			'object_id' => 1,
-			'type'      => 'post',
-		) ) );
+		$this->assertEquals(
+			'2c4eebcf19a6fa7b1d5e085ee453571b', WPCCSS()->get_item_hash(
+			array(
+				'object_id' => 1,
+				'type'      => 'post',
+			)
+		)
+		);
 	}
 
 	public function test_get_item_hash_template() {
 		WPCCSS()->update_settings( array( 'template_cache' => 'on' ) );
 		WPCCSS()->init();
 		$template = locate_template( 'index.php' );
-		$this->assertEquals( '998ff5ceec6be52c857c2f418933bef0', WPCCSS()->get_item_hash( array(
-			'template'  => $template,
-			'object_id' => 1,
-			'type'      => 'post',
-		) ) );
+		$this->assertEquals(
+			'998ff5ceec6be52c857c2f418933bef0', WPCCSS()->get_item_hash(
+			array(
+				'template'  => $template,
+				'object_id' => 1,
+				'type'      => 'post',
+			)
+		)
+		);
 	}
 }

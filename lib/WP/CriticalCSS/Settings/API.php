@@ -28,7 +28,10 @@ class API {
 	protected $settings_fields = array();
 
 	public function __construct() {
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array(
+			$this,
+			'admin_enqueue_scripts',
+		) );
 	}
 
 	/**
@@ -159,7 +162,10 @@ class API {
 
 		// creates our settings in the options table
 		foreach ( $this->settings_sections as $section ) {
-			register_setting( $section['id'], $section['id'], array( $this, 'sanitize_options' ) );
+			register_setting( $section['id'], $section['id'], array(
+				$this,
+				'sanitize_options',
+			) );
 		}
 	}
 
@@ -517,11 +523,11 @@ class API {
 	 */
 	function show_forms() {
 		?>
-        <div class="metabox-holder">
+		<div class="metabox-holder">
 			<?php foreach ( $this->settings_sections as $form ) { ?>
-                <div id="<?php echo $form['id']; ?>" class="group" style="display: none;">
+				<div id="<?php echo $form['id']; ?>" class="group" style="display: none;">
 					<?php if ( $form['form'] ): ?>
-                    <form method="post" action="<?php if ( is_multisite() ): ?>../<?php endif; ?>options.php">
+					<form method="post" action="<?php if ( is_multisite() ): ?>../<?php endif; ?>options.php">
 						<?php endif; ?>
 						<?php
 						do_action( 'wsa_form_top_' . $form['id'], $form );
@@ -532,16 +538,16 @@ class API {
 						do_action( 'wsa_form_bottom_' . $form['id'], $form );
 						if ( $form['form'] && isset( $this->settings_fields[ $form['id'] ] ) ):
 							?>
-                            <div style="padding-left: 10px">
+							<div style="padding-left: 10px">
 								<?php submit_button(); ?>
-                            </div>
+							</div>
 						<?php endif; ?>
 						<?php if ( $form['form'] ): ?>
-                    </form>
+					</form>
 				<?php endif; ?>
-                </div>
+				</div>
 			<?php } ?>
-        </div>
+		</div>
 		<?php
 		$this->script();
 	}
@@ -553,7 +559,7 @@ class API {
 	 */
 	function script() {
 		?>
-        <script>
+		<script>
           jQuery(document).ready(function ($) {
             //Initiate Color Picker
             $('.wp-color-picker-field').wpColorPicker();
@@ -621,7 +627,7 @@ class API {
               file_frame.open();
             });
           });
-        </script>
+		</script>
 		<?php
 		$this->_style_fix();
 	}
@@ -631,16 +637,16 @@ class API {
 
 		if ( version_compare( $wp_version, '3.8', '<=' ) ):
 			?>
-            <style type="text/css">
-                /** WordPress 3.8 Fix **/
-                .form-table th {
-                    padding: 20px 10px;
-                }
+			<style type="text/css">
+				/** WordPress 3.8 Fix **/
+				.form-table th {
+					padding: 20px 10px;
+				}
 
-                #wpbody-content .metabox-holder {
-                    padding-top: 5px;
-                }
-            </style>
+				#wpbody-content .metabox-holder {
+					padding-top: 5px;
+				}
+			</style>
 			<?php
 		endif;
 	}
