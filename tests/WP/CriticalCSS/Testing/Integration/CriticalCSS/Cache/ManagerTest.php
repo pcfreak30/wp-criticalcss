@@ -11,7 +11,7 @@ class ManagerTest extends TestCase {
 		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
-				'web_check_interval' => MINUTE_IN_SECONDS,
+				'web_check_interval' => HOUR_IN_SECONDS,
 			]
 		);
 		WPCCSS()->init();
@@ -23,7 +23,7 @@ class ManagerTest extends TestCase {
 		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
-				'web_check_interval' => MINUTE_IN_SECONDS,
+				'web_check_interval' => HOUR_IN_SECONDS,
 			]
 		);
 		WPCCSS()->init();
@@ -36,7 +36,7 @@ class ManagerTest extends TestCase {
 		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
-				'web_check_interval' => MINUTE_IN_SECONDS,
+				'web_check_interval' => HOUR_IN_SECONDS,
 			]
 		);
 		WPCCSS()->init();
@@ -49,7 +49,7 @@ class ManagerTest extends TestCase {
 		WPCCSS()->get_settings_manager()->update_settings(
 			[
 				'template_cache'     => 'off',
-				'web_check_interval' => MINUTE_IN_SECONDS,
+				'web_check_interval' => HOUR_IN_SECONDS,
 			]
 		);
 		WPCCSS()->init();
@@ -60,11 +60,11 @@ class ManagerTest extends TestCase {
 	public function test_get_expire_period() {
 		WPCCSS()->get_settings_manager()->update_settings(
 			[
-				'web_check_interval' => MINUTE_IN_SECONDS,
+				'web_check_interval' => HOUR_IN_SECONDS,
 			]
 		);
 		WPCCSS()->init();
-		$this->assertEquals( MINUTE_IN_SECONDS, WPCCSS()->get_cache_manager()->get_expire_period() );
+		$this->assertEquals( HOUR_IN_SECONDS, WPCCSS()->get_cache_manager()->get_expire_period() );
 	}
 
 	public function test_init_template_cache_off() {
