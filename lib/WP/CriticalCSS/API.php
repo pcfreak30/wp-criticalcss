@@ -50,7 +50,9 @@ class API extends ComponentAbstract {
 		if ( ! function_exists( $func ) ) {
 			return false;
 		}
-		$query_args = array_merge( $query_args, array( 'version' => CriticalCSS::VERSION ) );
+		$query_args = array_merge( $query_args, array(
+			'version' => CriticalCSS::VERSION,
+		) );
 		$response   = $func( add_query_arg( $query_args, "https://criticalcss.com/api/premium/${endpoint}" ), array_merge_recursive( array(
 			'headers' => array(
 				'Authorization' => 'JWT ' . $this->api_key,
@@ -72,7 +74,9 @@ class API extends ComponentAbstract {
 	 * @return array|bool|mixed|object
 	 */
 	public function get_result( $item_id ) {
-		return $this->_send_request( 'get', 'results', array( 'resultId' => $item_id ) );
+		return $this->_send_request( 'get', 'results', array(
+			'resultId' => $item_id,
+		) );
 	}
 
 	/**

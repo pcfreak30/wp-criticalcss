@@ -94,7 +94,10 @@ class CriticalCSSTest extends TestCase {
 
 	public function test_init_print_styles_hook() {
 		WPCCSS()->init();
-		$this->assertEquals( 7, has_action( 'wp_print_styles', array( WPCCSS(), 'print_styles' ) ) );
+		$this->assertEquals( 7, has_action( 'wp_print_styles', array(
+			WPCCSS(),
+			'print_styles',
+		) ) );
 	}
 
 	/**
@@ -103,7 +106,10 @@ class CriticalCSSTest extends TestCase {
 	public function test_init_print_styles_hook_admin() {
 		define( 'WP_ADMIN', true );
 		WPCCSS()->init();
-		$this->assertFalse( has_action( 'wp_print_styles', array( WPCCSS(), 'print_styles' ) ) );
+		$this->assertFalse( has_action( 'wp_print_styles', array(
+			WPCCSS(),
+			'print_styles',
+		) ) );
 	}
 
 	public function test_init_template_cache_on() {
@@ -141,20 +147,29 @@ class CriticalCSSTest extends TestCase {
 
 	public function test_get_permalink_post() {
 		$post      = $this->factory->post->create_and_get();
-		$permalink = WPCCSS()->get_permalink( array( 'type' => 'post', 'object_id' => $post->ID ) );
+		$permalink = WPCCSS()->get_permalink( array(
+			'type'      => 'post',
+			'object_id' => $post->ID,
+		) );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
 
 	public function test_get_permalink_term() {
 		$term      = $this->factory->term->create_and_get();
-		$permalink = WPCCSS()->get_permalink( array( 'type' => 'term', 'object_id' => $term->term_id ) );
+		$permalink = WPCCSS()->get_permalink( array(
+			'type'      => 'term',
+			'object_id' => $term->term_id,
+		) );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
 
 	public function test_get_permalink_author() {
-		$permalink = WPCCSS()->get_permalink( array( 'type' => 'author', 'object_id' => 1 ) );
+		$permalink = WPCCSS()->get_permalink( array(
+			'type'      => 'author',
+			'object_id' => 1,
+		) );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}

@@ -39,7 +39,10 @@ class RocketAsyncCSSTest extends TestCase {
 				)
 			)
 		);
-		$this->assertFalse( has_action( 'rocket_buffer', array( 'Rocket_Async_Css_The_Preloader', 'inject_div' ) ) );
+		$this->assertFalse( has_action( 'rocket_buffer', array(
+			'Rocket_Async_Css_The_Preloader',
+			'inject_div',
+		) ) );
 	}
 
 	/**
@@ -58,7 +61,10 @@ class RocketAsyncCSSTest extends TestCase {
 				)
 			)
 		);
-		$this->assertFalse( has_action( 'rocket_buffer', array( 'Rocket_Async_Css_The_Preloader', 'inject_div' ) ) );
+		$this->assertFalse( has_action( 'rocket_buffer', array(
+			'Rocket_Async_Css_The_Preloader',
+			'inject_div',
+		) ) );
 		$this->assertTrue( defined( 'DONOTCACHEPAGE' ) );
 	}
 }

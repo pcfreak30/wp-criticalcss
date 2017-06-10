@@ -6,8 +6,15 @@ use WP\CriticalCSS\Testing\Unit\TestCase;
 
 class ManagerTest extends TestCase {
 	public function test_set_item_data_post() {
-		\WP_Mock::userFunction( 'is_home', [ 'times' => 1, 'return' => true ] );
-		\WP_Mock::userFunction( 'get_option', [ 'args' => 'page_for_posts', 'times' => 1, 'return' => 1 ] );
+		\WP_Mock::userFunction( 'is_home', [
+			'times'  => 1,
+			'return' => true,
+		] );
+		\WP_Mock::userFunction( 'get_option', [
+			'args'   => 'page_for_posts',
+			'times'  => 1,
+			'return' => 1,
+		] );
 		\WP_Mock::userFunction(
 			'update_post_meta', [
 				'args'   => [
@@ -26,11 +33,26 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_set_item_data_term() {
-		\WP_Mock::userFunction( 'is_home', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_front_page', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_singular', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_tax', [ 'times' => 1, 'return' => true ] );
-		\WP_Mock::userFunction( 'get_queried_object', [ 'times' => 1, 'return' => (object) [ 'term_id' => 1 ] ] );
+		\WP_Mock::userFunction( 'is_home', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_front_page', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_singular', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_tax', [
+			'times'  => 1,
+			'return' => true,
+		] );
+		\WP_Mock::userFunction( 'get_queried_object', [
+			'times'  => 1,
+			'return' => (object) [ 'term_id' => 1 ],
+		] );
 		\WP_Mock::userFunction(
 			'update_term_meta', [
 				'args'   => [
@@ -50,14 +72,39 @@ class ManagerTest extends TestCase {
 
 	public function test_set_item_data_author() {
 
-		\WP_Mock::userFunction( 'is_home', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_front_page', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_singular', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_tax', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_category', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_tag', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_author', [ 'times' => 1, 'return' => true ] );
-		\WP_Mock::userFunction( 'get_the_author_meta', [ 'args' => 'ID', 'times' => 1, 'return' => 1 ] );
+		\WP_Mock::userFunction( 'is_home', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_front_page', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_singular', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_tax', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_category', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_tag', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_author', [
+			'times'  => 1,
+			'return' => true,
+		] );
+		\WP_Mock::userFunction( 'get_the_author_meta', [
+			'args'   => 'ID',
+			'times'  => 1,
+			'return' => 1,
+		] );
 		\WP_Mock::userFunction(
 			'update_user_meta', [
 				'args'   => [
@@ -76,14 +123,38 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_set_item_data_url() {
-		\WP_Mock::userFunction( 'is_home', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_front_page', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_singular', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_tax', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_category', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_tag', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'is_author', [ 'times' => 1, 'return' => false ] );
-		\WP_Mock::userFunction( 'site_url', [ 'times' => 1, 'return' => 'http://example.org' ] );
+		\WP_Mock::userFunction( 'is_home', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_front_page', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_singular', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_tax', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_category', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_tag', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'is_author', [
+			'times'  => 1,
+			'return' => false,
+		] );
+		\WP_Mock::userFunction( 'site_url', [
+			'times'  => 1,
+			'return' => 'http://example.org',
+		] );
 		\WP_Mock::userFunction(
 			'set_transient', [
 				'args'   => [
@@ -103,8 +174,15 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_set_item_data_template() {
-		\WP_Mock::userFunction( 'is_home', [ 'times' => 1, 'return' => true ] );
-		\WP_Mock::userFunction( 'get_option', [ 'args' => 'page_for_posts', 'times' => 1, 'return' => 1 ] );
+		\WP_Mock::userFunction( 'is_home', [
+			'times'  => 1,
+			'return' => true,
+		] );
+		\WP_Mock::userFunction( 'get_option', [
+			'args'   => 'page_for_posts',
+			'times'  => 1,
+			'return' => 1,
+		] );
 		\WP_Mock::userFunction(
 			'set_transient', [
 				'args'   => [

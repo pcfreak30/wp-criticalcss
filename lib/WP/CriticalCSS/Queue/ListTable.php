@@ -49,7 +49,9 @@ class ListTable extends \WP_List_Table {
 			'queue_position' => __( 'Queue Position', CriticalCSS::LANG_DOMAIN ),
 		);
 		if ( is_multisite() ) {
-			$columns = array_merge( array( 'blog_id' => __( 'Blog', CriticalCSS::LANG_DOMAIN ) ), $columns );
+			$columns = array_merge( array(
+				'blog_id' => __( 'Blog', CriticalCSS::LANG_DOMAIN ),
+			), $columns );
 		}
 
 		return $columns;
@@ -94,7 +96,9 @@ class ListTable extends \WP_List_Table {
 	}
 
 	protected function get_bulk_actions() {
-		return array( 'purge' => __( 'Purge', CriticalCSS::LANG_DOMAIN ) );
+		return array(
+			'purge' => __( 'Purge', CriticalCSS::LANG_DOMAIN ),
+		);
 	}
 
 	/**
@@ -107,7 +111,9 @@ class ListTable extends \WP_List_Table {
 			return __( 'N/A', CriticalCSS::LANG_DOMAIN );
 		}
 
-		$details = get_blog_details( array( 'blog_id' => $item['blog_id'] ) );
+		$details = get_blog_details( array(
+			'blog_id' => $item['blog_id'],
+		) );
 
 		if ( empty( $details ) ) {
 			return __( 'Blog Deleted', CriticalCSS::LANG_DOMAIN );

@@ -4,6 +4,7 @@
     <rule ref="WordPress-Core">
         <exclude name="WordPress.Files.FileName"/>
         <exclude name="WordPress.WP.I18n"/>
+        <exclude name="WordPress.WP.PreparedSQL"/>
         <exclude name="WordPress.Functions.DontExtract"/>
     </rule>
 

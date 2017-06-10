@@ -47,32 +47,33 @@ class WPEngine extends IntegrationAbstract {
 			if ( empty( $type ) ) {
 				/** @noinspection PhpUndefinedClassInspection */
 				WpeCommon::purge_varnish_cache();
-			} else if ( 'post' == $type ) {
+			} elseif ( 'post' == $type ) {
 				/** @noinspection PhpUndefinedClassInspection */
 				WpeCommon::purge_varnish_cache( $object_id );
 			} else {
-				$blog_url       = home_url();
+				$blog_url = home_url();
+				// @codingStandardsIgnoreLine
 				$blog_url_parts = @parse_url( $blog_url );
 				$blog_domain    = $blog_url_parts['host'];
 				$purge_domains  = array( $blog_domain );
 				$object_parts   = parse_url( $url );
-				$object_uri     = rtrim( $object_parts   ['path'], '/' ) . "(.*)";
+				$object_uri     = rtrim( $object_parts   ['path'], '/' ) . '(.*)';
 				if ( ! empty( $object_parts['query'] ) ) {
-					$object_uri .= "?" . $object_parts['query'];
+					$object_uri .= '?' . $object_parts['query'];
 				}
 				$paths = array( $object_uri );
 				/** @noinspection PhpUndefinedClassInspection */
 				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
-				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == "pod" ) {
-					$wpe_varnish_servers = array( "localhost" );
-				} // Ordinarily, the $wpe_varnish_servers are set during apply. Just in case, let's figure out a fallback plan.
-				else if ( ! isset( $wpe_varnish_servers ) ) {
+				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == 'pod' ) {
+					$wpe_varnish_servers = array( 'localhost' );
+				} // End if().
+				elseif ( ! isset( $wpe_varnish_servers ) ) {
 					if ( ! defined( 'WPE_CLUSTER_ID' ) || ! WPE_CLUSTER_ID ) {
-						$lbmaster = "lbmaster";
-					} else if ( WPE_CLUSTER_ID >= 4 ) {
-						$lbmaster = "localhost"; // so the current user sees the purge
+						$lbmaster = 'lbmaster';
+					} elseif ( WPE_CLUSTER_ID >= 4 ) {
+						$lbmaster = 'localhost'; // so the current user sees the purge
 					} else {
-						$lbmaster = "lbmaster-" . WPE_CLUSTER_ID;
+						$lbmaster = 'lbmaster-' . WPE_CLUSTER_ID;
 					}
 					$wpe_varnish_servers = array( $lbmaster );
 				}
@@ -92,8 +93,8 @@ class WPEngine extends IntegrationAbstract {
 						WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
 					}
 				}
-			}
+			}// End if().
 			sleep( 1 );
-		}
+		}// End if().
 	}
 }

@@ -191,19 +191,19 @@ class Request extends ComponentAbstract {
 				$object_id = $page_for_posts;
 				$type      = 'post';
 			}
-		} else if ( is_front_page() ) {
+		} elseif ( is_front_page() ) {
 			$page_on_front = get_option( 'page_on_front' );
 			if ( ! empty( $page_on_front ) ) {
 				$object_id = $page_on_front;
 				$type      = 'post';
 			}
-		} else if ( is_singular() ) {
+		} elseif ( is_singular() ) {
 			$object_id = get_the_ID();
 			$type      = 'post';
-		} else if ( is_tax() || is_category() || is_tag() ) {
+		} elseif ( is_tax() || is_category() || is_tag() ) {
 			$object_id = get_queried_object()->term_id;
 			$type      = 'term';
-		} else if ( is_author() ) {
+		} elseif ( is_author() ) {
 			$object_id = get_the_author_meta( 'ID' );
 			$type      = 'author';
 

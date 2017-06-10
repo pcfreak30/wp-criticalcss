@@ -52,7 +52,9 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			if ( ! empty( $result->status ) ) {
 				$item['status'] = $result->status;
 			}
+			// @codingStandardsIgnoreLine
 			if ( ! empty( $result->resultStatus ) ) {
+				// @codingStandardsIgnoreLine
 				$item['result_status'] = $result->resultStatus;
 			}
 			if ( 'JOB_UNKNOWN' == $result->status ) {
@@ -62,12 +64,14 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			}
 			if ( 'JOB_ONGOING' == $result->status || 'JOB_QUEUED' == $result->status ) {
 				if ( 'JOB_QUEUED' == $result->status ) {
+					// @codingStandardsIgnoreLine
 					$item['queue_index'] = $result->queueIndex;
 				}
 
 				return $item;
 			}
 			if ( 'JOB_DONE' == $result->status ) {
+				// @codingStandardsIgnoreLine
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
 					WPCCSS()->get_integration_manager()->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
@@ -90,7 +94,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			$item['status']   = $result->status;
 
 			return $item;
-		}
+		}// End if().
 
 		return false;
 	}

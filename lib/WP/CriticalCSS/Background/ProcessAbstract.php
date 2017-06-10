@@ -97,7 +97,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
   data TEXT,
   ";
 		if ( is_multisite() ) {
-			$sql .= "blog_id BIGINT(20)";
+			$sql .= 'blog_id BIGINT(20)';
 		}
 		dbDelta( "$sql
   PRIMARY KEY  (id)
@@ -190,7 +190,9 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			$item['data'] = maybe_serialize( $data );
 			$item         = array_diff_key( $item, $data );
 			if ( ! empty( $data ) ) {
-				$wpdb->update( "{$wpdb->prefix}{$this->action}_queue", $item, array( 'id' => $key ) );
+				$wpdb->update( "{$wpdb->prefix}{$this->action}_queue", $item, array(
+					'id' => $key,
+				) );
 			}
 		}
 
@@ -214,6 +216,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		} else {
 			$table = "{$wpdb->prefix}{$this->action}_queue";
 		}
-		$wpdb->delete( $table, array( 'id' => (int) $key ) );
+		$wpdb->delete( $table, array(
+			'id' => (int) $key,
+		) );
 	}
 }
