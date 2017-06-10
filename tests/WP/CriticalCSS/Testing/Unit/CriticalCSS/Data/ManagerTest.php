@@ -27,8 +27,9 @@ class ManagerTest extends TestCase {
 			]
 		);
 		$instance = WPCCSS();
-		$instance->set_settings( array( 'template_cache' => 'off' ) );
-		$instance->init();
+		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_data_manager()->init();
+		$instance->get_request()->init();
 		$instance->get_data_manager()->set_item_data( $instance->get_request()->get_current_page_type(), 'test', true );
 	}
 
@@ -65,8 +66,9 @@ class ManagerTest extends TestCase {
 			]
 		);
 		$instance = WPCCSS();
-		$instance->set_settings( array( 'template_cache' => 'off' ) );
-		$instance->init();
+		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_data_manager()->init();
+		$instance->get_request()->init();
 		$instance->get_data_manager()->set_item_data( $instance->get_request()->get_current_page_type(), 'test', true );
 	}
 
@@ -117,8 +119,9 @@ class ManagerTest extends TestCase {
 			]
 		);
 		$instance = WPCCSS();
-		$instance->set_settings( array( 'template_cache' => 'off' ) );
-		$instance->init();
+		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_data_manager()->init();
+		$instance->get_request()->init();
 		$instance->get_data_manager()->set_item_data( $instance->get_request()->get_current_page_type(), 'test', true );
 	}
 
@@ -168,7 +171,7 @@ class ManagerTest extends TestCase {
 		);
 		$GLOBALS['wp'] = (object) [ 'request' => '' ];
 		$instance      = WPCCSS();
-		$instance->set_settings( array( 'template_cache' => 'off' ) );
+		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$instance->get_data_manager()->set_item_data( $instance->get_request()->get_current_page_type(), 'test', true );
 	}
@@ -197,7 +200,8 @@ class ManagerTest extends TestCase {
 		$GLOBALS['wp'] = (object) [ 'request' => '' ];
 
 		$instance = WPCCSS();
-		$instance->set_settings( array( 'template_cache' => 'on' ) );
+		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		$instance->get_data_manager()->init();
 		$instance->get_request()->init();
 		$instance->get_data_manager()->init();
 		$instance->get_request()->set_template( 'index.php' );

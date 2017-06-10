@@ -52,11 +52,11 @@ class CriticalCSSTest extends TestCase {
 	}
 
 	public function test_query_vars() {
-		$this->assertContains( 'nocache', WPCCSS()->get_request()->query_vars( array() ) );
+		$this->assertContains( 'nocache', WPCCSS()->get_request()->query_vars( [] ) );
 	}
 
 	public function test_get_settings() {
-		update_option( CriticalCSS::OPTIONNAME, array( 'version' => CriticalCSS::VERSION ) );
+		update_option( CriticalCSS::OPTIONNAME, [ 'version' => CriticalCSS::VERSION ] );
 		$result = WPCCSS()->get_settings();
 		$this->assertInternalType( 'array', $result );
 		$this->assertNotEmpty( 'array', $result );
@@ -68,7 +68,7 @@ class CriticalCSSTest extends TestCase {
 	}
 
 	public function test_get_settings_multisite() {
-		update_site_option( CriticalCSS::OPTIONNAME, array( 'version' => CriticalCSS::VERSION ) );
+		update_site_option( CriticalCSS::OPTIONNAME, [ 'version' => CriticalCSS::VERSION ] );
 		$result = WPCCSS()->get_settings();
 		$this->assertInternalType( 'array', $result );
 		$this->assertNotEmpty( 'array', $result );
@@ -76,7 +76,7 @@ class CriticalCSSTest extends TestCase {
 
 	public function test_update_settings() {
 		$this->require_normal();
-		$settings = array( 'version' => CriticalCSS::VERSION );
+		$settings = [ 'version' => CriticalCSS::VERSION ];
 		delete_option( CriticalCSS::OPTIONNAME );
 		WPCCSS()->update_settings( $settings );
 		$this->assertEquals( $settings, get_option( CriticalCSS::OPTIONNAME ) );
@@ -85,7 +85,7 @@ class CriticalCSSTest extends TestCase {
 
 	public function test_update_settings_multisite() {
 		$this->require_multisite();
-		$settings = array( 'version' => CriticalCSS::VERSION );
+		$settings = [ 'version' => CriticalCSS::VERSION ];
 		delete_site_option( CriticalCSS::OPTIONNAME );
 		WPCCSS()->update_settings( $settings );
 		$this->assertEquals( $settings, get_site_option( CriticalCSS::OPTIONNAME ) );
@@ -94,10 +94,10 @@ class CriticalCSSTest extends TestCase {
 
 	public function test_init_print_styles_hook() {
 		WPCCSS()->init();
-		$this->assertEquals( 7, has_action( 'wp_print_styles', array(
+		$this->assertEquals( 7, has_action( 'wp_print_styles', [
 			WPCCSS(),
 			'print_styles',
-		) ) );
+		] ) );
 	}
 
 	/**
@@ -106,21 +106,21 @@ class CriticalCSSTest extends TestCase {
 	public function test_init_print_styles_hook_admin() {
 		define( 'WP_ADMIN', true );
 		WPCCSS()->init();
-		$this->assertFalse( has_action( 'wp_print_styles', array(
+		$this->assertFalse( has_action( 'wp_print_styles', [
 			WPCCSS(),
 			'print_styles',
-		) ) );
+		] ) );
 	}
 
 	public function test_init_template_cache_on() {
-		WPCCSS()->update_settings( array( 'template_cache' => 'on' ) );
+		WPCCSS()->update_settings( [ 'template_cache' => 'on' ] );
 		WPCCSS()->init();
 		$this->assertEquals(
 			PHP_INT_MAX, has_action(
-				'template_include', array(
+				'template_include', [
 					WPCCSS()->get_request(),
 					'template_include',
-				)
+				]
 			)
 		);
 	}
@@ -129,57 +129,57 @@ class CriticalCSSTest extends TestCase {
 		WPCCSS()->init();
 		$this->assertEquals(
 			10, has_action(
-				'post_updated', array(
+				'post_updated', [
 					WPCCSS(),
 					'reset_web_check_post_transient',
-				)
+				]
 			)
 		);
 		$this->assertEquals(
 			10, has_action(
-				'edited_term', array(
+				'edited_term', [
 					WPCCSS(),
 					'reset_web_check_term_transient',
-				)
+				]
 			)
 		);
 	}
 
 	public function test_get_permalink_post() {
 		$post      = $this->factory->post->create_and_get();
-		$permalink = WPCCSS()->get_permalink( array(
+		$permalink = WPCCSS()->get_permalink( [
 			'type'      => 'post',
 			'object_id' => $post->ID,
-		) );
+		] );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
 
 	public function test_get_permalink_term() {
 		$term      = $this->factory->term->create_and_get();
-		$permalink = WPCCSS()->get_permalink( array(
+		$permalink = WPCCSS()->get_permalink( [
 			'type'      => 'term',
 			'object_id' => $term->term_id,
-		) );
+		] );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
 
 	public function test_get_permalink_author() {
-		$permalink = WPCCSS()->get_permalink( array(
+		$permalink = WPCCSS()->get_permalink( [
 			'type'      => 'author',
 			'object_id' => 1,
-		) );
+		] );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
 
 	public function test_get_permalink_url() {
 		$permalink = WPCCSS()->get_permalink(
-			array(
+			[
 				'type' => 'url',
 				'url'  => home_url( '/testabc/testabc/testabc/' ),
-			)
+			]
 		);
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );

@@ -13,13 +13,13 @@ class WPRocketTest extends TestCase {
 	public function test_enable() {
 		global $wp;
 		WPCCSS()->init();
-		do_action_ref_array( 'wp', array( &$wp ) );
+		do_action_ref_array( 'wp', [ &$wp ] );
 		$this->assertEquals(
 			10, has_action(
-				'after_rocket_clean_domain', array(
+				'after_rocket_clean_domain', [
 					WPCCSS(),
 					'reset_web_check_transients',
-				)
+				]
 			)
 		);
 	}
@@ -28,29 +28,29 @@ class WPRocketTest extends TestCase {
 		global $wp;
 		$this->assertFalse(
 			has_action(
-				'after_rocket_clean_domain', array(
+				'after_rocket_clean_domain', [
 					WPCCSS(),
 					'reset_web_check_transients',
-				)
+				]
 			)
 		);
 		WPCCSS()->init();
-		do_action_ref_array( 'wp', array( &$wp ) );
+		do_action_ref_array( 'wp', [ &$wp ] );
 		$this->assertEquals(
 			10, has_action(
-				'after_rocket_clean_domain', array(
+				'after_rocket_clean_domain', [
 					WPCCSS(),
 					'reset_web_check_transients',
-				)
+				]
 			)
 		);
 		WPCCSS()->get_integration_manager()->disable_integrations();
 		$this->assertFalse(
 			has_action(
-				'after_rocket_clean_domain', array(
+				'after_rocket_clean_domain', [
 					WPCCSS(),
 					'reset_web_check_transients',
-				)
+				]
 			)
 		);
 	}

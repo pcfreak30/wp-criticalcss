@@ -4,9 +4,47 @@ namespace WP\CriticalCSS\Cache;
 
 use WP\CriticalCSS;
 
+/**
+ * Class Manager
+ *
+ * @package WP\CriticalCSS\Cache
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 class Manager extends CriticalCSS\ComponentAbstract {
+	/**
+	 *
+	 */
+	public function init() {
+		parent::init();
+		add_action(
+			'after_switch_theme', [
+				$this,
+				'reset_web_check_transients',
+			]
+		);
+		add_action(
+			'upgrader_process_complete', [
+				$this,
+				'reset_web_check_transients',
+			]
+		);
+		if ( ! ( ! empty( $this->settings['template_cache'] ) && 'on' == $this->settings['template_cache'] ) ) {
+			add_action(
+				'post_updated', [
+					$this,
+					'reset_web_check_post_transient',
+				]
+			);
+			add_action(
+				'edited_term', [
+					$this,
+					'reset_web_check_term_transient',
+				]
+			);
+		}
+	}
 
-	public function delete_cache_branch( $path = array() ) {
+	public function delete_cache_branch( $path = [] ) {
 		$result = false;
 		if ( is_array( $path ) ) {
 			if ( ! empty( $path ) ) {
@@ -38,7 +76,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	}
 
 	protected function set_path_defaults( $path ) {
-		$defaults = array( 'cache' );
+		$defaults = [ 'cache' ];
 		if ( is_multisite() ) {
 			$defaults[] = 'blog-' . get_current_blog_id();
 		}
@@ -54,9 +92,10 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	protected function get_transient() {
 		if ( is_multisite() ) {
 			return call_user_func_array( 'get_site_transient', func_get_args() );
-		} else {
-			return call_user_func_array( 'get_transient', func_get_args() );
 		}
+
+		return call_user_func_array( 'get_transient', func_get_args() );
+
 	}
 
 	/**
@@ -65,22 +104,25 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	protected function delete_transient() {
 		if ( is_multisite() ) {
 			return call_user_func_array( 'delete_site_transient', func_get_args() );
-		} else {
-			return call_user_func_array( 'delete_transient', func_get_args() );
 		}
+
+		return call_user_func_array( 'delete_transient', func_get_args() );
+
 	}
 
-	public function delete_cache_leaf( $path = array() ) {
+	public function delete_cache_leaf( $path = [] ) {
 		if ( is_array( $path ) ) {
 			if ( ! empty( $path ) ) {
 				$path = $this->set_path_defaults( $path );
 				$path = CriticalCSS::TRANSIENT_PREFIX . implode( '_', $path );
-			} else {
-				return false;
+
+				return $this->delete_transient( $path );
 			}
+
+			return false;
 		}
 
-		return $this->delete_transient( $path );
+		return false;
 	}
 
 	/**
@@ -119,7 +161,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 			}
 			$transient_cache_id .= '_1';
 			$cache              = $this->get_transient( $transient_cache_id );
-			$transient_value    = array();
+			$transient_value    = [];
 			if ( $i + 1 < $levels ) {
 				$transient_value[] = CriticalCSS::TRANSIENT_PREFIX . implode( '_', array_slice( $path, 0, $i + 2 ) );
 			}
@@ -152,9 +194,10 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	protected function set_transient() {
 		if ( is_multisite() ) {
 			return call_user_func_array( 'set_site_transient', func_get_args() );
-		} else {
-			return call_user_func_array( 'set_transient', func_get_args() );
 		}
+
+		return call_user_func_array( 'set_transient', func_get_args() );
+
 	}
 
 	/**
@@ -188,12 +231,102 @@ class Manager extends CriticalCSS\ComponentAbstract {
 					$cache_transient .= '_cache';
 				}
 				$cache_transient .= "_{$counter}";
-				$cache           = array();
+				$cache           = [];
 			}
 			$cache[] = $leaf;
 			$this->set_transient( $cache_transient, $cache, $expire );
 		}
 
 		return $this->set_transient( $leaf, $value, $expire );
+	}
+
+	/**
+	 * @param $type
+	 * @param $object_id
+	 * @param $url
+	 */
+	public function purge_page_cache( $type = null, $object_id = null, $url = null ) {
+		$url = preg_replace( '#nocache/$#', '', $url );
+
+		do_action( 'wp_criticalcss_purge_cache', $type, $object_id, $url );
+	}
+
+	/**
+	 *
+	 */
+	public function reset_web_check_transients() {
+		$this->delete_cache_branch();
+	}
+
+	/**
+	 * @param array $path
+	 */
+
+	/**
+	 * @param $post
+	 */
+	public function reset_web_check_post_transient( $post ) {
+		$post = get_post( $post );
+		$hash = $this->app->get_data_manager()->get_item_hash(
+			[
+				'object_id' => $post->ID,
+				'type'      => 'post',
+			]
+		);
+		$this->delete_cache_branch( [ $hash ] );
+	}
+
+	/**
+	 * @param $term
+	 *
+	 * @internal param \WP_Term $post
+	 */
+	public function reset_web_check_term_transient( $term ) {
+		$term = get_term( $term );
+		$hash = $this->app->get_data_manager()->get_item_hash(
+			[
+				'object_id' => $term->term_id,
+				'type'      => 'term',
+			]
+		);
+		$this->delete_cache_branch( [ $hash ] );
+	}
+
+	/**
+	 *
+	 */
+
+	/**
+	 * @internal param \WP_Term $post
+	 */
+	public function reset_web_check_home_transient() {
+		$page_for_posts = get_option( 'page_for_posts' );
+		if ( ! empty( $page_for_posts ) ) {
+			$post_id = $page_for_posts;
+		}
+		if ( empty( $post_id ) || ( ! empty( $post_id ) && get_permalink( $post_id ) != site_url() ) ) {
+			$page_on_front = get_option( 'page_on_front' );
+			if ( ! empty( $page_on_front ) ) {
+				$post_id = $page_on_front;
+			} else {
+				$post_id = false;
+			}
+		}
+		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
+			$hash = $this->app->get_data_manager()->get_item_hash(
+				[
+					'object_id' => $post_id,
+					'type'      => 'post',
+				]
+			);
+		} else {
+			$hash = $this->app->get_data_manager()->get_item_hash(
+				[
+					'type' => 'url',
+					'url'  => site_url(),
+				]
+			);
+		}
+		$this->delete_cache_branch( [ $hash ] );
 	}
 }

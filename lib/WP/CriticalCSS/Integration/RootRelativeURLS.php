@@ -14,51 +14,51 @@ class RootRelativeURLS extends IntegrationAbstract {
 	 * @return void
 	 */
 	public function enable() {
-		remove_filter( 'post_link', array(
+		remove_filter( 'post_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		remove_filter( 'page_link', array(
+		], 1 );
+		remove_filter( 'page_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		remove_filter( 'attachment_link', array(
+		], 1 );
+		remove_filter( 'attachment_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		remove_filter( 'post_type_link', array(
+		], 1 );
+		remove_filter( 'post_type_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		remove_filter( 'get_the_author_url', array(
+		], 1 );
+		remove_filter( 'get_the_author_url', [
 			'MP_WP_Root_Relative_URLS',
 			'dynamic_rss_absolute_url',
-		), 1 );
+		], 1 );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function disable() {
-		add_filter( 'post_link', array(
+		add_filter( 'post_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		add_filter( 'page_link', array(
+		], 1 );
+		add_filter( 'page_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		add_filter( 'attachment_link', array(
+		], 1 );
+		add_filter( 'attachment_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		add_filter( 'post_type_link', array(
+		], 1 );
+		add_filter( 'post_type_link', [
 			'MP_WP_Root_Relative_URLS',
 			'proper_root_relative_url',
-		), 1 );
-		add_filter( 'get_the_author_url', array(
+		], 1 );
+		add_filter( 'get_the_author_url', [
 			'MP_WP_Root_Relative_URLS',
 			'dynamic_rss_absolute_url',
-		), 1, 2 );
+		], 1, 2 );
 	}
 }

@@ -18,3 +18,8 @@ $container->addRule(
 		'instanceOf' => '\\WP\\CriticalCSS\\Testing\Admin\UIMock',
 	]
 );
+$container->addRule(
+	'\\WP\\CriticalCSS\\Settings\\Manager', [
+		'instanceOf' => 'WP\\CriticalCSS\\Testing\Unit\\CriticalCSS\\Settings\\ManagerMock',
+	]
+);

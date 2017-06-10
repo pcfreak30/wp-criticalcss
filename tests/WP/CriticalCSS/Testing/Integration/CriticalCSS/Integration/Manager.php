@@ -8,7 +8,7 @@ use WP\CriticalCSS\Integration\IntegrationAbstract;
 
 class Manager extends \WP\CriticalCSS\Integration\Manager {
 	public function reset() {
-		$integrations = array();
+		$integrations = [];
 		foreach ( $this->integrations as $integration ) {
 			if ( $integration instanceof IntegrationAbstract ) {
 				$integration = get_class( $integration );

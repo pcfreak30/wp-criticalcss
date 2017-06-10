@@ -7,7 +7,7 @@ use WP\CriticalCSS\Background\ProcessAbstract;
 class Process extends ProcessAbstract {
 	protected $action = 'wp_criticalcss_web_check';
 
-	private $_processed_urls = array();
+	private $_processed_urls = [];
 
 	/**
 	 * Task
@@ -38,7 +38,7 @@ class Process extends ProcessAbstract {
 		if ( empty( $url ) ) {
 			return false;
 		}
-		$result = wp_remote_get( WPCCSS()->get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', array(), $item ) );
+		$result = wp_remote_get( WPCCSS()->get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', [], $item ) );
 
 		if ( $result instanceof \WP_Error ) {
 			if ( empty( $item['error'] ) ) {
@@ -61,7 +61,7 @@ class Process extends ProcessAbstract {
 		}
 		$xpath = new \DOMXpath( $document );
 		$css   = '';
-		$urls  = array();
+		$urls  = [];
 		foreach ( $xpath->query( '((//style|//STYLE)|(//link|//LINK)[@rel="stylesheet"])' ) as $tag ) {
 			$name = strtolower( $tag->tagName );
 			$rel  = $tag->getAttribute( 'rel' );
@@ -102,14 +102,14 @@ class Process extends ProcessAbstract {
 			if ( empty( $host ) ) {
 				$url = site_url( $url );
 			}
-			$file = wp_remote_get( $url, array(
+			$file = wp_remote_get( $url, [
 				'sslverify' => false,
-			) );
+			] );
 			// Catch Error
-			if ( $file instanceof \WP_Error || ( is_array( $file ) && ( empty( $file['response']['code'] ) || ! in_array( $file['response']['code'], array(
+			if ( $file instanceof \WP_Error || ( is_array( $file ) && ( empty( $file['response']['code'] ) || ! in_array( $file['response']['code'], [
 							200,
 							304,
-						) ) ) )
+						] ) ) )
 			) {
 				if ( empty( $item['error'] ) ) {
 					$item['error'] = 0;

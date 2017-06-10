@@ -8,10 +8,10 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	 */
 	public function __construct() {
 		parent::__construct();
-		add_filter( $this->cron_interval_identifier, array(
+		add_filter( $this->cron_interval_identifier, [
 			$this,
 			'cron_interval',
-		) );
+		] );
 		$this->schedule_event();
 	}
 
@@ -23,7 +23,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		global $wpdb;
 
 		$batch       = new stdClass();
-		$batch->data = array();
+		$batch->data = [];
 		$batch->key  = '';
 		if ( ! $this->is_queue_empty() ) {
 			if ( is_multisite() ) {
@@ -45,7 +45,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			}
 			unset( $result->data );
 
-			$batch->data = array( (array) $result );
+			$batch->data = [ (array) $result ];
 		}
 
 		return $batch;
@@ -107,7 +107,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	public function get_item_exists( $item ) {
 		global $wpdb;
 
-		$args = array();
+		$args = [];
 		if ( is_multisite() ) {
 			$table = "{$wpdb->base_prefix}{$this->action}_queue";
 		} else {
@@ -151,7 +151,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			$table = "{$wpdb->prefix}{$this->action}_queue";
 		}
 		foreach ( $this->data as $item ) {
-			$data = array_merge( array(), $item );
+			$data = array_merge( [], $item );
 			unset( $data['object_id'] );
 			unset( $data['type'] );
 			unset( $data['url'] );
@@ -182,7 +182,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	public function update( $key, $items ) {
 		global $wpdb;
 		foreach ( $items as $item ) {
-			$data = array_merge( array(), $item );
+			$data = array_merge( [], $item );
 			unset( $data['object_id'] );
 			unset( $data['type'] );
 			unset( $data['url'] );
@@ -190,9 +190,9 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			$item['data'] = maybe_serialize( $data );
 			$item         = array_diff_key( $item, $data );
 			if ( ! empty( $data ) ) {
-				$wpdb->update( "{$wpdb->prefix}{$this->action}_queue", $item, array(
+				$wpdb->update( "{$wpdb->prefix}{$this->action}_queue", $item, [
 					'id' => $key,
-				) );
+				] );
 			}
 		}
 
@@ -216,8 +216,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		} else {
 			$table = "{$wpdb->prefix}{$this->action}_queue";
 		}
-		$wpdb->delete( $table, array(
+		$wpdb->delete( $table, [
 			'id' => (int) $key,
-		) );
+		] );
 	}
 }

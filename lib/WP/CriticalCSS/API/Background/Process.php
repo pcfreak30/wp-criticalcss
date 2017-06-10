@@ -4,6 +4,11 @@ namespace WP\CriticalCSS\API\Background;
 
 use WP\CriticalCSS\API;
 
+/**
+ * Class Process
+ *
+ * @package WP\CriticalCSS\API\Background
+ */
 class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 	protected $action = 'wp_criticalcss_api';
 	private $_ping_checked = false;

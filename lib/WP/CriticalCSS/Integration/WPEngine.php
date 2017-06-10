@@ -19,20 +19,20 @@ class WPEngine extends IntegrationAbstract {
 	 *
 	 */
 	public function enable() {
-		add_action( 'wp_criticalcss_purge_cache', array(
+		add_action( 'wp_criticalcss_purge_cache', [
 			$this,
 			'_purge_cache',
-		) );
+		] );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function disable() {
-		remove_action( 'wp_criticalcss_purge_cache', array(
+		remove_action( 'wp_criticalcss_purge_cache', [
 			$this,
 			'_purge_cache',
-		) );
+		] );
 	}
 
 	/**
@@ -55,17 +55,17 @@ class WPEngine extends IntegrationAbstract {
 				// @codingStandardsIgnoreLine
 				$blog_url_parts = @parse_url( $blog_url );
 				$blog_domain    = $blog_url_parts['host'];
-				$purge_domains  = array( $blog_domain );
+				$purge_domains  = [ $blog_domain ];
 				$object_parts   = parse_url( $url );
 				$object_uri     = rtrim( $object_parts   ['path'], '/' ) . '(.*)';
 				if ( ! empty( $object_parts['query'] ) ) {
 					$object_uri .= '?' . $object_parts['query'];
 				}
-				$paths = array( $object_uri );
+				$paths = [ $object_uri ];
 				/** @noinspection PhpUndefinedClassInspection */
 				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
 				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == 'pod' ) {
-					$wpe_varnish_servers = array( 'localhost' );
+					$wpe_varnish_servers = [ 'localhost' ];
 				} // End if().
 				elseif ( ! isset( $wpe_varnish_servers ) ) {
 					if ( ! defined( 'WPE_CLUSTER_ID' ) || ! WPE_CLUSTER_ID ) {
@@ -75,7 +75,7 @@ class WPEngine extends IntegrationAbstract {
 					} else {
 						$lbmaster = 'lbmaster-' . WPE_CLUSTER_ID;
 					}
-					$wpe_varnish_servers = array( $lbmaster );
+					$wpe_varnish_servers = [ $lbmaster ];
 				}
 				$path_regex          = '(' . join( '|', $paths ) . ')';
 				$hostname            = $purge_domains[0];
@@ -85,10 +85,10 @@ class WPEngine extends IntegrationAbstract {
 					$purge_domain_regex = '^(' . join( '|', $chunk ) . ')$';
 					// Tell Varnish.
 					foreach ( $wpe_varnish_servers as $varnish ) {
-						$headers = array(
+						$headers = [
 							'X-Purge-Path' => $path_regex,
 							'X-Purge-Host' => $purge_domain_regex,
-						);
+						];
 						/** @noinspection PhpUndefinedClassInspection */
 						WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
 					}

@@ -21,32 +21,32 @@ class RocketAsyncCSS extends IntegrationAbstract {
 	 */
 	public function enable() {
 		if ( get_query_var( 'nocache' ) ) {
-			remove_action( 'wp_enqueue_scripts', array(
+			remove_action( 'wp_enqueue_scripts', [
 				'Rocket_Async_Css_The_Preloader',
 				'add_window_resize_js',
-			) );
-			remove_action( 'rocket_buffer', array(
+			] );
+			remove_action( 'rocket_buffer', [
 				'Rocket_Async_Css_The_Preloader',
 				'inject_div',
-			) );
+			] );
 			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 				define( 'DONOTCACHEPAGE', true );
 			}
 		}
-		add_action( 'wp_criticalcss_before_print_styles', array(
+		add_action( 'wp_criticalcss_before_print_styles', [
 			$this,
 			'purge_cache',
-		) );
+		] );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function disable() {
-		remove_action( 'wp_criticalcss_before_print_styles', array(
+		remove_action( 'wp_criticalcss_before_print_styles', [
 			$this,
 			'purge_cache',
-		) );
+		] );
 	}
 
 	/**
@@ -55,14 +55,14 @@ class RocketAsyncCSS extends IntegrationAbstract {
 	 */
 	public function purge_cache( $cache ) {
 		if ( ! empty( $cache ) ) {
-			remove_action( 'wp_enqueue_scripts', array(
+			remove_action( 'wp_enqueue_scripts', [
 				'Rocket_Async_Css_The_Preloader',
 				'add_window_resize_js',
-			) );
-			remove_action( 'rocket_buffer', array(
+			] );
+			remove_action( 'rocket_buffer', [
 				'Rocket_Async_Css_The_Preloader',
 				'inject_div',
-			) );
+			] );
 		}
 	}
 }

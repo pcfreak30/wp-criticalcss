@@ -4,6 +4,11 @@ namespace WP\CriticalCSS\Data;
 
 use WP\CriticalCSS;
 
+/**
+ * Class Manager
+ *
+ * @package WP\CriticalCSS\Data
+ */
 class Manager extends CriticalCSS\ComponentAbstract {
 
 	/**
@@ -11,7 +16,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 *
 	 * @return string
 	 */
-	public function get_html_hash( $item = array() ) {
+	public function get_html_hash( $item = [] ) {
 		return $this->get_item_data( $item, 'html_hash' );
 	}
 
@@ -21,7 +26,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 *
 	 * @return mixed|null
 	 */
-	public function get_item_data( $item = array(), $name ) {
+	public function get_item_data( $item = [], $name ) {
 		$value = null;
 		if ( empty( $item ) ) {
 			$item = WPCCSS()->get_request()->get_current_page_type();
@@ -102,7 +107,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 *
 	 * @return string
 	 */
-	public function get_css_hash( $item = array() ) {
+	public function get_css_hash( $item = [] ) {
 		return $this->get_item_data( $item, 'css_hash' );
 	}
 
@@ -133,7 +138,30 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 *
 	 * @return string
 	 */
-	public function get_cache( $item = array() ) {
+	public function get_cache( $item = [] ) {
 		return $this->get_item_data( $item, 'cache' );
+	}
+
+	/**
+	 * @param $item
+	 *
+	 * @return string
+	 * @SuppressWarnings("unused")
+	 */
+	public function get_item_hash( $item ) {
+		extract( $item );
+		$parts = [
+			'object_id',
+			'type',
+			'url',
+		];
+		if ( 'on' == $this->settings['template_cache'] ) {
+
+			$template = $this->app->get_request()->get_template();
+			$parts    = [ 'template' ];
+		}
+		$type = compact( $parts );
+
+		return md5( serialize( $type ) );
 	}
 }

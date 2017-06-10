@@ -18,7 +18,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'return' => true,
 		] );
 		ob_start();
-		WPCCSS()->wp_head();
+		WPCCSS()->get_frontend()->wp_head();
 		$result = ob_get_clean();
 		$this->assertEquals( '<meta name="robots" content="noindex, nofollow"/>', trim( $result ) );
 	}
@@ -30,7 +30,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'return' => false,
 		] );
 		ob_start();
-		WPCCSS()->wp_head();
+		WPCCSS()->get_frontend()->wp_head();
 		$result = ob_get_clean();
 		$this->assertEmpty( $result );
 	}
@@ -55,11 +55,11 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 	}
 
 	public function test_query_vars() {
-		$this->assertContains( 'nocache', WPCCSS()->get_request()->query_vars( array() ) );
+		$this->assertContains( 'nocache', WPCCSS()->get_request()->query_vars( [] ) );
 	}
 
 	public function test_get_settings() {
-		WPCCSS()->set_settings( array( 'version' => CriticalCSS::VERSION ) );
+		WPCCSS()->get_settings_manager()->update_settings( [ 'version' => CriticalCSS::VERSION ] );
 		$result = WPCCSS()->get_settings();
 		$this->assertInternalType( 'array', $result );
 		$this->assertNotEmpty( 'array', $result );
@@ -67,15 +67,6 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 
 	public function test_get_settings_empty() {
 		$this->assertEmpty( WPCCSS()->get_settings() );
-	}
-
-	public function test_init_print_styles_hook() {
-		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
-		\WP_Mock::expectActionAdded( 'wp_print_styles', [
-			WPCCSS(),
-			'print_styles',
-		], 7 );
-		WPCCSS()->init();
 	}
 
 	public function test_init_print_styles_hook_admin() {
@@ -89,26 +80,27 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 
 	public function test_init_template_cache_on() {
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
-		WPCCSS()->set_settings( [ 'template_cache' => 'on' ] );
+		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
 		\WP_Mock::expectActionAdded( 'template_include', [
 			WPCCSS()->get_request(),
 			'template_include',
 		], PHP_INT_MAX );
+		WPCCSS()->get_frontend()->init();
 		WPCCSS()->get_request()->init();
 	}
 
 	public function test_init_template_cache_off() {
-		WPCCSS()->set_settings( array( 'template_cache' => 'off' ) );
+		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
 		\WP_Mock::expectActionAdded( 'post_updated', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_post_transient',
 		] );
 		\WP_Mock::expectActionAdded( 'edited_term', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_term_transient',
 		] );
-		WPCCSS()->init();
+		WPCCSS()->get_cache_manager()->init();
 	}
 
 	public function test_get_permalink_post() {
@@ -116,10 +108,10 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'args'   => 1,
 			'return' => 'http://example.org/nocache/',
 		] );
-		$permalink = WPCCSS()->get_permalink( array(
+		$permalink = WPCCSS()->get_permalink( [
 			'type'      => 'post',
 			'object_id' => 1,
-		) );
+		] );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
@@ -129,10 +121,10 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'args'   => 1,
 			'return' => 'http://example.org/tag/test/nocache/',
 		] );
-		$permalink = WPCCSS()->get_permalink( array(
+		$permalink = WPCCSS()->get_permalink( [
 			'type'      => 'term',
 			'object_id' => 1,
-		) );
+		] );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
@@ -144,10 +136,10 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 				'return' => 'http://example.org/author/admin/nocache/',
 			]
 		);
-		$permalink = WPCCSS()->get_permalink( array(
+		$permalink = WPCCSS()->get_permalink( [
 			'type'      => 'author',
 			'object_id' => 1,
-		) );
+		] );
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );
 	}
@@ -162,10 +154,10 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			]
 		);
 		$permalink = WPCCSS()->get_permalink(
-			array(
+			[
 				'type' => 'url',
 				'url'  => home_url( '/testabc/testabc/testabc/' ),
-			)
+			]
 		);
 		$this->assertNotFalse( $permalink );
 		$this->assertContains( 'nocache/', $permalink );

@@ -24,11 +24,11 @@ class ListTable extends \WP_List_Table {
 	 */
 	public function __construct( Process $api_queue ) {
 		$this->_api_queue = $api_queue;
-		parent::__construct( array(
+		parent::__construct( [
 			'singular' => __( 'Queue Item', 'criticalcss' ),
 			'plural'   => __( 'Queue Items', 'criticalcss' ),
 			'ajax'     => false,
-		) );
+		] );
 	}
 
 	/**
@@ -42,16 +42,16 @@ class ListTable extends \WP_List_Table {
 	 * @return array
 	 */
 	public function get_columns() {
-		$columns = array(
+		$columns = [
 			'url'            => __( 'URL', CriticalCSS::LANG_DOMAIN ),
 			'template'       => __( 'Template', CriticalCSS::LANG_DOMAIN ),
 			'status'         => __( 'Status', CriticalCSS::LANG_DOMAIN ),
 			'queue_position' => __( 'Queue Position', CriticalCSS::LANG_DOMAIN ),
-		);
+		];
 		if ( is_multisite() ) {
-			$columns = array_merge( array(
+			$columns = array_merge( [
 				'blog_id' => __( 'Blog', CriticalCSS::LANG_DOMAIN ),
-			), $columns );
+			], $columns );
 		}
 
 		return $columns;
@@ -81,11 +81,11 @@ class ListTable extends \WP_List_Table {
 
 		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} LIMIT %d,%d", $start, $per_page ), ARRAY_A );
 
-		$this->set_pagination_args( array(
+		$this->set_pagination_args( [
 			'total_items' => $total_items,
 			'per_page'    => $per_page,
 			'total_pages' => ceil( $total_items / $per_page ),
-		) );
+		] );
 	}
 
 	private function _process_bulk_action() {
@@ -96,9 +96,9 @@ class ListTable extends \WP_List_Table {
 	}
 
 	protected function get_bulk_actions() {
-		return array(
+		return [
 			'purge' => __( 'Purge', CriticalCSS::LANG_DOMAIN ),
-		);
+		];
 	}
 
 	/**
@@ -111,9 +111,9 @@ class ListTable extends \WP_List_Table {
 			return __( 'N/A', CriticalCSS::LANG_DOMAIN );
 		}
 
-		$details = get_blog_details( array(
+		$details = get_blog_details( [
 			'blog_id' => $item['blog_id'],
-		) );
+		] );
 
 		if ( empty( $details ) ) {
 			return __( 'Blog Deleted', CriticalCSS::LANG_DOMAIN );

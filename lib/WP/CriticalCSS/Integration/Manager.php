@@ -7,15 +7,15 @@ namespace WP\CriticalCSS\Integration;
 use WP\CriticalCSS\ComponentAbstract;
 
 class Manager extends ComponentAbstract {
-	protected $integrations = array(
+	protected $integrations = [
 		'\\WP\\CriticalCSS\\Integration\\RocketAsyncCSS',
 		'\\WP\\CriticalCSS\\Integration\\RootRelativeURLS',
 		'\\WP\\CriticalCSS\\Integration\\WPRocket',
 		'\\WP\\CriticalCSS\\Integration\\WPEngine',
-	);
+	];
 
 	public function init() {
-		$integrations = array();
+		$integrations = [];
 		foreach ( $this->integrations as $integration ) {
 			$integrations[ $integration ] = wpccss_container()->create( $integration );
 		}

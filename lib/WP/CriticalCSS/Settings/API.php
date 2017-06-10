@@ -18,20 +18,20 @@ class API {
 	 *
 	 * @var array
 	 */
-	protected $settings_sections = array();
+	protected $settings_sections = [];
 
 	/**
 	 * Settings fields array
 	 *
 	 * @var array
 	 */
-	protected $settings_fields = array();
+	protected $settings_fields = [];
 
 	public function __construct() {
-		add_action( 'admin_enqueue_scripts', array(
+		add_action( 'admin_enqueue_scripts', [
 			$this,
 			'admin_enqueue_scripts',
-		) );
+		] );
 	}
 
 	/**
@@ -66,9 +66,9 @@ class API {
 	 * @return $this
 	 */
 	function add_section( $section ) {
-		$section                   = wp_parse_args( $section, array(
+		$section                   = wp_parse_args( $section, [
 			'form' => true,
-		) );
+		] );
 		$this->settings_sections[] = $section;
 
 		return $this;
@@ -88,12 +88,12 @@ class API {
 	}
 
 	function add_field( $section, $field ) {
-		$defaults = array(
+		$defaults = [
 			'name'  => '',
 			'label' => '',
 			'desc'  => '',
 			'type'  => 'text',
-		);
+		];
 
 		$arg                                 = wp_parse_args( $field, $defaults );
 		$this->settings_fields[ $section ][] = $arg;
@@ -135,12 +135,12 @@ class API {
 				$name     = $option['name'];
 				$type     = isset( $option['type'] ) ? $option['type'] : 'text';
 				$label    = isset( $option['label'] ) ? $option['label'] : '';
-				$callback = isset( $option['callback'] ) ? $option['callback'] : array(
+				$callback = isset( $option['callback'] ) ? $option['callback'] : [
 					$this,
 					'callback_' . $type,
-				);
+				];
 
-				$args = array(
+				$args = [
 					'id'                => $name,
 					'class'             => isset( $option['class'] ) ? $option['class'] : $name,
 					'label_for'         => "{$section}[{$name}]",
@@ -156,7 +156,7 @@ class API {
 					'min'               => isset( $option['min'] ) ? $option['min'] : '',
 					'max'               => isset( $option['max'] ) ? $option['max'] : '',
 					'step'              => isset( $option['step'] ) ? $option['step'] : '',
-				);
+				];
 
 				add_settings_field( "{$section}[{$name}]", $label, $callback, $section, $section, $args );
 			}
@@ -164,10 +164,10 @@ class API {
 
 		// creates our settings in the options table
 		foreach ( $this->settings_sections as $section ) {
-			register_setting( $section['id'], $section['id'], array(
+			register_setting( $section['id'], $section['id'], [
 				$this,
 				'sanitize_options',
-			) );
+			] );
 		}
 	}
 
@@ -380,11 +380,11 @@ class API {
 
 		echo '<div style="max-width: ' . $size . ';">';
 
-		$editor_settings = array(
+		$editor_settings = [
 			'teeny'         => true,
 			'textarea_name' => $args['section'] . '[' . $args['id'] . ']',
 			'textarea_rows' => 10,
-		);
+		];
 
 		if ( isset( $args['options'] ) && is_array( $args['options'] ) ) {
 			$editor_settings = array_merge( $editor_settings, $args['options'] );

@@ -44,20 +44,20 @@ class API extends ComponentAbstract {
 	 *
 	 * @return array|bool|mixed|object
 	 */
-	private function _send_request( $type, $endpoint, $query_args = array(), $args = array() ) {
+	private function _send_request( $type, $endpoint, $query_args = [], $args = [] ) {
 		$type = strtolower( $type );
 		$func = "wp_remote_{$type}";
 		if ( ! function_exists( $func ) ) {
 			return false;
 		}
-		$query_args = array_merge( $query_args, array(
+		$query_args = array_merge( $query_args, [
 			'version' => CriticalCSS::VERSION,
-		) );
-		$response   = $func( add_query_arg( $query_args, "https://criticalcss.com/api/premium/{$endpoint}" ), array_merge_recursive( array(
-			'headers' => array(
+		] );
+		$response   = $func( add_query_arg( $query_args, "https://criticalcss.com/api/premium/{$endpoint}" ), array_merge_recursive( [
+			'headers' => [
 				'Authorization' => 'JWT ' . $this->api_key,
-			),
-		), $args ) );
+			],
+		], $args ) );
 		if ( $response instanceof \WP_Error ) {
 			return $response;
 		}
@@ -74,9 +74,9 @@ class API extends ComponentAbstract {
 	 * @return array|bool|mixed|object
 	 */
 	public function get_result( $item_id ) {
-		return $this->_send_request( 'get', 'results', array(
+		return $this->_send_request( 'get', 'results', [
 			'resultId' => $item_id,
-		) );
+		] );
 	}
 
 	/**
@@ -85,15 +85,15 @@ class API extends ComponentAbstract {
 	 * @return array|bool|mixed|object
 	 */
 	public function generate( array $item ) {
-		$response = $this->_send_request( 'post', 'generate', array(), array(
-			'body' => array(
+		$response = $this->_send_request( 'post', 'generate', [], [
+			'body' => [
 				'height'  => 900,
 				'width'   => 1300,
 				'url'     => CriticalCSS::get_permalink( $item ),
 				'aff'     => 3,
 				'version' => CriticalCSS::VERSION,
-			),
-		) );
+			],
+		] );
 
 		return $response instanceof \WP_Error ? $response : $response->job;
 	}

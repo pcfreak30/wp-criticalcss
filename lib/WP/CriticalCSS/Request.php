@@ -14,47 +14,48 @@ class Request extends ComponentAbstract {
 	 * @var
 	 */
 	protected $template;
+
 	/**
 	 * WP_CriticalCSS_Request constructor.
 	 */
 	public function init() {
 		parent::init();
-		add_action( 'init', array(
+		add_action( 'init', [
 			$this,
 			'add_rewrite_rules',
-		) );
-		add_filter( 'rewrite_rules_array', array(
+		] );
+		add_filter( 'rewrite_rules_array', [
 			$this,
 			'fix_rewrites',
-		), 11 );
-		add_action( 'request', array(
+		], 11 );
+		add_action( 'request', [
 			$this,
 			'update_request',
-		) );
+		] );
 		if ( ! empty( $this->settings['template_cache'] ) && 'on' == $this->settings['template_cache'] ) {
-			add_action( 'template_include', array(
+			add_action( 'template_include', [
 				$this,
 				'template_include',
-			), PHP_INT_MAX );
+			], PHP_INT_MAX );
 		}
 
 		/*
 		 * Prevent a 404 on homepage if a static page is set.
 		 * Will store query_var outside \WP_Query temporarily so we don't need to do any extra routing logic and will appear as if it was not set.
 		 */
-		add_action( 'query_vars', array(
+		add_action( 'query_vars', [
 			$this,
 			'query_vars',
-		) );
-		add_action( 'parse_request', array(
+		] );
+		add_action( 'parse_request', [
 			$this,
 			'parse_request',
-		) );
+		] );
 		// Don't fix url or try to guess url if we are using nocache on the homepage
-		add_filter( 'redirect_canonical', array(
+		add_filter( 'redirect_canonical', [
 			$this,
 			'redirect_canonical',
-		) );
+		] );
 	}
 
 	/**
@@ -63,10 +64,10 @@ class Request extends ComponentAbstract {
 	public function add_rewrite_rules() {
 		add_rewrite_endpoint( 'nocache', E_ALL );
 		add_rewrite_rule( 'nocache/?$', 'index.php?nocache=1', 'top' );
-		$taxonomies = get_taxonomies( array(
+		$taxonomies = get_taxonomies( [
 			'public'   => true,
 			'_builtin' => false,
-		), 'objects' );
+		], 'objects' );
 
 		foreach ( $taxonomies as $tax_id => $tax ) {
 			if ( ! empty( $tax->rewrite ) ) {
@@ -79,15 +80,15 @@ class Request extends ComponentAbstract {
 	 *
 	 */
 	public function fix_rewrites( $rules ) {
-		$nocache_rules = array(
+		$nocache_rules = [
 			// Fix page archives
 			'(.?.+?)/page(?:/([0-9]+))?/nocache/?' => 'index.php?pagename=$matches[1]&paged=$matches[2]&nocache',
-		);
+		];
 		// Fix all custom taxonomies
-		$tokens = get_taxonomies( array(
+		$tokens = get_taxonomies( [
 			'public'   => true,
 			'_builtin' => false,
-		) );
+		] );
 		foreach ( $rules as $match => $query ) {
 			if ( false !== strpos( $match, 'nocache' ) && preg_match( '/' . implode( '|', $tokens ) . '/', $query ) ) {
 				$nocache_rules[ $match ] = $query;
@@ -106,7 +107,7 @@ class Request extends ComponentAbstract {
 	 */
 	public function redirect_canonical( $redirect_url ) {
 		global $wp_query;
-		if ( ! array_diff( array_keys( $wp_query->query ), array( 'nocache' ) ) || get_query_var( 'nocache' ) ) {
+		if ( ! array_diff( array_keys( $wp_query->query ), [ 'nocache' ] ) || get_query_var( 'nocache' ) ) {
 			$redirect_url = false;
 		}
 
@@ -176,6 +177,7 @@ class Request extends ComponentAbstract {
 
 	/**
 	 * @SuppressWarnings(PHPMD.ShortVariable)
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
 	 * @return array
 	 */
 	public function get_current_page_type() {

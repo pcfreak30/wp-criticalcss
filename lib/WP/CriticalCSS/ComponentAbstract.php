@@ -16,7 +16,7 @@ abstract class ComponentAbstract {
 	 */
 	protected $app;
 
-	protected $settings = array();
+	protected $settings = [];
 
 	/**
 	 *
