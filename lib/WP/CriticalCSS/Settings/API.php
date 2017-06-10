@@ -9,6 +9,7 @@ namespace WP\CriticalCSS\Settings;
  * @author  Tareq Hasan <tareq@weDevs.com>
  * @link    https://tareq.co Tareq Hasan
  * @example example/oop-example.php How to use the class
+ * @SuppressWarnings(PHPMD)
  */
 class API {
 
