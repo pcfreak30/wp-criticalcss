@@ -17,7 +17,7 @@ engines:
   phpmd:
     enabled: true
     config:
-      rulesets: "cleancode,codesize,design,naming,unusedcode"
+      rulesets: phpmd.ruleset.xml
   phpcodesniffer:
     enabled: true
     config:
