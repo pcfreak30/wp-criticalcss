@@ -21,7 +21,7 @@ engines:
   phpcodesniffer:
     enabled: true
     config:
-      standard: WordPress-Core,WordPress-Docs
+      standard: WordPress-Core
 ratings:
   paths:
   - "**.css"
