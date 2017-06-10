@@ -4,7 +4,7 @@ namespace WP\CriticalCSS\Testing\Integration\CriticalCSS\Data;
 
 use WP\CriticalCSS\Testing\Integration\TestCase;
 
-class Manager extends TestCase {
+class ManagerTest extends TestCase {
 	public function test_set_item_data_post() {
 		$instance = WPCCSS();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );

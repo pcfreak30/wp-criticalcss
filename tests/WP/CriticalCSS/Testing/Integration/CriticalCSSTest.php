@@ -92,26 +92,6 @@ class CriticalCSSTest extends TestCase {
 	}
 
 
-	public function test_init_print_styles_hook() {
-		WPCCSS()->init();
-		$this->assertEquals( 7, has_action( 'wp_print_styles', [
-			WPCCSS(),
-			'print_styles',
-		] ) );
-	}
-
-	/**
-	 * @runInSeparateProcess
-	 */
-	public function test_init_print_styles_hook_admin() {
-		define( 'WP_ADMIN', true );
-		WPCCSS()->init();
-		$this->assertFalse( has_action( 'wp_print_styles', [
-			WPCCSS(),
-			'print_styles',
-		] ) );
-	}
-
 	public function test_init_template_cache_on() {
 		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
 		WPCCSS()->init();
@@ -120,26 +100,6 @@ class CriticalCSSTest extends TestCase {
 				'template_include', [
 					WPCCSS()->get_request(),
 					'template_include',
-				]
-			)
-		);
-	}
-
-	public function test_init_template_cache_off() {
-		WPCCSS()->init();
-		$this->assertEquals(
-			10, has_action(
-				'post_updated', [
-					WPCCSS(),
-					'reset_web_check_post_transient',
-				]
-			)
-		);
-		$this->assertEquals(
-			10, has_action(
-				'edited_term', [
-					WPCCSS(),
-					'reset_web_check_term_transient',
 				]
 			)
 		);

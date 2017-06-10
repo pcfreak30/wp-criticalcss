@@ -4,7 +4,7 @@ namespace WP\CriticalCSS\Testing\Integration\CriticalCSS\Cache;
 
 use WP\CriticalCSS\Testing\Integration\TestCase;
 
-class Manager extends TestCase {
+class ManagerTest extends TestCase {
 
 
 	public function test_update_cache_fragment() {
@@ -66,4 +66,25 @@ class Manager extends TestCase {
 		WPCCSS()->init();
 		$this->assertEquals( MINUTE_IN_SECONDS, WPCCSS()->get_cache_manager()->get_expire_period() );
 	}
+
+	public function test_init_template_cache_off() {
+		WPCCSS()->init();
+		$this->assertEquals(
+			10, has_action(
+				'post_updated', [
+					WPCCSS()->get_cache_manager(),
+					'reset_web_check_post_transient',
+				]
+			)
+		);
+		$this->assertEquals(
+			10, has_action(
+				'edited_term', [
+					WPCCSS()->get_cache_manager(),
+					'reset_web_check_term_transient',
+				]
+			)
+		);
+	}
 }
+
