@@ -22,7 +22,7 @@ abstract class ComponentAbstract {
 	 *
 	 */
 	public function init() {
-		$this->settings = $this->app->get_settings();
+		$this->settings = $this->app->get_settings_manager()->get_settings();
 	}
 
 	/**
