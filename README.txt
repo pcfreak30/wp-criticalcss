@@ -3,7 +3,7 @@ Contributors: pcfreak30
 Donate link: https://www.paypal.me/pcfreak30
 Tags: optimize, above the fold, critical css
 Requires at least: 4.5
-Tested up to: 4.7.1
+Tested up to: 4.8
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -66,6 +66,10 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 This is used as a special version of the web page that forcibly disables supported caching and minify plugins to ensure that critical css is created without complications. SEO wise these URL's are safe as they have no references anywhere and google will not be aware to crawl them.
 
 == Changelog ==
+
+### 0.6.4 ###
+
+* Bug: SECOND_IN_SECONDS is defined in wp-rockets compatibility code only, so must be removed
 
 ### 0.6.3 ###
 
