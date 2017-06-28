@@ -51,7 +51,7 @@ class WP_CriticalCSS {
 	public static function wp_head() {
 		if ( get_query_var( 'nocache' ) ):
 			?>
-            <meta name="robots" content="noindex, nofollow"/>
+			<meta name="robots" content="noindex, nofollow"/>
 			<?php
 		endif;
 	}
@@ -153,10 +153,10 @@ class WP_CriticalCSS {
 			add_action( 'after_rocket_clean_post', array( __CLASS__, 'reset_web_check_post_transient' ) );
 			add_action( 'after_rocket_clean_term', array( __CLASS__, 'reset_web_check_term_transient' ) );
 			add_action( 'after_rocket_clean_home', array( __CLASS__, 'reset_web_check_home_transient' ) );
-			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
+			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) && function_exists( 'rocket_clean_wpengine' ) ) {
 				add_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 			}
-			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) ) {
+			if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) && function_exists( 'rocket_clean_supercacher' ) ) {
 				add_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
 			}
 
@@ -524,7 +524,7 @@ class WP_CriticalCSS {
 					remove_action( 'rocket_buffer', array( 'Rocket_Async_Css_The_Preloader', 'inject_div' ) );
 				}
 				?>
-                <style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
+				<style type="text/css" id="criticalcss" data-no-minify="1"><?= $cache ?></style>
 				<?php
 			}
 			$type  = self::get_current_page_type();
@@ -907,17 +907,17 @@ class WP_CriticalCSS {
 		ob_start();
 
 		?>
-        <style type="text/css">
-            .queue > th {
-                display: none;
-            }
-        </style>
-        <form method="post">
+		<style type="text/css">
+			.queue > th {
+				display: none;
+			}
+		</style>
+		<form method="post">
 			<?php
 			self::$_queue_table->prepare_items();
 			self::$_queue_table->display();
 			?>
-        </form>
+		</form>
 		<?php
 		self::$_settings_ui->add_field( 'wp_criticalcss_queue', array(
 			'name'  => 'queue',
