@@ -186,11 +186,11 @@ class CriticalCSS {
 			);
 			if ( isset( $settings['disable_autopurge'] ) ) {
 				unset( $settings['disable_autopurge'] );
-				$this->update_settings( $settings );
+				$this->get_settings_manager()->update_settings( $settings );
 			}
 			if ( isset( $settings['expire'] ) ) {
 				unset( $settings['expire'] );
-				$this->update_settings( $settings );
+				$this->get_settings_manager()->update_settings( $settings );
 			}
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 || $version_0_5 ) {
@@ -213,12 +213,12 @@ class CriticalCSS {
 			}
 		}
 
-		$this->update_settings(
+		$this->get_settings_manager()->update_settings(
 			array_merge(
 				[
 					'web_check_interval' => DAY_IN_SECONDS,
 					'template_cache'     => 'off',
-				], $this->get_settings(), [
+				], $this->get_settings_manager()->get_settings(), [
 					'version' => self::VERSION,
 				]
 			)
