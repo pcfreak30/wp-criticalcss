@@ -30,6 +30,7 @@ class UI extends CriticalCSS\ComponentAbstract {
 				$this,
 				'sync_options',
 			], 10, 2 );
+			$this->settings_ui = new CriticalCSS\Settings\API();
 		}
 	}
 
