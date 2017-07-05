@@ -100,14 +100,11 @@ abstract class ProcessAbstract extends \WP_Background_Process {
   object_id  BIGINT(10),
   type VARCHAR (10),
   url TEXT,
-  data TEXT,
-  ";
+  data TEXT,";
 		if ( is_multisite() ) {
-			$sql .= 'blog_id BIGINT(20)';
+			$sql .= "\n" . 'blog_id BIGINT(20)';
 		}
-		dbDelta( "$sql
-  PRIMARY KEY  (id)
-) {$charset_collate};" );
+		dbDelta( "$sql\nPRIMARY KEY  (id)\n) {$charset_collate};" );
 	}
 
 	public function get_item_exists( $item ) {
