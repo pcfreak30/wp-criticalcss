@@ -95,7 +95,7 @@ class UI extends CriticalCSS\ComponentAbstract {
 	 * Render settings page
 	 */
 	public function settings_ui() {
-		require ABSPATH . 'wp-admin/options-head.php';
+		require_once ABSPATH . 'wp-admin/options-head.php';
 		$this->settings_ui->add_section( [
 			'id'    => 'wp_criticalcss_queue',
 			'title' => 'WP Critical CSS Queue',
