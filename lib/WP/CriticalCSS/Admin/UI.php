@@ -18,12 +18,6 @@ class UI extends CriticalCSS\ComponentAbstract {
 	public function init() {
 		parent::init();
 		if ( is_admin() ) {
-			add_action(
-				'wp_loaded', [
-					$this,
-					'wp_action',
-				]
-			);
 			add_action( 'network_admin_menu', [
 				$this,
 				'settings_init',
