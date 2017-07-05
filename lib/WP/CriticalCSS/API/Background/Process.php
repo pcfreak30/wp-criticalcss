@@ -26,7 +26,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		$settings = WPCCSS()->get_settings();
+		$settings = WPCCSS()->get_settings_manager()->get_settings();
 
 		if ( empty( $settings ) || empty( $settings['apikey'] ) ) {
 			return false;
@@ -80,9 +80,9 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
 					WPCCSS()->get_integration_manager()->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
-						WPCCSS()->purge_page_cache();
+						WPCCSS()->get_cache_manager()->purge_page_cache();
 					} else {
-						WPCCSS()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
+						WPCCSS()->get_cache_manager()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
 					}
 					WPCCSS()->get_integration_manager()->enable_integrations();
 					WPCCSS()->get_data_manager()->set_cache( $item, $result->css );
@@ -99,7 +99,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			$item['status']   = $result->status;
 
 			return $item;
-		}// End if().
+		}
 
 		return false;
 	}
