@@ -25,14 +25,21 @@ class Manager {
 			return $this->get_settings_multisite();
 
 		}
+		$settings = get_option( CriticalCSS::OPTIONNAME, [] );
+		if ( empty( $settings ) ) {
+			$settings = [];
+		}
 
-		return get_option( CriticalCSS::OPTIONNAME, [] );
+		return $settings;
 	}
 
 	private function get_settings_multisite() {
 		$settings = get_site_option( CriticalCSS::OPTIONNAME, [] );
 		if ( empty( $settings ) ) {
 			$settings = get_option( CriticalCSS::OPTIONNAME, [] );
+		}
+		if ( empty( $settings ) ) {
+			$settings = [];
 		}
 
 		return $settings;
