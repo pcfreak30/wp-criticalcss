@@ -32,7 +32,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			return false;
 		}
 
-		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + ( SECOND_IN_SECONDS * 8 ) >= time() ) {
+		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + 8 >= time() ) {
 			return $item;
 		}
 
