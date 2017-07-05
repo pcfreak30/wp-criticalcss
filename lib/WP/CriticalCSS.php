@@ -167,7 +167,7 @@ class CriticalCSS {
 	public function activate() {
 		global $wpdb;
 		$settings    = $this->settings_manager->get_settings();
-		$no_version  = ! empty( $settings ) && empty( $settings['version'] );
+		$no_version  = ( ! empty( $settings ) && empty( $settings['version'] ) ) || empty( $settings );
 		$version_0_3 = false;
 		$version_0_4 = false;
 		$version_0_5 = false;
