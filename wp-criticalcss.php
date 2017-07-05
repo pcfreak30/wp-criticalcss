@@ -64,7 +64,7 @@ function wp_criticalcss_php_upgrade_notice() {
 	);
 }
 
-if ( version_compare( PHP_VERSION, '5.4.0' ) >= 0 ) {
+if ( version_compare( PHP_VERSION, '5.4.0' ) < 0 ) {
 	add_action( 'admin_notices', 'wp_criticalcss_php_upgrade_notice' );
 } else {
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
