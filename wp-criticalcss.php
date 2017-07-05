@@ -43,6 +43,15 @@ function wp_criticalcss_init() {
 	WPCCSS()->init();
 }
 
+function wp_criticalcss_activate() {
+	WPCCSS()->init();
+	WPCCSS()->activate();
+}
+
+function wp_criticalcss_deactivate() {
+	WPCCSS()->deactivate();
+}
+
 function wp_criticalcss_php_upgrade_notice() {
 	$info = get_plugin_data( __FILE__ );
 	_e(
@@ -61,12 +70,16 @@ if ( version_compare( PHP_VERSION, '5.4.0' ) >= 0 ) {
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 		include_once __DIR__ . '/vendor/autoload.php';
 		add_action( 'plugins_loaded', 'wp_criticalcss_init' );
+		register_activation_hook( __FILE__, 'wp_criticalcss_activate' );
+		register_deactivation_hook( __FILE__, 'wp_criticalcss_deactivate' );
 	} else {
 		include_once __DIR__ . '/wordpress-web-composer/class-wordpress-web-composer.php';
 		$web_composer = new WordPress_Web_Composer( 'wp_criticalcss' );
 		$web_composer->set_install_target( __DIR__ );
 		if ( $web_composer->run() ) {
 			include_once __DIR__ . '/vendor/autoload.php';
+			register_activation_hook( __FILE__, 'wp_criticalcss_activate' );
+			register_deactivation_hook( __FILE__, 'wp_criticalcss_deactivate' );
 			define( 'WP_CRITICALCSS_COMPOSER_RAN', true );
 		}
 	}
