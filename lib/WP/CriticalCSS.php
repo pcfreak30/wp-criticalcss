@@ -224,7 +224,6 @@ class CriticalCSS {
 			)
 		);
 
-		$this->init();
 		$this->request->add_rewrite_rules();
 
 		$this->web_check_queue->create_table();
