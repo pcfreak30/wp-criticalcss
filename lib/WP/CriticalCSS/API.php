@@ -89,7 +89,7 @@ class API extends ComponentAbstract {
 			'body' => [
 				'height'  => 900,
 				'width'   => 1300,
-				'url'     => CriticalCSS::get_permalink( $item ),
+				'url'     => $this->app->get_permalink( $item ),
 				'aff'     => 3,
 				'version' => CriticalCSS::VERSION,
 			],
