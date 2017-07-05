@@ -22,7 +22,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 		global $wpdb;
 
-		$batch       = new stdClass();
+		$batch       = new \stdClass();
 		$batch->data = [];
 		$batch->key  = '';
 		if ( ! $this->is_queue_empty() ) {
@@ -36,7 +36,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			FROM `{$table}`
 			LIMIT 1
 		" );
-			$batch      = new stdClass();
+			$batch      = new \stdClass();
 			$batch->key = $result->id;
 			unset( $result->id );
 			$data = maybe_unserialize( $result->data );
@@ -49,6 +49,10 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		}
 
 		return $batch;
+	}
+
+	public function dispatch() {
+		$this->schedule_event();
 	}
 
 	/**
