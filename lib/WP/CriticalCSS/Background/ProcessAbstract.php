@@ -12,6 +12,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			$this,
 			'cron_interval',
 		] );
+		remove_action( 'wp_ajax_' . $this->identifier, array( $this, 'maybe_handle' ) );
+		remove_action( 'wp_ajax_nopriv_' . $this->identifier, array( $this, 'maybe_handle' ) );
 		$this->schedule_event();
 	}
 
