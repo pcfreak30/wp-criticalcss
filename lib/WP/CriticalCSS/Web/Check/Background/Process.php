@@ -147,7 +147,7 @@ class Process extends ProcessAbstract {
 			$item['css_hash']  = $css_hash;
 			$item['html_hash'] = $html_hash;
 			WPCCSS()->get_integration_manager()->disable_integrations();
-			WPCCSS()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
+			WPCCSS()->get_cache_manager()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
 			WPCCSS()->get_integration_manager()->enable_integrations();
 			WPCCSS()->get_data_manager()->set_cache( $item, '' );
 			$api_queue->push_to_queue( $item )->save();
