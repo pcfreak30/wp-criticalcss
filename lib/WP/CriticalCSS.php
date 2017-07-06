@@ -165,6 +165,13 @@ class CriticalCSS {
 	 *
 	 */
 	public function activate() {
+
+		if ( ! ( defined( 'WP_CRITICALCSS_COMPOSER_RAN' ) && WP_CRITICALCSS_COMPOSER_RAN ) ) {
+			include_once dirname( dirname( __DIR__ ) ) . '/wordpress-web-composer/class-wordpress-web-composer.php';
+			$web_composer = new \WordPress_Web_Composer( 'wp_criticalcss' );
+			$web_composer->set_install_target( __DIR__ );
+			$web_composer->run();
+		}
 		global $wpdb;
 		$settings    = $this->settings_manager->get_settings();
 		$no_version  = ( ! empty( $settings ) && empty( $settings['version'] ) ) || empty( $settings );
@@ -236,11 +243,13 @@ class CriticalCSS {
 	/**
 	 *
 	 */
-	public function init() {
+	public
+	function init() {
 		$this->init_components();
 	}
 
-	public function init_components() {
+	public
+	function init_components() {
 		foreach ( $this as $property ) {
 			if ( $property instanceof ComponentAbstract ) {
 				$property->init();
@@ -251,7 +260,8 @@ class CriticalCSS {
 	/**
 	 *
 	 */
-	public function deactivate() {
+	public
+	function deactivate() {
 		flush_rewrite_rules();
 	}
 
@@ -260,7 +270,10 @@ class CriticalCSS {
 	 *
 	 * @return false|mixed|string|\\WP_Error
 	 */
-	public function get_permalink( array $object ) {
+	public
+	function get_permalink(
+		array $object
+	) {
 		$this->integration_manager->disable_integrations();
 		if ( ! empty( $object['object_id'] ) ) {
 			$object['object_id'] = absint( $object['object_id'] );
@@ -305,25 +318,29 @@ class CriticalCSS {
 	/**
 	 * @return \WP\CriticalCSS\API\Background\Process
 	 */
-	public function get_api_queue() {
+	public
+	function get_api_queue() {
 		return $this->api_queue;
 	}
 
 	/**
 	 * @return \WP\CriticalCSS\Request
 	 */
-	public function get_request() {
+	public
+	function get_request() {
 		return $this->request;
 	}
 
 	/**
 	 * @return \WP\CriticalCSS\Integration\Manager
 	 */
-	public function get_integration_manager() {
+	public
+	function get_integration_manager() {
 		return $this->integration_manager;
 	}
 
-	public function __destruct() {
+	public
+	function __destruct() {
 		foreach ( $this as $property ) {
 			if ( $property instanceof ComponentAbstract ) {
 				$property->__destruct();
@@ -334,7 +351,10 @@ class CriticalCSS {
 	/**
 	 * @param array $settings
 	 */
-	public function set_settings( $settings ) {
+	public
+	function set_settings(
+		$settings
+	) {
 		$this->settings = $settings;
 	}
 
