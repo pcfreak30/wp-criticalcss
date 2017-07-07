@@ -69,7 +69,7 @@ if ( version_compare( PHP_VERSION, '5.4.0' ) < 0 ) {
 } else {
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 		include_once __DIR__ . '/vendor/autoload.php';
-		add_action( 'plugins_loaded', 'wp_criticalcss_init' );
+		add_action( 'plugins_loaded', 'wp_criticalcss_init', 11 );
 		register_activation_hook( __FILE__, 'wp_criticalcss_activate' );
 		register_deactivation_hook( __FILE__, 'wp_criticalcss_deactivate' );
 	} else {
