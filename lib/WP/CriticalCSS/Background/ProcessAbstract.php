@@ -102,7 +102,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
   url TEXT,
   data TEXT,";
 		if ( is_multisite() ) {
-			$sql .= "\n" . 'blog_id BIGINT(20)';
+			$sql .= "\n" . 'blog_id BIGINT(20),';
 		}
 		dbDelta( "$sql\nPRIMARY KEY  (id)\n) {$charset_collate};" );
 	}
