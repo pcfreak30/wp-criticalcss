@@ -20,6 +20,7 @@ class Manager extends ComponentAbstract {
 			$integrations[ $integration ] = wpccss_container()->create( $integration );
 		}
 		$this->integrations = $integrations;
+		$this->enable_integrations();
 	}
 
 	/**
