@@ -40,6 +40,12 @@ class CriticalCSS {
 	 * @var \WP\CriticalCSS\API\Background\Process
 	 */
 	protected $api_queue;
+
+	/**
+	 * @var \WP\CriticalCSS\Integration\Manager
+	 */
+	protected $integration_manager;
+
 	/**
 	 * @var array
 	 */
@@ -68,10 +74,6 @@ class CriticalCSS {
 	 * @var \WP\CriticalCSS\Request
 	 */
 	protected $request;
-	/**
-	 * @var \WP\CriticalCSS\Integration\Manager
-	 */
-	protected $integration_manager;
 	/**
 	 * @var \WP\CriticalCSS\Settings\Manager
 	 */
