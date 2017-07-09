@@ -21,8 +21,7 @@ class RootRelativeURLSTest extends TestCase {
 				]
 			)
 		);
-		WPCCSS()->init();
-		do_action_ref_array( 'wp', [ &$wp ] );
+		WPCCSS()->get_integration_manager()->enable_integrations();
 		$this->assertFalse(
 			has_action(
 				'post_link', [
@@ -35,18 +34,7 @@ class RootRelativeURLSTest extends TestCase {
 
 	public function test_disable() {
 		global $wp;
-		$this->assertEquals(
-			1, has_action(
-				'post_link', [
-					'MP_WP_Root_Relative_URLS',
-					'proper_root_relative_url',
-				]
-			)
-		);
-		WPCCSS()->init();
-		do_action_ref_array( 'wp', [ &$wp ] );
-		$this->assertFalse(
-			has_action(
+		$this->assetFalse( has_action(
 				'post_link', [
 					'MP_WP_Root_Relative_URLS',
 					'proper_root_relative_url',
