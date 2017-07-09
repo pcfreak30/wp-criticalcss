@@ -12,6 +12,7 @@ class RootRelativeURLSTest extends TestCase {
 
 	public function test_enable() {
 		global $wp;
+		WPCCSS()->get_integration_manager()->disable_integrations();
 		$this->assertEquals(
 			1, has_action(
 				'post_link', [
