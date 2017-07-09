@@ -34,7 +34,7 @@ class RootRelativeURLSTest extends TestCase {
 
 	public function test_disable() {
 		global $wp;
-		$this->assetFalse( has_action(
+		$this->assertFalse( has_action(
 				'post_link', [
 					'MP_WP_Root_Relative_URLS',
 					'proper_root_relative_url',
