@@ -57,6 +57,9 @@ class TestCase extends \PHPUnit_Framework_TestCase {
 				},
 			]
 		);
+		\WP_Mock::userFunction( 'register_activation_hook' );
+		\WP_Mock::userFunction( 'register_deactivation_hook' );
+		\WP_Mock::userFunction( 'remove_action' );
 	}
 
 	protected function tearDown() {

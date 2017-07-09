@@ -4,6 +4,8 @@ define( 'ABSPATH', '/tmp/wordpress/' );
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
 WP_Mock::bootstrap();
+\WP_Mock::userFunction( 'register_activation_hook' );
+\WP_Mock::userFunction( 'register_deactivation_hook' );
 
 require dirname( __DIR__ ) . '/wp-criticalcss.php';
 wpccss_container( 'unit_test' );
