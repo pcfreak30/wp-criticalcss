@@ -7,7 +7,10 @@ use WP\CriticalCSS\Testing\Integration\TestCase;
 class ManagerTest extends TestCase {
 	public function test_set_item_data_post() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
@@ -17,7 +20,10 @@ class ManagerTest extends TestCase {
 
 	public function test_set_item_data_term() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$term = $this->factory->term->create_and_get();
 		$this->go_to( get_term_link( $term->term_id ) );
@@ -27,7 +33,10 @@ class ManagerTest extends TestCase {
 
 	public function test_set_item_data_author() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$this->factory->post->create( [ 'post_author' => 1 ] );
 		$this->go_to( get_author_posts_url( 1 ) );
@@ -37,7 +46,10 @@ class ManagerTest extends TestCase {
 
 	public function test_set_item_data_url() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$url = home_url();
 		$this->go_to( $url );
@@ -48,7 +60,10 @@ class ManagerTest extends TestCase {
 	public function test_set_item_data_template() {
 		$instance = WPCCSS();
 		$template = locate_template( 'index.php' );
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		WPCCSS()->get_settings_manager()->update_settings( [
+			'template_cache'     => 'on',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		WPCCSS()->get_request()->template_include( $template );
 		$post = $this->factory->post->create_and_get();
@@ -59,7 +74,10 @@ class ManagerTest extends TestCase {
 
 	public function test_get_item_data_post() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
@@ -69,7 +87,10 @@ class ManagerTest extends TestCase {
 
 	public function test_get_item_data_term() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$term = $this->factory->term->create_and_get();
 		$this->go_to( get_term_link( $term->term_id ) );
@@ -79,7 +100,10 @@ class ManagerTest extends TestCase {
 
 	public function test_get_item_data_author() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$this->factory->post->create( [ 'post_author' => 1 ] );
 		$this->go_to( get_author_posts_url( 1 ) );
@@ -89,7 +113,10 @@ class ManagerTest extends TestCase {
 
 	public function test_get_item_data_url() {
 		$instance = WPCCSS();
-		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		$instance->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		$url = home_url();
 		$this->go_to( $url );
@@ -100,7 +127,10 @@ class ManagerTest extends TestCase {
 	public function test_get_item_data_template() {
 		$instance = WPCCSS();
 		$template = locate_template( 'index.php' );
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		WPCCSS()->get_settings_manager()->update_settings( [
+			'template_cache'     => 'on',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		$instance->init();
 		WPCCSS()->get_request()->template_include( $template );
 		$post = $this->factory->post->create_and_get();
@@ -110,7 +140,10 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_hash_object() {
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		WPCCSS()->get_settings_manager()->update_settings( [
+			'template_cache'     => 'off',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		WPCCSS()->init();
 		$this->assertEquals(
 			'2c4eebcf19a6fa7b1d5e085ee453571b', WPCCSS()->get_data_manager()->get_item_hash(
@@ -123,7 +156,10 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_hash_template() {
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		WPCCSS()->get_settings_manager()->update_settings( [
+			'template_cache'     => 'on',
+			'web_check_interval' => DAY_IN_SECONDS,
+		] );
 		WPCCSS()->init();
 		$template = locate_template( 'index.php' );
 		$this->assertEquals(
