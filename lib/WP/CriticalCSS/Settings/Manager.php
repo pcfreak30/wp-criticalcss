@@ -7,6 +7,14 @@ namespace WP\CriticalCSS\Settings;
 use WP\CriticalCSS;
 
 class Manager {
+	private $settings = [
+		'version',
+		'web_check_interval',
+		'apikey',
+		'force_web_check',
+		'template_cache',
+		'web_check_interval',
+	];
 
 	public function get_setting( $name ) {
 		$settings = $this->get_settings();
@@ -29,6 +37,13 @@ class Manager {
 		if ( empty( $settings ) ) {
 			$settings = [];
 		}
+
+		$defaults = [];
+		foreach ( $this->settings as $setting ) {
+			$defaults[ $setting ] = null;
+		}
+
+		$settings = array_merge( $defaults, $settings );
 
 		return $settings;
 	}
