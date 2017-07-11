@@ -47,4 +47,4 @@ script:
 
 after_success:
   - ./vendor/bin/phpcov merge --clover=logs/clover.xml logs/
-  - ./vendor/bin/test-reporter -coverage-report=logs/clover.xml
+  - ./vendor/bin/test-reporter --coverage-report=logs/clover.xml
