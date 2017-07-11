@@ -166,4 +166,11 @@ class Manager extends CriticalCSS\ComponentAbstract {
 		}
 		$this->store->delete_cache_branch( [ $hash ] );
 	}
+
+	/**
+	 * @return \pcfreak30\WordPress\Cache\Store
+	 */
+	public function get_store() {
+		return $this->store;
+	}
 }
