@@ -38,12 +38,7 @@ class Manager {
 			$settings = [];
 		}
 
-		$defaults = [];
-		foreach ( $this->settings as $setting ) {
-			$defaults[ $setting ] = null;
-		}
-
-		$settings = array_merge( $defaults, $settings );
+		$settings = array_merge( $this->get_defaults(), $settings );
 
 		return $settings;
 	}
@@ -72,5 +67,15 @@ class Manager {
 		}
 
 		return update_option( CriticalCSS::OPTIONNAME, $settings );
+	}
+
+	protected function get_defaults() {
+
+		$defaults = [];
+		foreach ( $this->settings as $setting ) {
+			$defaults[ $setting ] = null;
+		}
+
+		return $defaults;
 	}
 }
