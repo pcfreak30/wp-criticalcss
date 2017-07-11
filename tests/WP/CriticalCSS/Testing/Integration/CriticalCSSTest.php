@@ -64,7 +64,7 @@ class CriticalCSSTest extends TestCase {
 
 	public function test_get_settings_empty() {
 		WPCCSS()->get_settings_manager()->update_settings( [] );
-		$this->assertEmpty( WPCCSS()->get_settings_manager()->get_settings() );
+		$this->assertEmpty( array_filter( WPCCSS()->get_settings_manager()->get_settings() ) );
 	}
 
 	public function test_get_settings_multisite() {
