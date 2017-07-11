@@ -92,7 +92,9 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 	public function create_table() {
 		global $wpdb;
-		include_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		if ( ! function_exists( 'dbDelta' ) ) {
+			include_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		}
 
 		$charset_collate = $wpdb->get_charset_collate();
 		if ( is_multisite() ) {
