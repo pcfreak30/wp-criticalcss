@@ -124,12 +124,12 @@
         "source": {
           "type": "git",
           "url": "https://github.com/pcfreak30/wordpress-cache-store.git",
-          "reference": "c44c56e3cf1e2da8f8f67ba0137d455b4d87f8d8"
+          "reference": "8003f0517288329f0e0e514a2dad2977901e5e46"
         },
         "dist": {
           "type": "zip",
-          "url": "https://api.github.com/repos/pcfreak30/wordpress-cache-store/zipball/c44c56e3cf1e2da8f8f67ba0137d455b4d87f8d8",
-          "reference": "c44c56e3cf1e2da8f8f67ba0137d455b4d87f8d8",
+          "url": "https://api.github.com/repos/pcfreak30/wordpress-cache-store/zipball/8003f0517288329f0e0e514a2dad2977901e5e46",
+          "reference": "8003f0517288329f0e0e514a2dad2977901e5e46",
           "shasum": ""
         },
         "type": "library",
@@ -149,7 +149,7 @@
           }
         ],
         "description": "WordPress cache library to enable a data tree inspired storage structure to offset the limitation of the WordPress cache API for querying available keys",
-        "time": "2017-07-10T03:04:27+00:00"
+        "time": "2017-07-11T01:59:18+00:00"
         }
     ],
     "packages-dev": [
