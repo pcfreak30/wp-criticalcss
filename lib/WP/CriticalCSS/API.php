@@ -98,4 +98,10 @@ class API extends ComponentAbstract {
 
 		return $response instanceof \WP_Error ? $response : $response->job;
 	}
+
+	public function get_invalid_url_regexes() {
+		$response = $this->_send_request( 'get', 'invalid-generate-url-rules' );
+
+		return $response->rules;
+	}
 }
