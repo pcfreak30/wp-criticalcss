@@ -7,7 +7,7 @@ namespace WP\CriticalCSS\Settings;
 use WP\CriticalCSS;
 
 class Manager {
-	private $settings = [
+	protected $settings = [
 		'version',
 		'web_check_interval',
 		'apikey',
