@@ -49,6 +49,16 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 		if ( empty( $url ) ) {
 			return false;
 		}
+		$bad_urls = $api->get_invalid_url_regexes();
+		$bad_urls = array_filter( $bad_urls, function ( $regex ) use ( $url ) {
+			return preg_match( $regex, $url );
+		} );
+		if ( ! empty( $bad_urls ) ) {
+			return false;
+		}
+		if ( 2083 <= strlen( $url ) ) {
+			return false;
+		}
 		if ( ! empty( $item['queue_id'] ) ) {
 			$result = $api->get_result( $item['queue_id'] );
 			if ( $result instanceof \WP_Error ) {
