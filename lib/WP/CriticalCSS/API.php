@@ -87,11 +87,12 @@ class API extends ComponentAbstract {
 	public function generate( array $item ) {
 		$response = $this->_send_request( 'post', 'generate', [], [
 			'body' => [
-				'height'  => 900,
-				'width'   => 1300,
-				'url'     => $this->app->get_permalink( $item ),
-				'aff'     => 3,
-				'version' => CriticalCSS::VERSION,
+				'height'                   => 900,
+				'width'                    => 1300,
+				'url'                      => $this->app->get_permalink( $item ),
+				'aff'                      => 3,
+				'version'                  => CriticalCSS::VERSION,
+				'wpCriticalCssQueueLength' => $this->app->get_api_queue()->get_length(),
 			],
 		] );
 
