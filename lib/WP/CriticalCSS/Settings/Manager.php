@@ -52,6 +52,8 @@ class Manager {
 			$settings = [];
 		}
 
+		$settings = array_merge( $this->get_defaults(), $settings );
+
 		return $settings;
 	}
 
