@@ -100,8 +100,16 @@ class API extends ComponentAbstract {
 	}
 
 	public function get_invalid_url_regexes() {
-		$response = $this->_send_request( 'get', 'invalid-generate-url-rules' );
 
-		return $response->rules;
+		$cache_name = CriticalCSS::LANG_DOMAIN . '_imvalid_urls';
+		$cache      = $this->app->get_cache_manager()->get_store()->get_transient( $cache_name );
+
+		if ( empty( $cache ) ) {
+			$response = $this->_send_request( 'get', 'invalid-generate-url-rules' );
+			$cache    = $response->rules;
+			$this->app->get_cache_manager()->get_store()->set_transient( $cache_name, $cache, WEEK_IN_SECONDS * 2 );
+		}
+
+		return $cache;
 	}
 }
