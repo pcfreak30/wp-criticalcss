@@ -63,11 +63,17 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	 * @return bool
 	 */
 	protected function is_queue_empty() {
+		$count = $this->get_length();
+
+		return 0 == $count;
+	}
+
+	public function get_length() {
 		global $wpdb;
 
 		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}{$this->action}_queue`" );
 
-		return 0 == $count;
+		return $count;
 	}
 
 	/**
