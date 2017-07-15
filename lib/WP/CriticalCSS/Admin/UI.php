@@ -10,6 +10,10 @@ class UI extends CriticalCSS\ComponentAbstract {
 	 */
 	protected $settings_ui;
 
+	public function __construct( \WP\CriticalCSS\Settings\API $settings_ui ) {
+		$this->settings_ui = $settings_ui;
+	}
+
 	/**
 	 * @var \WP\CriticalCSS\Queue\ListTable
 	 */
@@ -30,7 +34,6 @@ class UI extends CriticalCSS\ComponentAbstract {
 				$this,
 				'sync_options',
 			], 10, 2 );
-			$this->settings_ui = new CriticalCSS\Settings\API();
 		}
 	}
 
