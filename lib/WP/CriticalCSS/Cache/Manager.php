@@ -49,7 +49,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 				]
 			);
 		}
-		$this->store = new Store( CriticalCSS::TRANSIENT_PREFIX, apply_filters( 'wp_criticalcss_cache_expire_period', absint( $this->settings['web_check_interval'] ) ), apply_filters( 'rocket_async_css_max_branch_length', 50 ) );
+		$this->store = new Store( CriticalCSS::TRANSIENT_PREFIX, apply_filters( 'wp_criticalcss_cache_expire_period', absint( $this->settings['web_check_interval'] ) ), apply_filters( 'rocket_footer_js_max_branch_length', 50 ) );
 	}
 
 	public function delete_cache_branch( $path = [] ) {
