@@ -343,7 +343,7 @@ class CriticalCSS {
 
 	public
 	function __destruct() {
-		foreach ( $this as $property ) {
+		foreach ( get_object_vars( $this ) as $property ) {
 			if ( $property instanceof ComponentAbstract ) {
 				$property->__destruct();
 			}
