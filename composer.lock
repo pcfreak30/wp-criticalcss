@@ -120,16 +120,16 @@
         },
       {
         "name": "pcfreak30/wordpress-cache-store",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "source": {
           "type": "git",
           "url": "https://github.com/pcfreak30/wordpress-cache-store.git",
-          "reference": "8003f0517288329f0e0e514a2dad2977901e5e46"
+          "reference": "dd8eede8cf150476551166c3032273d3a417d0fe"
         },
         "dist": {
           "type": "zip",
-          "url": "https://api.github.com/repos/pcfreak30/wordpress-cache-store/zipball/8003f0517288329f0e0e514a2dad2977901e5e46",
-          "reference": "8003f0517288329f0e0e514a2dad2977901e5e46",
+          "url": "https://api.github.com/repos/pcfreak30/wordpress-cache-store/zipball/dd8eede8cf150476551166c3032273d3a417d0fe",
+          "reference": "dd8eede8cf150476551166c3032273d3a417d0fe",
           "shasum": ""
         },
         "type": "library",
@@ -149,7 +149,7 @@
           }
         ],
         "description": "WordPress cache library to enable a data tree inspired storage structure to offset the limitation of the WordPress cache API for querying available keys",
-        "time": "2017-07-11T01:59:18+00:00"
+        "time": "2017-07-22T21:43:49+00:00"
         }
     ],
     "packages-dev": [
@@ -159,12 +159,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/10up/wp_mock.git",
-                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a"
+              "reference": "1baea0dbd1a23251fe7f08d9044fb7c1dc2106b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/10up/wp_mock/zipball/01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
-                "reference": "01458ea2173ace24291e4be42f7c3c3a3ebfe48a",
+              "url": "https://api.github.com/repos/10up/wp_mock/zipball/1baea0dbd1a23251fe7f08d9044fb7c1dc2106b3",
+              "reference": "1baea0dbd1a23251fe7f08d9044fb7c1dc2106b3",
                 "shasum": ""
             },
             "require": {
@@ -180,11 +180,6 @@
                 "behat/behat": "^3.0"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-dev": "1.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "WP_Mock\\": "./php/WP_Mock"
@@ -198,20 +193,20 @@
                 "GPL-2.0+"
             ],
             "description": "A mocking library to take the pain out of unit testing for WordPress",
-            "time": "2017-06-01 16:49:53"
+          "time": "2017-07-19T03:16:31+00:00"
         },
         {
             "name": "antecedent/patchwork",
-            "version": "2.0.6",
+          "version": "2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/antecedent/patchwork.git",
-                "reference": "248daac9af59644ebf25ad1925f8780a7a5e4882"
+              "reference": "d8e772ee90390960c23c6c64e09f1279d8a7b0df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/antecedent/patchwork/zipball/248daac9af59644ebf25ad1925f8780a7a5e4882",
-                "reference": "248daac9af59644ebf25ad1925f8780a7a5e4882",
+              "url": "https://api.github.com/repos/antecedent/patchwork/zipball/d8e772ee90390960c23c6c64e09f1279d8a7b0df",
+              "reference": "d8e772ee90390960c23c6c64e09f1279d8a7b0df",
                 "shasum": ""
             },
             "require": {
@@ -239,7 +234,7 @@
                 "runkit",
                 "testing"
             ],
-            "time": "2017-05-23T05:41:30+00:00"
+          "time": "2017-07-11T07:22:21+00:00"
         },
         {
             "name": "doctrine/instantiator",
@@ -379,7 +374,7 @@
             ],
             "authors": [
                 {
-                  "name": "Pádraic Brady",
+                  "name": "Padraic Brady",
                     "email": "padraic.brady@gmail.com",
                     "homepage": "http://blog.astrumfutura.com"
                 },
@@ -503,22 +498,22 @@
       },
       {
         "name": "phpdocumentor/reflection-docblock",
-        "version": "3.1.1",
+        "version": "3.2.0",
         "source": {
           "type": "git",
           "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-          "reference": "8331b5efe816ae05461b7ca1e721c01b46bafb3e"
+          "reference": "46f7e8bb075036c92695b15a1ddb6971c751e585"
         },
         "dist": {
           "type": "zip",
-          "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/8331b5efe816ae05461b7ca1e721c01b46bafb3e",
-          "reference": "8331b5efe816ae05461b7ca1e721c01b46bafb3e",
+          "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/46f7e8bb075036c92695b15a1ddb6971c751e585",
+          "reference": "46f7e8bb075036c92695b15a1ddb6971c751e585",
           "shasum": ""
         },
         "require": {
           "php": ">=5.5",
           "phpdocumentor/reflection-common": "^1.0@dev",
-          "phpdocumentor/type-resolver": "^0.2.0",
+          "phpdocumentor/type-resolver": "^0.4.0",
           "webmozart/assert": "^1.0"
         },
         "require-dev": {
@@ -544,24 +539,24 @@
           }
         ],
         "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-        "time": "2016-09-30T07:12:33+00:00"
+        "time": "2017-07-15T11:38:20+00:00"
       },
       {
         "name": "phpdocumentor/type-resolver",
-        "version": "0.2.1",
+        "version": "0.4.0",
         "source": {
           "type": "git",
           "url": "https://github.com/phpDocumentor/TypeResolver.git",
-          "reference": "e224fb2ea2fba6d3ad6fdaef91cd09a172155ccb"
+          "reference": "9c977708995954784726e25d0cd1dddf4e65b0f7"
         },
         "dist": {
           "type": "zip",
-          "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/e224fb2ea2fba6d3ad6fdaef91cd09a172155ccb",
-          "reference": "e224fb2ea2fba6d3ad6fdaef91cd09a172155ccb",
+          "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/9c977708995954784726e25d0cd1dddf4e65b0f7",
+          "reference": "9c977708995954784726e25d0cd1dddf4e65b0f7",
           "shasum": ""
         },
         "require": {
-          "php": ">=5.5",
+          "php": "^5.5 || ^7.0",
           "phpdocumentor/reflection-common": "^1.0"
         },
         "require-dev": {
@@ -591,7 +586,7 @@
             "email": "me@mikevanriel.com"
           }
         ],
-        "time": "2016-11-25T06:54:22+00:00"
+        "time": "2017-07-14T14:27:02+00:00"
       },
       {
         "name": "phpspec/prophecy",
@@ -1561,7 +1556,7 @@
       },
       {
         "name": "symfony/yaml",
-        "version": "v3.3.4",
+        "version": "v3.3.5",
         "source": {
           "type": "git",
           "url": "https://github.com/symfony/yaml.git",
