@@ -30,10 +30,10 @@ class WPRocket extends IntegrationAbstract {
 			WPCCSS(),
 			'reset_web_check_home_transient',
 		] );
-		if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
+		if ( function_exists( 'rocket_clean_wpengine' ) && ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
 			add_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 		}
-		if ( ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) ) {
+		if ( function_exists( 'rocket_clean_wpengine' ) && ! has_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' ) ) {
 			add_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
 		}
 		add_action( 'wp_criticalcss_purge_cache', [
