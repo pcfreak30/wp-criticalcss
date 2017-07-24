@@ -15,19 +15,19 @@ class WPRocket extends IntegrationAbstract {
 	 */
 	public function enable() {
 		add_action( 'after_rocket_clean_domain', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_transients',
 		] );
 		add_action( 'after_rocket_clean_post', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_post_transient',
 		] );
 		add_action( 'after_rocket_clean_term', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_term_transient',
 		] );
 		add_action( 'after_rocket_clean_home', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_home_transient',
 		] );
 		if ( function_exists( 'rocket_clean_wpengine' ) && ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
@@ -56,19 +56,19 @@ class WPRocket extends IntegrationAbstract {
 	 */
 	public function disable() {
 		remove_action( 'after_rocket_clean_domain', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_transients',
 		] );
 		remove_action( 'after_rocket_clean_post', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_post_transient',
 		] );
 		remove_action( 'after_rocket_clean_term', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_term_transient',
 		] );
 		remove_action( 'after_rocket_clean_home', [
-			WPCCSS(),
+			WPCCSS()->get_cache_manager(),
 			'reset_web_check_home_transient',
 		] );
 		remove_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
