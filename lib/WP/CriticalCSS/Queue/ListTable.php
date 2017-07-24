@@ -91,7 +91,7 @@ class ListTable extends \WP_List_Table {
 	private function _process_bulk_action() {
 		if ( 'purge' == $this->current_action() ) {
 			WPCCSS()->get_api_queue()->purge();
-			WPCCSS()->reset_web_check_transients();
+			WPCCSS()->get_cache_manager()->reset_web_check_transients();
 		}
 	}
 
