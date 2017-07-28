@@ -129,7 +129,7 @@ class ListTable extends \WP_List_Table {
 	 */
 	protected function column_url( array $item ) {
 		$settings = WPCCSS()->get_settings_manager()->get_settings();
-		if ( 'on' == $settings['template_cache'] ) {
+		if ( 'on' === $settings['template_cache'] ) {
 			return __( 'N/A', CriticalCSS::LANG_DOMAIN );
 		}
 
@@ -143,7 +143,7 @@ class ListTable extends \WP_List_Table {
 	 */
 	protected function column_template( array $item ) {
 		$settings = WPCCSS()->get_settings_manager()->get_settings();
-		if ( 'on' == $settings['template_cache'] ) {
+		if ( 'on' === $settings['template_cache'] ) {
 			if ( ! empty( $item['template'] ) ) {
 				return $item['template'];
 			}
