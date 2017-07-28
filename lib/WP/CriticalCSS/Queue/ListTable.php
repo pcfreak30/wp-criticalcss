@@ -178,6 +178,9 @@ class ListTable extends \WP_List_Table {
 						break;
 				}
 			} else {
+				if ( empty( $data['status'] ) ) {
+					return __( 'Pending', CriticalCSS::LANG_DOMAIN );
+				}
 				switch ( $data['status'] ) {
 					case CriticalCSS\API::STATUS_UNKNOWN:
 						return __( 'Unknown', CriticalCSS::LANG_DOMAIN );
