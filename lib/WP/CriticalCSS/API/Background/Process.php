@@ -33,7 +33,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + 8 >= time() ) {
 			return $item;
 		}
-		$api = wpccss_container()->create( '\\WP\\CriticalCSS\\API' );
+		$api = wpccss_container()->create( '\\WP\\CriticalCSS\\API', [ $settings['apikey'] ] );
 		$api->set_app( WPCCSS() );
 		if ( ! $this->_ping_checked ) {
 			if ( $api->ping() ) {
