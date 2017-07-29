@@ -7,12 +7,23 @@ namespace WP\CriticalCSS\Integration;
 use WP\CriticalCSS\ComponentAbstract;
 
 class Manager extends ComponentAbstract {
+	/**
+	 * @var bool
+	 */
+	protected $enabled = false;
 	protected $integrations = [
 		'\\WP\\CriticalCSS\\Integration\\RocketAsyncCSS',
 		'\\WP\\CriticalCSS\\Integration\\RootRelativeURLS',
 		'\\WP\\CriticalCSS\\Integration\\WPRocket',
 		'\\WP\\CriticalCSS\\Integration\\WPEngine',
 	];
+
+	/**
+	 * @return bool
+	 */
+	public function is_enabled() {
+		return $this->enabled;
+	}
 
 	public function init() {
 		$integrations = [];
@@ -23,6 +34,12 @@ class Manager extends ComponentAbstract {
 		$this->enable_integrations();
 	}
 
+	public function enable_integrations() {
+		do_action( 'wp_criticalcss_enable_integrations' );
+		$this->enabled = true;
+
+	}
+
 	/**
 	 * @return array
 	 */
@@ -30,14 +47,13 @@ class Manager extends ComponentAbstract {
 		return $this->integrations;
 	}
 
-	public function enable_integrations() {
-		do_action( 'wp_criticalcss_enable_integrations' );
-	}
-
 	/**
 	 *
 	 */
 	public function disable_integrations() {
+
 		do_action( 'wp_criticalcss_disable_integrations' );
+		$this->enabled = false;
+
 	}
 }
