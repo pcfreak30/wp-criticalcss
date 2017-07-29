@@ -63,9 +63,9 @@ class API extends ComponentAbstract {
 		}
 		if ( is_array( $response ) ) {
 			return json_decode( $response['body'] );
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 	/**
