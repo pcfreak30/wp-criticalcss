@@ -276,7 +276,11 @@ class CriticalCSS {
 	function get_permalink(
 		array $object
 	) {
-		$this->integration_manager->disable_integrations();
+		$enable_integration = false;
+		if ( $this->integration_manager->is_enabled() ) {
+			$this->integration_manager->disable_integrations();
+			$enable_integration = true;
+		}
 		if ( ! empty( $object['object_id'] ) ) {
 			$object['object_id'] = absint( $object['object_id'] );
 		}
@@ -296,8 +300,9 @@ class CriticalCSS {
 			default:
 				$url = $object['url'];
 		}
-		$this->integration_manager->enable_integrations();
-
+		if ( $enable_integration ) {
+			$this->integration_manager->enable_integrations();
+		}
 		if ( $url instanceof \WP_Error ) {
 			return false;
 		}
