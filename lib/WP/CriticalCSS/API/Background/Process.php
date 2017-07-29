@@ -70,22 +70,20 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 				// @codingStandardsIgnoreLine
 				$item['result_status'] = $result->resultStatus;
 			}
-			if ( 'JOB_UNKNOWN' == $result->status ) {
+			if ( 'JOB_UNKNOWN' === $result->status ) {
 				unset( $item['queue_id'] );
 
 				return $item;
 			}
-			if ( 'JOB_ONGOING' == $result->status || 'JOB_QUEUED' == $result->status ) {
-				if ( 'JOB_QUEUED' == $result->status ) {
-					// @codingStandardsIgnoreLine
-					$item['queue_index'] = $result->queueIndex;
-				}
+			if ( ! empty( $result->error ) || 'JOB_QUEUED' === $result->status ) {
+				// @codingStandardsIgnoreLine
+				$item['queue_index'] = $result->queueIndex;
 
 				return $item;
 			}
-			if ( 'JOB_DONE' == $result->status ) {
+			if ( 'JOB_DONE' === $result->status ) {
 				// @codingStandardsIgnoreLine
-				if ( 'GOOD' == $result->resultStatus && ! empty( $result->css ) ) {
+				if ( 'GOOD' === $result->resultStatus && ! empty( $result->css ) ) {
 					WPCCSS()->get_integration_manager()->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
 						WPCCSS()->get_cache_manager()->purge_page_cache();
