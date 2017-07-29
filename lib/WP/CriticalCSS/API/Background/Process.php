@@ -49,7 +49,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 		}
 		$bad_urls = $api->get_invalid_url_regexes();
 		$bad_urls = array_filter( $bad_urls, function ( $regex ) use ( $url ) {
-			return preg_match( $regex, $url );
+			return preg_match( "~$regex~", $url );
 		} );
 		if ( ! empty( $bad_urls ) ) {
 			return false;
