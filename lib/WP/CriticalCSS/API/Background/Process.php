@@ -70,12 +70,12 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 				// @codingStandardsIgnoreLine
 				$item['result_status'] = $result->resultStatus;
 			}
-			if ( 'JOB_UNKNOWN' === $result->status ) {
+			if ( ! empty( $result->error ) || 'JOB_UNKNOWN' === $result->status ) {
 				unset( $item['queue_id'] );
 
 				return $item;
 			}
-			if ( ! empty( $result->error ) || 'JOB_QUEUED' === $result->status ) {
+			if ( 'JOB_QUEUED' === $result->status ) {
 				// @codingStandardsIgnoreLine
 				$item['queue_index'] = $result->queueIndex;
 
