@@ -2,8 +2,6 @@
 
 namespace WP\CriticalCSS\API\Background;
 
-use WP\CriticalCSS\API;
-
 /**
  * Class Process
  *
@@ -35,8 +33,8 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + 8 >= time() ) {
 			return $item;
 		}
-
-		$api = new API( $settings['apikey'] );
+		$api = wpccss_container()->create( '\\WP\\CriticalCSS\\API' );
+		$api->set_app( WPCCSS() );
 		if ( ! $this->_ping_checked ) {
 			if ( $api->ping() ) {
 				$this->_ping_checked = true;
