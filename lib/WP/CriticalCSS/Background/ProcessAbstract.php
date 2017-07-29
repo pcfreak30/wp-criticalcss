@@ -231,4 +231,22 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			'id' => (int) $key,
 		] );
 	}
+
+	public function handle_cron_healthcheck() {
+		if ( $this->is_process_running() ) {
+			// Background process already running.
+			return;
+		}
+
+		if ( $this->is_queue_empty() ) {
+			// No data to process.
+			$this->clear_scheduled_event();
+
+			return;
+		}
+
+		$this->handle();
+
+		exit;
+	}
 }
