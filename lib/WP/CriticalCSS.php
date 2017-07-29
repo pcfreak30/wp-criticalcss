@@ -109,7 +109,7 @@ class CriticalCSS {
 	}
 
 	protected function set_parent() {
-		foreach ( $this as $property ) {
+		foreach ( get_object_vars( $this ) as &$property ) {
 			if ( $property instanceof ComponentAbstract ) {
 				$property->set_app( $this );
 			}
