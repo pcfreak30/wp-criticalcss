@@ -75,7 +75,7 @@ class WPRocket extends IntegrationAbstract {
 		remove_action( 'after_rocket_clean_domain', 'rocket_clean_supercacher' );
 		remove_filter( 'wp_criticalcss_print_styles_cache', [
 			$this,
-			'purge_cache',
+			'print_styles',
 		] );
 		remove_filter( 'wp_criticalcss_cache_integration', '_return_true' );
 	}
