@@ -85,11 +85,11 @@ class Process extends ProcessAbstract {
 			}
 		}
 		if ( preg_match_all( '#loadCSS\s*\(\s*["\'](.*)["\']\s*#', $result['body'], $matches ) ) {
-			foreach ( $matches as $match ) {
-				$href = $match[1];
+			foreach ( $matches[1] as $match ) {
+				$href = $match;
 				if ( 0 === strpos( $href, '//' ) ) {
 					//Handle no protocol urls
-					$href = 'http:' . $match[1];
+					$href = 'http:' . $match;
 				}
 				$href    = set_url_scheme( $href );
 				$css_url = parse_url( set_url_scheme( $href ) );
