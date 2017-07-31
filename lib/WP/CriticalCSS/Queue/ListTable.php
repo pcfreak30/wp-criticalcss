@@ -147,11 +147,9 @@ class ListTable extends \WP_List_Table {
 			if ( ! empty( $item['template'] ) ) {
 				return $item['template'];
 			}
-
-			return __( 'N/A', CriticalCSS::LANG_DOMAIN );
 		}
 
-		return WPCCSS()->get_permalink( $item );
+		return __( 'N/A', CriticalCSS::LANG_DOMAIN );
 	}
 
 	/**
