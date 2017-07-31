@@ -307,7 +307,10 @@ class CriticalCSS {
 			return false;
 		}
 
-		$url_parts         = parse_url( $url );
+		$url_parts = parse_url( $url );
+		if ( empty( $url_parts['path'] ) ) {
+			$url_parts['path'] = '/';
+		}
 		$url_parts['path'] = trailingslashit( $url_parts['path'] ) . 'nocache/';
 		if ( class_exists( 'http\Url' ) ) {
 			/**
