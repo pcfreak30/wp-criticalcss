@@ -37,7 +37,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 		} else {
 			if ( 'url' === $item['type'] ) {
 				$name  = [ $name, md5( $item['url'] ) ];
-				$value = $this->app->get_cache_manager()->get_cache_fragment( $name );
+				$value = $this->app->get_cache_manager()->get_store()->get_cache_fragment( $name );
 			} else {
 				$name = "criticalcss_{$name}";
 				switch ( $item['type'] ) {
@@ -82,7 +82,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 		} else {
 			if ( 'url' === $item['type'] ) {
 				$name = [ $name, md5( $item['url'] ) ];
-				$this->app->get_cache_manager()->update_cache_fragment( $name, $value );
+				$this->app->get_cache_manager()->get_store()->update_cache_fragment( $name, $value );
 			} else {
 				$name  = "criticalcss_{$name}";
 				$value = wp_slash( $value );
