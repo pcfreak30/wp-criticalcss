@@ -3,6 +3,7 @@
 namespace WP\CriticalCSS\Cache;
 
 use pcfreak30\WordPress\Cache\Store;
+use WP\CriticalCSS;
 use WP\CriticalCSS\ComponentAbstract;
 
 /**
@@ -39,13 +40,13 @@ class Manager extends ComponentAbstract {
 		add_action( 'after_rocket_clean_post', [ $this, 'purge_post' ] );
 		add_action( 'after_rocket_clean_term', [ $this, 'purge_term' ] );
 		add_action( 'after_rocket_clean_files', [ $this, 'purge_url' ] );
-		$this->store->set_prefix( CSS::TRANSIENT_PREFIX );
+		$this->store->set_prefix( CriticalCSS::TRANSIENT_PREFIX );
 		$interval = 0;
 		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
 			$interval = get_rocket_purge_cron_interval();
 		}
-		$this->store->set_expire( apply_filters( 'rocket_async_css_cache_expire_period', $interval ) );
-		$this->store->set_max_branch_length( apply_filters( 'rocket_async_css_max_branch_length', 50 ) );
+		$this->store->set_expire( apply_filters( 'wp_criticalcss_cache_expire_period', $interval ) );
+		$this->store->set_max_branch_length( apply_filters( 'wp_criticalcss_max_branch_length', 50 ) );
 	}
 
 	/**
