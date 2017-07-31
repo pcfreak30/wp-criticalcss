@@ -198,10 +198,11 @@ class ListTable extends \WP_List_Table {
 	 * @return string
 	 */
 	protected function column_queue_position( array $item ) {
-		if ( ! isset( $item['queue_id'], $item['queue_index'] ) ) {
+		$data = maybe_unserialize( $item['data'] );
+		if ( ! isset( $data['queue_id'], $data['queue_index'] ) ) {
 			return __( 'N/A', CriticalCSS::LANG_DOMAIN );
 		}
 
-		return $item['queue_index'];
+		return $data['queue_index'];
 	}
 }
