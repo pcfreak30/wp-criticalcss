@@ -23,7 +23,7 @@ class CriticalCSS {
 	/**
 	 *
 	 */
-	const TRANSIENT_PREFIX = 'wp_criticalcss_web_check_';
+	const TRANSIENT_PREFIX = 'wp_criticalcss';
 	/**
 	 * @var array
 	 */
