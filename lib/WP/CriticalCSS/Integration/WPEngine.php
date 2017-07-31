@@ -47,7 +47,7 @@ class WPEngine extends IntegrationAbstract {
 			if ( empty( $type ) ) {
 				/** @noinspection PhpUndefinedClassInspection */
 				WpeCommon::purge_varnish_cache();
-			} elseif ( 'post' == $type ) {
+			} elseif ( 'post' === $type ) {
 				/** @noinspection PhpUndefinedClassInspection */
 				WpeCommon::purge_varnish_cache( $object_id );
 			} else {
@@ -64,7 +64,7 @@ class WPEngine extends IntegrationAbstract {
 				$paths = [ $object_uri ];
 				/** @noinspection PhpUndefinedClassInspection */
 				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
-				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE == 'pod' ) {
+				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE === 'pod' ) {
 					$wpe_varnish_servers = [ 'localhost' ];
 				} // End if().
 				elseif ( ! isset( $wpe_varnish_servers ) ) {

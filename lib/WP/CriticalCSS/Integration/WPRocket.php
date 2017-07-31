@@ -87,13 +87,13 @@ class WPRocket extends IntegrationAbstract {
 	 * @param null $url
 	 */
 	public function purge_cache( $type = null, $object_id = null, $url = null ) {
-		if ( 'post' == $type ) {
+		if ( 'post' === $type ) {
 			rocket_clean_post( $object_id );
 		}
-		if ( 'term' == $type ) {
+		if ( 'term' === $type ) {
 			rocket_clean_term( $object_id, get_term( $object_id )->taxonomy );
 		}
-		if ( 'url' == $type ) {
+		if ( 'url' === $type ) {
 			rocket_clean_files( $url );
 		}
 		if ( empty( $type ) ) {
