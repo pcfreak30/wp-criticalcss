@@ -64,15 +64,15 @@ class Frontend extends ComponentAbstract {
 			}
 			$type  = $this->app->get_request()->get_current_page_type();
 			$hash  = $this->app->get_data_manager()->get_item_hash( $type );
-			$check = $this->app->get_cache_manager()->get_cache_fragment( [ $hash ] );
-			if ( 'on' == $this->settings['template_cache'] && ! empty( $type['template'] ) ) {
+			$check = $this->app->get_cache_manager()->get_cache_fragment( [ 'webcheck', $hash ] );
+			if ( 'on' === $this->settings['template_cache'] && ! empty( $type['template'] ) ) {
 				if ( empty( $cache ) && ! $this->app->get_api_queue()->get_item_exists( $type ) ) {
 					$this->app->get_api_queue()->push_to_queue( $type )->save();
 				}
 			} else {
 				if ( empty( $check ) && ! $this->app->get_web_check_queue()->get_item_exists( $type ) ) {
 					$this->app->get_web_check_queue()->push_to_queue( $type )->save();
-					$this->app->get_cache_manager()->update_cache_fragment( [ $hash ], true );
+					$this->app->get_cache_manager()->update_cache_fragment( [ 'webcheck', $hash ], true );
 				}
 			}
 
