@@ -18,6 +18,17 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 */
 	private $store;
 
+
+	/**
+	 * Manager constructor.
+	 *
+	 * @param \pcfreak30\WordPress\Cache\Store $store
+	 */
+	public function __construct( Store $store ) {
+		$this->store = $store;
+	}
+
+
 	/**
 	 *
 	 */
@@ -35,7 +46,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 				'reset_web_check_transients',
 			]
 		);
-		if ( ! ( ! empty( $this->settings['template_cache'] ) && 'on' == $this->settings['template_cache'] ) ) {
+		if ( ! ( ! empty( $this->settings['template_cache'] ) && 'on' === $this->settings['template_cache'] ) ) {
 			add_action(
 				'post_updated', [
 					$this,
@@ -49,7 +60,13 @@ class Manager extends CriticalCSS\ComponentAbstract {
 				]
 			);
 		}
-		$this->store = new Store( CriticalCSS::TRANSIENT_PREFIX, apply_filters( 'wp_criticalcss_cache_expire_period', absint( $this->settings['web_check_interval'] ) ), apply_filters( 'rocket_footer_js_max_branch_length', 50 ) );
+		$this->store->set_prefix( CriticalCSS::TRANSIENT_PREFIX );
+		$interval = 0;
+		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
+			$interval = get_rocket_purge_cron_interval();
+		}
+		$this->store->set_expire( apply_filters( 'wp_criticalcss_cache_expire_period', $interval ) );
+		$this->store->set_max_branch_length( apply_filters( 'wp_criticalcss_max_branch_length', 50 ) );
 	}
 
 	public function delete_cache_branch( $path = [] ) {
