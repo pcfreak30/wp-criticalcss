@@ -3,7 +3,7 @@
     "jakeasmith/http_build_url": "^1",
     "a5hleyrich/wp-background-processing": "dev-master",
     "level-2/dice": "dev-v2.0-PHP5.4-5.5",
-    "pcfreak30/wordpress-cache-store": "^0.1.0"
+    "pcfreak30/wordpress-cache-store": "^0.1.1"
   },
   "autoload": {
     "psr-4": {
