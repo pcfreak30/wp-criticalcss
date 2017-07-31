@@ -39,7 +39,7 @@ class WPRocket extends IntegrationAbstract {
 		add_action( 'wp_criticalcss_purge_cache', [
 			$this,
 			'purge_cache',
-		] );
+		], 10, 3 );
 		add_filter( 'wp_criticalcss_print_styles_cache', [
 			$this,
 			'print_styles',
