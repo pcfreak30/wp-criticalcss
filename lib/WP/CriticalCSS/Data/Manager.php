@@ -31,13 +31,13 @@ class Manager extends CriticalCSS\ComponentAbstract {
 		if ( empty( $item ) ) {
 			$item = WPCCSS()->get_request()->get_current_page_type();
 		}
-		if ( 'on' == $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
 			$name  = "criticalcss_{$name}_" . md5( $item['template'] );
 			$value = get_transient( $name );
 		} else {
-			if ( 'url' == $item['type'] ) {
-				$name  = "criticalcss_url_{$name}_" . md5( $item['url'] );
-				$value = get_transient( $name );
+			if ( 'url' === $item['type'] ) {
+				$name  = [ $name, md5( $item['url'] ) ];
+				$value = $this->app->get_cache_manager()->get_cache_fragment( $name );
 			} else {
 				$name = "criticalcss_{$name}";
 				switch ( $item['type'] ) {
@@ -76,13 +76,13 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 * @param int $expires
 	 */
 	public function set_item_data( $item, $name, $value, $expires = 0 ) {
-		if ( 'on' == $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
 			$name = "criticalcss_{$name}_" . md5( $item['template'] );
 			set_transient( $name, $value, $expires );
 		} else {
-			if ( 'url' == $item['type'] ) {
-				$name = "criticalcss_url_{$name}_" . md5( $item['url'] );
-				set_transient( $name, $value, $expires );
+			if ( 'url' === $item['type'] ) {
+				$name = [ $name, md5( $item['url'] ) ];
+				$this->app->get_cache_manager()->update_cache_fragment( $name, $value );
 			} else {
 				$name  = "criticalcss_{$name}";
 				$value = wp_slash( $value );
@@ -149,7 +149,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 * @SuppressWarnings("unused")
 	 */
 	public function get_item_hash( $item ) {
-		extract( $item );
+		extract( $item, EXTR_OVERWRITE );
 		$parts = [
 			'object_id',
 			'type',
