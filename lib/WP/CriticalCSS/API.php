@@ -110,7 +110,7 @@ class API extends ComponentAbstract {
 
 	public function get_invalid_url_regexes() {
 
-		$cache_name = CriticalCSS::LANG_DOMAIN . '_imvalid_urls';
+		$cache_name = CriticalCSS::LANG_DOMAIN . '_invalid_urls';
 		$cache      = $this->app->get_cache_manager()->get_store()->get_transient( $cache_name );
 
 		if ( empty( $cache ) ) {
