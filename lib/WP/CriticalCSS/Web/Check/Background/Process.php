@@ -91,9 +91,8 @@ class Process extends ProcessAbstract {
 					//Handle no protocol urls
 					$href = 'http:' . $match;
 				}
-				$href    = set_url_scheme( $href );
-				$css_url = parse_url( set_url_scheme( $href ) );
-				$urls[]  = $css_url;
+				$href   = set_url_scheme( $href );
+				$urls[] = $href;
 			}
 		}
 		$urls = apply_filters( 'wp_criticalcss_web_check_css_urls', $urls, $item );
