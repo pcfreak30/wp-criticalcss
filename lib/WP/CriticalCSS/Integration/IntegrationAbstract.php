@@ -4,11 +4,17 @@ namespace WP\CriticalCSS\Integration;
 /**
  * Class IntegrationAbstract
  */
+/**
+ * Class IntegrationAbstract
+ *
+ * @package WP\CriticalCSS\Integration
+ */
 abstract class IntegrationAbstract {
+
 	/**
-	 * WP_CriticalCSS_Integration_Base constructor.
+	 *
 	 */
-	public function __construct() {
+	public function init() {
 		add_action( 'wp_criticalcss_enable_integrations', [
 			$this,
 			'enable',
