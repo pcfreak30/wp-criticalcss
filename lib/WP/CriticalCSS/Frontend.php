@@ -51,6 +51,9 @@ class Frontend extends ComponentAbstract {
 	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
 	 */
 	public function print_styles() {
+		if ( get_query_var( 'nocache' ) ) {
+			do_action( 'wp_criticalcss_nocache' );
+		}
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
 			$cache = $this->app->get_data_manager()->get_cache();
 			$cache = apply_filters( 'wp_criticalcss_print_styles_cache', $cache );
