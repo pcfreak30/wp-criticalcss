@@ -9,9 +9,9 @@ class WPEngine extends IntegrationAbstract {
 	/**
 	 * WP_CriticalCSS_Integration_WPEngine constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		if ( class_exists( 'WPECommon' ) ) {
-			parent::__construct();
+			parent::init();
 		}
 	}
 

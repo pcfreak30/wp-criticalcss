@@ -4,9 +4,9 @@ namespace WP\CriticalCSS\Integration;
 
 class WPRocket extends IntegrationAbstract {
 
-	public function __construct() {
+	public function init() {
 		if ( function_exists( 'get_rocket_option' ) ) {
-			parent::__construct();
+			parent::init();
 		}
 	}
 

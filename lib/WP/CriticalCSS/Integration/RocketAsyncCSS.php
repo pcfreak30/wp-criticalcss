@@ -10,9 +10,9 @@ class RocketAsyncCSS extends IntegrationAbstract {
 	/**
 	 * WP_CriticalCSS_Integration_Rocket_Async_CSS constructor.
 	 */
-	public function __construct() {
+	public function init() {
 		if ( class_exists( 'Rocket_Async_Css' ) ) {
-			parent::__construct();
+			parent::init();
 		}
 	}
 

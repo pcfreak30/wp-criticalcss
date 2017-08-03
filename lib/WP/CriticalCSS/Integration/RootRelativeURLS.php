@@ -4,9 +4,9 @@ namespace WP\CriticalCSS\Integration;
 
 class RootRelativeURLS extends IntegrationAbstract {
 
-	public function __construct() {
+	public function init() {
 		if ( class_exists( 'MP_WP_Root_Relative_URLS' ) ) {
-			parent::__construct();
+			parent::init();
 		}
 	}
 
