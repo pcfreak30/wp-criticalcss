@@ -6,17 +6,36 @@ namespace WP\CriticalCSS\Integration;
 
 use WP\CriticalCSS\ComponentAbstract;
 
+/**
+ * Class Manager
+ *
+ * @package WP\CriticalCSS\Integration
+ */
 class Manager extends ComponentAbstract {
 	/**
 	 * @var bool
 	 */
 	protected $enabled = false;
+	/**
+	 * @var array
+	 */
 	protected $integrations = [
-		'\\WP\\CriticalCSS\\Integration\\RocketAsyncCSS',
-		'\\WP\\CriticalCSS\\Integration\\RootRelativeURLS',
-		'\\WP\\CriticalCSS\\Integration\\WPRocket',
-		'\\WP\\CriticalCSS\\Integration\\WPEngine',
+		'RocketAsyncCSS',
+		'RootRelativeURLS',
+		'WPRocket',
+		'WPEngine',
 	];
+	/**
+	 * @var string
+	 */
+	protected $namespace;
+
+	/**
+	 * Manager constructor.
+	 */
+	public function __construct() {
+		$this->namespace = ( new \ReflectionClass( get_called_class() ) )->getNamespaceName();
+	}
 
 	/**
 	 * @return bool
@@ -25,15 +44,32 @@ class Manager extends ComponentAbstract {
 		return $this->enabled;
 	}
 
+	/**
+	 *
+	 */
 	public function init() {
-		$integrations = [];
-		foreach ( $this->integrations as $integration ) {
-			$integrations[ $integration ] = wpccss_container()->create( $integration );
+		$reflect   = new \ReflectionClass( $this );
+		$class     = strtolower( $reflect->getShortName() );
+		$namespace = $reflect->getNamespaceName();
+		$namespace = str_replace( '\\', '/', $namespace );
+		$component = strtolower( basename( $namespace ) );
+		$filter    = "rocket_async_css_{$component}_{$class}_modules";
+
+		$integrations_list = apply_filters( $filter, $this->integrations );
+
+		foreach ( $integrations_list as $module ) {
+			$modules[ $module ] = wpccss_container()->create( $this->namespace . '\\' . $module );
 		}
-		$this->integrations = $integrations;
+		foreach ( $integrations_list as $module ) {
+			$modules[ $module ]->init();
+		}
+		$this->integrations = $integrations_list;
 		$this->enable_integrations();
 	}
 
+	/**
+	 *
+	 */
 	public function enable_integrations() {
 		do_action( 'wp_criticalcss_enable_integrations' );
 		$this->enabled = true;
