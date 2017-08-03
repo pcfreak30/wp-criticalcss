@@ -56,7 +56,7 @@ class RocketAsyncCSS extends IntegrationAbstract {
 
 	public function disable_preloader() {
 		if ( function_exists( 'rocket_async_css_instance' ) ) {
-			$integration = rocket_async_css_instance()->get_integration->get_module( 'ThePreloader' );
+			$integration = rocket_async_css_instance()->get_integration_manager()->get_module( 'ThePreloader' );
 			if ( ! empty( $integration ) ) {
 				remove_action( 'wp_enqueue_scripts', [
 					$integration,
