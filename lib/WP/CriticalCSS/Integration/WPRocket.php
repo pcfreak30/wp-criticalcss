@@ -30,6 +30,10 @@ class WPRocket extends IntegrationAbstract {
 			WPCCSS()->get_cache_manager(),
 			'reset_web_check_home_transient',
 		] );
+		add_action( 'wp_criticalcss_nocache', [
+			$this,
+			'disable_cache',
+		] );
 		if ( function_exists( 'rocket_clean_wpengine' ) && ! has_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' ) ) {
 			add_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
 		}
@@ -119,5 +123,11 @@ class WPRocket extends IntegrationAbstract {
 	 */
 	public function get_cache_expire_period() {
 		return get_rocket_purge_cron_interval();
+	}
+
+	public function disable_cache() {
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
 	}
 }
