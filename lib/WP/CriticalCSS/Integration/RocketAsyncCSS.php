@@ -26,7 +26,7 @@ class RocketAsyncCSS extends IntegrationAbstract {
 		] );
 		add_action( 'wp_criticalcss_before_print_styles', [
 			$this,
-			'purge_cache',
+			'maybe_disable_preloader',
 		] );
 	}
 
@@ -48,16 +48,9 @@ class RocketAsyncCSS extends IntegrationAbstract {
 	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 * @param $cache
 	 */
-	public function purge_cache( $cache ) {
+	public function maybe_disable_preloader( $cache ) {
 		if ( ! empty( $cache ) ) {
-			remove_action( 'wp_enqueue_scripts', [
-				'Rocket_Async_Css_The_Preloader',
-				'add_window_resize_js',
-			] );
-			remove_action( 'rocket_buffer', [
-				'Rocket_Async_Css_The_Preloader',
-				'inject_div',
-			] );
+			$this->disable_preloader();
 		}
 	}
 
