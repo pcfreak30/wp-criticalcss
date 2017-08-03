@@ -20,9 +20,9 @@ class RocketAsyncCSS extends IntegrationAbstract {
 	 * @return void
 	 */
 	public function enable() {
-		add_action( 'wp', [
+		add_action( 'wp_criticalcss_nocache', [
 			$this,
-			'wp_action',
+			'disable_preloader',
 		] );
 		add_action( 'wp_criticalcss_before_print_styles', [
 			$this,
@@ -61,19 +61,14 @@ class RocketAsyncCSS extends IntegrationAbstract {
 		}
 	}
 
-	public function wp_action() {
-		if ( get_query_var( 'nocache' ) ) {
-			remove_action( 'wp_enqueue_scripts', [
-				'Rocket_Async_Css_The_Preloader',
-				'add_window_resize_js',
-			] );
-			remove_action( 'rocket_buffer', [
-				'Rocket_Async_Css_The_Preloader',
-				'inject_div',
-			] );
-			if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-				define( 'DONOTCACHEPAGE', true );
-			}
-		}
+	public function disable_preloader() {
+		remove_action( 'wp_enqueue_scripts', [
+			'Rocket_Async_Css_The_Preloader',
+			'add_window_resize_js',
+		] );
+		remove_action( 'rocket_buffer', [
+			'Rocket_Async_Css_The_Preloader',
+			'inject_div',
+		] );
 	}
 }
