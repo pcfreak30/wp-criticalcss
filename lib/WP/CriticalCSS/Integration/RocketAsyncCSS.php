@@ -55,6 +55,21 @@ class RocketAsyncCSS extends IntegrationAbstract {
 	}
 
 	public function disable_preloader() {
+		if ( function_exists( 'rocket_async_css_instance' ) ) {
+			$integration = rocket_async_css_instance()->get_integration->get_module( 'ThePreloader' );
+			if ( ! empty( $integration ) ) {
+				remove_action( 'wp_enqueue_scripts', [
+					$integration,
+					'add_window_resize_js',
+				] );
+				remove_action( 'rocket_buffer', [
+					$integration,
+					'inject_div',
+				] );
+
+				return;
+			}
+		}
 		remove_action( 'wp_enqueue_scripts', [
 			'Rocket_Async_Css_The_Preloader',
 			'add_window_resize_js',
