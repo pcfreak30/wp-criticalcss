@@ -79,7 +79,7 @@ class ListTable extends \WP_List_Table {
 		$paged = $this->get_pagenum();
 		$start = ( $paged - 1 ) * $per_page;
 
-		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY LOCATE('queue_index', {$table}.data) DESC, LOCATE('queue_id', {$table}.data) DESC LIMIT %d,%d", $start, $per_page ), ARRAY_A );
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY LOCATE('queue_id', {$table}.data), LOCATE('queue_index', {$table}.data) DESC DESC LIMIT %d,%d", $start, $per_page ), ARRAY_A );
 
 		usort( $this->items, [ $this, 'sort_items' ] );
 
