@@ -79,7 +79,9 @@ class ListTable extends \WP_List_Table {
 		$paged = $this->get_pagenum();
 		$start = ( $paged - 1 ) * $per_page;
 
-		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} LIMIT %d,%d", $start, $per_page ), ARRAY_A );
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY LOCATE('queue_index', {$table}.data) DESC, LOCATE('queue_id', {$table}.data) DESC LIMIT %d,%d", $start, $per_page ), ARRAY_A );
+
+		usort( $this->items, [ $this, 'sort_items' ] );
 
 		$this->set_pagination_args( [
 			'total_items' => $total_items,
@@ -204,5 +206,25 @@ class ListTable extends \WP_List_Table {
 		}
 
 		return $data['queue_index'];
+	}
+
+	/**
+	 * @param array $a
+	 * @param array $b
+	 *
+	 * @return int
+	 */
+	private function sort_items( $a, $b ) {
+		$a['data'] = maybe_unserialize( $a['data'] );
+		$b['data'] = maybe_unserialize( $b['data'] );
+		if ( isset( $a['data']['queue_index'] ) ) {
+			if ( isset( $b['data']['queue_index'] ) ) {
+				return $a['data']['queue_index'] > $b['data']['queue_index'] ? 1 : - 1;
+			}
+
+			return 1;
+		}
+
+		return - 1;
 	}
 }
