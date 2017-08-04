@@ -59,7 +59,7 @@ class UI extends CriticalCSS\ComponentAbstract {
 		] );
 		$this->settings_ui->add_section( [
 			'id'    => CriticalCSS::OPTIONNAME,
-			'title' => 'WP Critical CSS Options',
+			'title' => 'Options',
 		] );
 		$this->settings_ui->add_field( CriticalCSS::OPTIONNAME, [
 			'name'              => 'apikey',
@@ -101,7 +101,7 @@ class UI extends CriticalCSS\ComponentAbstract {
 		require_once ABSPATH . 'wp-admin/options-head.php';
 		$this->settings_ui->add_section( [
 			'id'    => 'wp_criticalcss_queue',
-			'title' => 'WP Critical CSS Queue',
+			'title' => 'API Queue',
 			'form'  => false,
 		] );
 
