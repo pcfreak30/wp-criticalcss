@@ -32,10 +32,16 @@ class Manager extends CriticalCSS\ComponentAbstract {
 			$item = WPCCSS()->get_request()->get_current_page_type();
 		}
 		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+			if ( 'cache' === $name ) {
+				$name = 'ccss';
+			}
 			$name  = [ $name, md5( $item['template'] ) ];
 			$value = $this->app->get_cache_manager()->get_store()->get_cache_fragment( $name );
 		} else {
 			if ( 'url' === $item['type'] ) {
+				if ( 'cache' === $name ) {
+					$name = 'ccss';
+				}
 				$name  = [ $name, md5( $item['url'] ) ];
 				$value = $this->app->get_cache_manager()->get_store()->get_cache_fragment( $name );
 			} else {
@@ -77,10 +83,16 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 */
 	public function set_item_data( $item, $name, $value, $expires = 0 ) {
 		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+			if ( 'cache' === $name ) {
+				$name = 'ccss';
+			}
 			$name = [ $name, md5( $item['template'] ) ];
 			$this->app->get_cache_manager()->get_store()->update_cache_fragment( $name, $value );
 		} else {
 			if ( 'url' === $item['type'] ) {
+				if ( 'cache' === $name ) {
+					$name = 'ccss';
+				}
 				$name = [ $name, md5( $item['url'] ) ];
 				$this->app->get_cache_manager()->get_store()->update_cache_fragment( $name, $value );
 			} else {
