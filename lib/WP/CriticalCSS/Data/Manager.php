@@ -79,7 +79,6 @@ class Manager extends CriticalCSS\ComponentAbstract {
 		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
 			$name = [ $name, md5( $item['template'] ) ];
 			$this->app->get_cache_manager()->get_store()->update_cache_fragment( $name, $value );
-			set_transient( $name, $value, $expires );
 		} else {
 			if ( 'url' === $item['type'] ) {
 				$name = [ $name, md5( $item['url'] ) ];
