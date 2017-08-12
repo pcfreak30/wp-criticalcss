@@ -29,10 +29,7 @@ class WPEngine extends IntegrationAbstract {
 	 * @return void
 	 */
 	public function disable() {
-		remove_action( 'wp_criticalcss_purge_cache', [
-			$this,
-			'purge_cache',
-		] );
+
 	}
 
 	/**
