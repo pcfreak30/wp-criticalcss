@@ -10,7 +10,7 @@ class WPEngine extends IntegrationAbstract {
 	 * WP_CriticalCSS_Integration_WPEngine constructor.
 	 */
 	public function init() {
-		if ( class_exists( 'WPECommon' ) ) {
+		if ( class_exists( '\WPECommon' ) ) {
 			parent::init();
 		}
 	}
@@ -40,13 +40,13 @@ class WPEngine extends IntegrationAbstract {
 	 */
 	public function purge_cache( $type = null, $object_id = null, $url = null ) {
 		global $wpe_varnish_servers;
-		if ( class_exists( 'WPECommon' ) ) {
+		if ( class_exists( '\WPECommon' ) ) {
 			if ( empty( $type ) ) {
 				/** @noinspection PhpUndefinedClassInspection */
-				WpeCommon::purge_varnish_cache( null, true );
+				\WpeCommon::purge_varnish_cache( null, true );
 			} elseif ( 'post' === $type ) {
 				/** @noinspection PhpUndefinedClassInspection */
-				WpeCommon::purge_varnish_cache( $object_id, true );
+				\WpeCommon::purge_varnish_cache( $object_id, true );
 			} else {
 				$blog_url = home_url();
 				// @codingStandardsIgnoreLine
@@ -87,7 +87,7 @@ class WPEngine extends IntegrationAbstract {
 							'X-Purge-Host' => $purge_domain_regex,
 						];
 						/** @noinspection PhpUndefinedClassInspection */
-						WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
+						\WpeCommon::http_request_async( 'PURGE', $varnish, 9002, $hostname, '/', $headers, 0 );
 					}
 				}
 			}// End if().
