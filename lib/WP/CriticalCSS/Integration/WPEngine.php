@@ -21,7 +21,7 @@ class WPEngine extends IntegrationAbstract {
 	public function enable() {
 		add_action( 'wp_criticalcss_purge_cache', [
 			$this,
-			'_purge_cache',
+			'purge_cache',
 		] );
 	}
 
@@ -31,7 +31,7 @@ class WPEngine extends IntegrationAbstract {
 	public function disable() {
 		remove_action( 'wp_criticalcss_purge_cache', [
 			$this,
-			'_purge_cache',
+			'purge_cache',
 		] );
 	}
 
@@ -41,7 +41,7 @@ class WPEngine extends IntegrationAbstract {
 	 * @param null $object_id
 	 * @param null $url
 	 */
-	private function _purge_cache( $type = null, $object_id = null, $url = null ) {
+	public function purge_cache( $type = null, $object_id = null, $url = null ) {
 		global $wpe_varnish_servers;
 		if ( class_exists( 'WPECommon' ) ) {
 			if ( empty( $type ) ) {
