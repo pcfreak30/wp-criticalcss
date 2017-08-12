@@ -46,10 +46,10 @@ class WPEngine extends IntegrationAbstract {
 		if ( class_exists( 'WPECommon' ) ) {
 			if ( empty( $type ) ) {
 				/** @noinspection PhpUndefinedClassInspection */
-				WpeCommon::purge_varnish_cache();
+				WpeCommon::purge_varnish_cache( null, true );
 			} elseif ( 'post' === $type ) {
 				/** @noinspection PhpUndefinedClassInspection */
-				WpeCommon::purge_varnish_cache( $object_id );
+				WpeCommon::purge_varnish_cache( $object_id, true );
 			} else {
 				$blog_url = home_url();
 				// @codingStandardsIgnoreLine
