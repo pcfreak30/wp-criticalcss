@@ -2,14 +2,26 @@
 
 namespace WP\CriticalCSS\Admin;
 
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 use WP\CriticalCSS;
 
-class UI extends CriticalCSS\ComponentAbstract {
+/**
+ * Class UI
+ *
+ * @package WP\CriticalCSS\Admin
+ * @property \WP\CriticalCSS $plugin
+ */
+class UI extends ComponentAbstract {
 	/**
 	 * @var \WP\CriticalCSS\Settings\API
 	 */
 	protected $settings_ui;
 
+	/**
+	 * UI constructor.
+	 *
+	 * @param \WP\CriticalCSS\Settings\API $settings_ui
+	 */
 	public function __construct( \WP\CriticalCSS\Settings\API $settings_ui ) {
 		$this->settings_ui = $settings_ui;
 	}
@@ -19,8 +31,11 @@ class UI extends CriticalCSS\ComponentAbstract {
 	 */
 	protected $queue_table;
 
+	/**
+	 *
+	 */
 	public function init() {
-		parent::init();
+		$this->setup_components();
 		if ( is_admin() ) {
 			add_action( 'network_admin_menu', [
 				$this,
@@ -61,7 +76,7 @@ class UI extends CriticalCSS\ComponentAbstract {
 			'id'    => CriticalCSS::OPTIONNAME,
 			'title' => 'Options',
 		] );
-		$this->settings_ui->add_field( CriticalCSS::OPTIONNAME, [
+		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'              => 'apikey',
 			'label'             => 'API Key',
 			'type'              => 'text',
@@ -71,20 +86,20 @@ class UI extends CriticalCSS\ComponentAbstract {
 			],
 			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', CriticalCSS::LANG_DOMAIN ),
 		] );
-		$this->settings_ui->add_field( CriticalCSS::OPTIONNAME, [
+		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'force_web_check',
 			'label' => 'Force Web Check',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', CriticalCSS::LANG_DOMAIN ),
 		] );
-		$this->settings_ui->add_field( CriticalCSS::OPTIONNAME, [
+		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'template_cache',
 			'label' => 'Template Cache',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url.', CriticalCSS::LANG_DOMAIN ),
 		] );
 		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
-			$this->settings_ui->add_field( CriticalCSS::OPTIONNAME, [
+			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 				'name'  => 'web_check_interval',
 				'label' => 'Web Check Interval',
 				'type'  => 'number',
@@ -147,12 +162,12 @@ class UI extends CriticalCSS\ComponentAbstract {
 		$valid = true;
 		if ( empty( $options['apikey'] ) ) {
 			$valid = false;
-			add_settings_error( 'apikey', 'invalid_apikey', __( 'API Key is empty', CriticalCSS::LANG_DOMAIN ) );
+			add_settings_error( 'apikey', 'invalid_apikey', __( 'API Key is empty', $this->plugin->get_option_name() ) );
 		}
 		if ( ! $valid ) {
 			return $valid;
 		}
-		$api = new CriticalCSS\API( $options['apikey'] );
+		$api = $this->plugin->container->create( '\\WP\\CriticalCSS\\API', [ $options['apikey'] ] );
 		if ( ! $api->ping() ) {
 			add_settings_error( 'apikey', 'invalid_apikey', 'CriticalCSS.com API Key is invalid' );
 			$valid = false;
@@ -177,7 +192,8 @@ class UI extends CriticalCSS\ComponentAbstract {
 			'default' => 20,
 			'option'  => 'queue_items_per_page',
 		] );
-		$this->queue_table = new CriticalCSS\Queue\ListTable( WPCCSS()->get_api_queue() );
+		$this->plugin->container->create( '\\WP\\CriticalCSS\\Queue\\ListTable', [ wp_criticalcss()->api_queue ] );
+		$this->queue_table = new CriticalCSS\Queue\ListTable( wp_criticalcss()->api_queue );
 	}
 
 	/**
@@ -194,13 +210,13 @@ class UI extends CriticalCSS\ComponentAbstract {
 
 		$value = array_merge( $old_value, $value );
 
-		if ( isset( $value['force_web_check'] ) && 'on' == $value['force_web_check'] ) {
+		if ( isset( $value['force_web_check'] ) && 'on' === $value['force_web_check'] ) {
 			$value['force_web_check'] = 'off';
 			$this->app->get_cache_manager()->reset_web_check_transients();
 		}
 
 		if ( is_multisite() ) {
-			update_site_option( CriticalCSS::OPTIONNAME, $value );
+			update_site_option( $this->plugin->get_option_name(), $value );
 			$value = $original_old_value;
 		}
 

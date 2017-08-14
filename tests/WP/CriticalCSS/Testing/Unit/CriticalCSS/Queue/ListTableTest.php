@@ -22,11 +22,11 @@ class ListTableTest extends TestCase {
 				},
 			]
 		);
-		WPCCSS()->get_admin_ui()->screen_option();
+		wp_criticalcss()->get_admin_ui()->screen_option();
 		foreach (
 			$keys as $key
 		) {
-			$this->assertArrayHasKey( $key, WPCCSS()->get_admin_ui()->get_queue_table()->get_columns() );
+			$this->assertArrayHasKey( $key, wp_criticalcss()->get_admin_ui()->get_queue_table()->get_columns() );
 		}
 	}
 
@@ -47,11 +47,11 @@ class ListTableTest extends TestCase {
 				},
 			]
 		);
-		WPCCSS()->get_admin_ui()->screen_option();
+		wp_criticalcss()->get_admin_ui()->screen_option();
 		foreach (
 			$keys as $key
 		) {
-			$this->assertArrayHasKey( $key, WPCCSS()->get_admin_ui()->get_queue_table()->get_columns() );
+			$this->assertArrayHasKey( $key, wp_criticalcss()->get_admin_ui()->get_queue_table()->get_columns() );
 		}
 	}
 }

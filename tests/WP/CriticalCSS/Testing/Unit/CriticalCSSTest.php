@@ -5,8 +5,8 @@ namespace WP\Testing\Unit;
 use WP\CriticalCSS;
 
 class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
-	public function test_wpccss() {
-		$instance = \WPCCSS();
+	public function test_wp_criticalcss() {
+		$instance = \wp_criticalcss();
 
 		$this->assertInstanceOf( '\WP\CriticalCSS', $instance );
 	}
@@ -18,7 +18,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'return' => true,
 		] );
 		ob_start();
-		WPCCSS()->get_frontend()->wp_head();
+		wp_criticalcss()->get_frontend()->wp_head();
 		$result = ob_get_clean();
 		$this->assertEquals( '<meta name="robots" content="noindex, nofollow"/>', trim( $result ) );
 	}
@@ -30,7 +30,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'return' => false,
 		] );
 		ob_start();
-		WPCCSS()->get_frontend()->wp_head();
+		wp_criticalcss()->get_frontend()->wp_head();
 		$result = ob_get_clean();
 		$this->assertEmpty( $result );
 	}
@@ -51,56 +51,56 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'times'  => 1,
 			'return' => 'http://example.org',
 		] );
-		$this->assertFalse( WPCCSS()->get_request()->redirect_canonical( home_url() ) );
+		$this->assertFalse( wp_criticalcss()->get_request()->redirect_canonical( home_url() ) );
 	}
 
 	public function test_query_vars() {
-		$this->assertContains( 'nocache', WPCCSS()->get_request()->query_vars( [] ) );
+		$this->assertContains( 'nocache', wp_criticalcss()->get_request()->query_vars( [] ) );
 	}
 
 	public function test_get_settings() {
-		WPCCSS()->get_settings_manager()->update_settings( [ 'version' => CriticalCSS::VERSION ] );
-		$result = WPCCSS()->get_settings();
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'version' => CriticalCSS::VERSION ] );
+		$result = wp_criticalcss()->get_settings();
 		$this->assertInternalType( 'array', $result );
 		$this->assertNotEmpty( 'array', $result );
 	}
 
 	public function test_get_settings_empty() {
-		$this->assertEmpty( WPCCSS()->get_settings() );
+		$this->assertEmpty( wp_criticalcss()->get_settings() );
 	}
 
 	public function test_init_print_styles_hook_admin() {
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => true ] );
-		WPCCSS()->init();
+		wp_criticalcss()->init();
 		\WP_Mock::expectActionNotAdded( 'wp_print_styles', [
-			WPCCSS(),
+			wp_criticalcss(),
 			'print_styles',
 		] );
 	}
 
 	public function test_init_template_cache_on() {
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
 		\WP_Mock::expectActionAdded( 'template_include', [
-			WPCCSS()->get_request(),
+			wp_criticalcss()->get_request(),
 			'template_include',
 		], PHP_INT_MAX );
-		WPCCSS()->get_frontend()->init();
-		WPCCSS()->get_request()->init();
+		wp_criticalcss()->get_frontend()->init();
+		wp_criticalcss()->get_request()->init();
 	}
 
 	public function test_init_template_cache_off() {
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
 		\WP_Mock::expectActionAdded( 'post_updated', [
-			WPCCSS()->get_cache_manager(),
+			wp_criticalcss()->get_cache_manager(),
 			'reset_web_check_post_transient',
 		] );
 		\WP_Mock::expectActionAdded( 'edited_term', [
-			WPCCSS()->get_cache_manager(),
+			wp_criticalcss()->get_cache_manager(),
 			'reset_web_check_term_transient',
 		] );
-		WPCCSS()->get_cache_manager()->init();
+		wp_criticalcss()->get_cache_manager()->init();
 	}
 
 	public function test_get_permalink_post() {
@@ -108,7 +108,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'args'   => 1,
 			'return' => 'http://example.org/nocache/',
 		] );
-		$permalink = WPCCSS()->get_permalink( [
+		$permalink = wp_criticalcss()->get_permalink( [
 			'type'      => 'post',
 			'object_id' => 1,
 		] );
@@ -121,7 +121,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 			'args'   => 1,
 			'return' => 'http://example.org/tag/test/nocache/',
 		] );
-		$permalink = WPCCSS()->get_permalink( [
+		$permalink = wp_criticalcss()->get_permalink( [
 			'type'      => 'term',
 			'object_id' => 1,
 		] );
@@ -136,7 +136,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 				'return' => 'http://example.org/author/admin/nocache/',
 			]
 		);
-		$permalink = WPCCSS()->get_permalink( [
+		$permalink = wp_criticalcss()->get_permalink( [
 			'type'      => 'author',
 			'object_id' => 1,
 		] );
@@ -153,7 +153,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 				},
 			]
 		);
-		$permalink = WPCCSS()->get_permalink(
+		$permalink = wp_criticalcss()->get_permalink(
 			[
 				'type' => 'url',
 				'url'  => home_url( '/testabc/testabc/testabc/' ),
@@ -165,7 +165,7 @@ class CriticalCSSTest extends CriticalCSS\Testing\Unit\TestCase {
 
 	protected function setUp() {
 		parent::setUp();
-		WPCCSS()->set_settings( [] );
+		wp_criticalcss()->set_settings( [] );
 	}
 
 }

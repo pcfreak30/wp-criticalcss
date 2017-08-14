@@ -8,4 +8,4 @@ WP_Mock::bootstrap();
 \WP_Mock::userFunction( 'register_deactivation_hook' );
 
 require dirname( __DIR__ ) . '/wp-criticalcss.php';
-wpccss_container( 'unit_test' );
+wp_criticalcss_container( 'unit_test' );

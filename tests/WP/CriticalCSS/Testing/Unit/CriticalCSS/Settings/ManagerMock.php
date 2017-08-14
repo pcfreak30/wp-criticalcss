@@ -11,13 +11,13 @@ class ManagerMock extends Manager {
 			$defaults[ $setting ] = null;
 		}
 
-		$settings = array_merge( $this->get_defaults(), WPCCSS()->get_settings() );
+		$settings = array_merge( $this->get_defaults(), wp_criticalcss()->get_settings() );
 
 		return $settings;
 	}
 
 	public function update_settings( array $settings ) {
-		WPCCSS()->set_settings( $settings );
+		wp_criticalcss()->set_settings( $settings );
 
 		return true;
 	}

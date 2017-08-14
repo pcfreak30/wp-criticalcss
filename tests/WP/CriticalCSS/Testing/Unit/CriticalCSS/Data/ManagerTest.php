@@ -26,7 +26,7 @@ class ManagerTest extends TestCase {
 				'return' => true,
 			]
 		);
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->get_data_manager()->init();
 		$instance->get_request()->init();
@@ -65,7 +65,7 @@ class ManagerTest extends TestCase {
 				'return' => true,
 			]
 		);
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->get_data_manager()->init();
 		$instance->get_request()->init();
@@ -118,7 +118,7 @@ class ManagerTest extends TestCase {
 				'return' => true,
 			]
 		);
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->get_data_manager()->init();
 		$instance->get_request()->init();
@@ -170,7 +170,7 @@ class ManagerTest extends TestCase {
 			]
 		);
 		$GLOBALS['wp'] = (object) [ 'request' => '' ];
-		$instance      = WPCCSS();
+		$instance      = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$instance->get_data_manager()->set_item_data( $instance->get_request()->get_current_page_type(), 'test', true );
@@ -199,7 +199,7 @@ class ManagerTest extends TestCase {
 		);
 		$GLOBALS['wp'] = (object) [ 'request' => '' ];
 
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
 		$instance->get_data_manager()->init();
 		$instance->get_request()->init();
@@ -212,6 +212,6 @@ class ManagerTest extends TestCase {
 		parent::setUp();
 		\WP_Mock::userFunction( 'is_multisite', [ 'return' => false ] );
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
-		WPCCSS()->set_settings( [] );
+		wp_criticalcss()->set_settings( [] );
 	}
 }

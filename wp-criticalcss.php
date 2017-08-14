@@ -22,11 +22,11 @@ use Dice\Dice;
  * @return \WP\CriticalCSS
  * @alias WPCCSS()
  */
-function wpccss() {
-	return wpccss_container()->create( 'WP\CriticalCSS' );
+function wp_criticalcss() {
+	return wp_criticalcss_container()->create( 'WP\CriticalCSS' );
 }
 
-function wpccss_container( $env = 'prod' ) {
+function wp_criticalcss_container( $env = 'prod' ) {
 	static $container;
 	if ( empty( $container ) ) {
 		$container = new Dice();
@@ -37,21 +37,30 @@ function wpccss_container( $env = 'prod' ) {
 }
 
 /**
- *
+ * Init function shortcut
  */
 function wp_criticalcss_init() {
-	WPCCSS()->init();
+	wp_criticalcss()->init();
 }
 
+/**
+ * Activate function shortcut
+ */
 function wp_criticalcss_activate() {
-	WPCCSS()->init();
-	WPCCSS()->activate();
+	wp_criticalcss()->init();
+	wp_criticalcss()->activate();
 }
 
+/**
+ * Deactivate function shortcut
+ */
 function wp_criticalcss_deactivate() {
-	WPCCSS()->deactivate();
+	wp_criticalcss()->deactivate();
 }
 
+/**
+ * Error for older php
+ */
 function wp_criticalcss_php_upgrade_notice() {
 	$info = get_plugin_data( __FILE__ );
 	_e(
@@ -60,6 +69,21 @@ function wp_criticalcss_php_upgrade_notice() {
 	<div class="error notice">
 		<p>Opps! %s requires a minimum PHP version of 5.4.0. Your current version is: %s. Please contact your host to upgrade.</p>
 	</div>', $info['Name'], PHP_VERSION
+		)
+	);
+}
+
+/**
+ * Error if vendors autoload is missing
+ */
+function wp_criticalcss_php_vendor_missing() {
+	$info = get_plugin_data( __FILE__ );
+	_e(
+		sprintf(
+			'
+	<div class="error notice">
+		<p>Opps! %s is corrupted it seems, please re-install the plugin.</p>
+	</div>', $info['Name']
 		)
 	);
 }
@@ -73,14 +97,6 @@ if ( version_compare( PHP_VERSION, '5.4.0' ) < 0 ) {
 		register_activation_hook( __FILE__, 'wp_criticalcss_activate' );
 		register_deactivation_hook( __FILE__, 'wp_criticalcss_deactivate' );
 	} else {
-		include_once __DIR__ . '/wordpress-web-composer/class-wordpress-web-composer.php';
-		$web_composer = new \WordPress_Web_Composer( 'wp_criticalcss' );
-		$web_composer->set_install_target( __DIR__ );
-		if ( $web_composer->run() ) {
-			include_once __DIR__ . '/vendor/autoload.php';
-			register_activation_hook( __FILE__, 'wp_criticalcss_activate' );
-			register_deactivation_hook( __FILE__, 'wp_criticalcss_deactivate' );
-			define( 'WP_CRITICALCSS_COMPOSER_RAN', true );
-		}
+		add_action( 'admin_notices', 'wp_criticalcss_php_vendor_missing' );
 	}
 }

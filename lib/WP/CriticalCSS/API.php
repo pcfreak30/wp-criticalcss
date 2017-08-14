@@ -2,6 +2,7 @@
 
 namespace WP\CriticalCSS;
 
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 use WP\CriticalCSS;
 
 /**
@@ -120,5 +121,12 @@ class API extends ComponentAbstract {
 		}
 
 		return $cache;
+	}
+
+	/**
+	 *
+	 */
+	public function init() {
+		// noop
 	}
 }

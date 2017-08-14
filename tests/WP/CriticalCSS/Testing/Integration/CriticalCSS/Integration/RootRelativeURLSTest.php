@@ -12,7 +12,7 @@ class RootRelativeURLSTest extends TestCase {
 
 	public function test_enable() {
 		global $wp;
-		WPCCSS()->get_integration_manager()->disable_integrations();
+		wp_criticalcss()->get_integration_manager()->disable_integrations();
 		$this->assertEquals(
 			1, has_action(
 				'post_link', [
@@ -21,7 +21,7 @@ class RootRelativeURLSTest extends TestCase {
 				]
 			)
 		);
-		WPCCSS()->get_integration_manager()->enable_integrations();
+		wp_criticalcss()->get_integration_manager()->enable_integrations();
 		$this->assertFalse(
 			has_action(
 				'post_link', [
@@ -41,7 +41,7 @@ class RootRelativeURLSTest extends TestCase {
 				]
 			)
 		);
-		WPCCSS()->get_integration_manager()->disable_integrations();
+		wp_criticalcss()->get_integration_manager()->disable_integrations();
 		$this->assertEquals(
 			1, has_action(
 				'post_link', [

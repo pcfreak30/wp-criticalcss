@@ -14,9 +14,9 @@ class TestCase extends \WP_UnitTestCase {
 		flush_rewrite_rules();
 
 		$this->home_url = get_option( 'home' );
-		WPCCSS()->get_integration_manager()->reset();
-		WPCCSS()->get_request()->set_nocache( null );
-		WPCCSS()->get_settings_manager()->update_settings( [ 'version' => CriticalCSS::VERSION ] );
+		wp_criticalcss()->get_integration_manager()->reset();
+		wp_criticalcss()->get_request()->set_nocache( null );
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'version' => CriticalCSS::VERSION ] );
 		\WP_Mock::setUp();
 	}
 

@@ -4,9 +4,16 @@
 namespace WP\CriticalCSS\Settings;
 
 
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 use WP\CriticalCSS;
 
-class Manager {
+/**
+ * Class Manager
+ *
+ * @package WP\CriticalCSS\Settings
+ * @property CriticalCSS $plugin
+ */
+class Manager extends ComponentAbstract {
 	protected $settings = [
 		'version',
 		'web_check_interval',
@@ -33,7 +40,7 @@ class Manager {
 			return $this->get_settings_multisite();
 
 		}
-		$settings = get_option( CriticalCSS::OPTIONNAME, [] );
+		$settings = get_option( $this->plugin->get_option_name(), [] );
 		if ( empty( $settings ) ) {
 			$settings = [];
 		}
@@ -44,9 +51,9 @@ class Manager {
 	}
 
 	private function get_settings_multisite() {
-		$settings = get_site_option( CriticalCSS::OPTIONNAME, [] );
+		$settings = get_site_option( $this->plugin->get_option_name(), [] );
 		if ( empty( $settings ) ) {
-			$settings = get_option( CriticalCSS::OPTIONNAME, [] );
+			$settings = get_option( $this->plugin->get_option_name(), [] );
 		}
 		if ( empty( $settings ) ) {
 			$settings = [];
@@ -57,20 +64,6 @@ class Manager {
 		return $settings;
 	}
 
-	/**
-	 * @param array $settings
-	 *
-	 * @return bool
-	 */
-	public function update_settings( array $settings ) {
-		WPCCSS()->set_settings( $settings );
-		if ( is_multisite() ) {
-			return update_site_option( CriticalCSS::OPTIONNAME, $settings );
-		}
-
-		return update_option( CriticalCSS::OPTIONNAME, $settings );
-	}
-
 	protected function get_defaults() {
 
 		$defaults = [];
@@ -79,5 +72,26 @@ class Manager {
 		}
 
 		return $defaults;
+	}
+
+	/**
+	 * @param array $settings
+	 *
+	 * @return bool
+	 */
+	public function update_settings( array $settings ) {
+		wp_criticalcss()->set_settings( $settings );
+		if ( is_multisite() ) {
+			return update_site_option( $this->plugin->get_option_name(), $settings );
+		}
+
+		return update_option( $this->plugin->get_option_name(), $settings );
+	}
+
+	/**
+	 *
+	 */
+	public function init() {
+		// TODO: Implement init() method.
 	}
 }

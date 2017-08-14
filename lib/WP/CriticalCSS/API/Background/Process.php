@@ -24,7 +24,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		$settings = WPCCSS()->get_settings_manager()->get_settings();
+		$settings = wp_criticalcss()->settings_manager->settings;
 
 		if ( empty( $settings ) || empty( $settings['apikey'] ) ) {
 			return false;
@@ -33,8 +33,8 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + 8 >= time() ) {
 			return $item;
 		}
-		$api = wpccss_container()->create( '\\WP\\CriticalCSS\\API', [ $settings['apikey'] ] );
-		$api->set_app( WPCCSS() );
+		$api         = wp_criticalcss()->container->create( '\\WP\\CriticalCSS\\API', [ $settings['apikey'] ] );
+		$api->parent = wp_criticalcss();
 		if ( ! $this->_ping_checked ) {
 			if ( $api->ping() ) {
 				$this->_ping_checked = true;
@@ -43,7 +43,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			}
 		}
 		$item['timestamp'] = time();
-		$url               = WPCCSS()->get_permalink( $item );
+		$url               = wp_criticalcss()->get_permalink( $item );
 		if ( empty( $url ) ) {
 			return false;
 		}
@@ -84,16 +84,16 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			if ( 'JOB_DONE' === $result->status ) {
 				// @codingStandardsIgnoreLine
 				if ( 'GOOD' === $result->resultStatus && ! empty( $result->css ) ) {
-					WPCCSS()->get_integration_manager()->disable_integrations();
+					wp_criticalcss()->integration_manager->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
-						WPCCSS()->get_cache_manager()->purge_page_cache();
+						wp_criticalcss()->cache_manager->purge_page_cache();
 					} else {
-						WPCCSS()->get_cache_manager()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
+						wp_criticalcss()->cache_manager->purge_page_cache( $item['type'], $item['object_id'], wp_criticalcss()->get_permalink( $item ) );
 					}
-					WPCCSS()->get_integration_manager()->enable_integrations();
-					WPCCSS()->get_data_manager()->set_cache( $item, $result->css );
-					WPCCSS()->get_data_manager()->set_css_hash( $item, $item['css_hash'] );
-					WPCCSS()->get_data_manager()->set_html_hash( $item, $item['html_hash'] );
+					wp_criticalcss()->integration_manager->enable_integrations();
+					wp_criticalcss()->data_manager->set_cache( $item, $result->css );
+					wp_criticalcss()->data_manager->set_css_hash( $item, $item['css_hash'] );
+					wp_criticalcss()->data_manager->set_html_hash( $item, $item['html_hash'] );
 				}
 			}
 		} else {

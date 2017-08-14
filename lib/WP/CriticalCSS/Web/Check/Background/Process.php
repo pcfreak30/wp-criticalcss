@@ -22,23 +22,23 @@ class Process extends ProcessAbstract {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		$url = WPCCSS()->get_permalink( $item );
+		$url = wp_criticalcss()->get_permalink( $item );
 		if ( isset( $this->_processed_urls[ $url ] ) ) {
 			return false;
 		}
-		$api_queue = WPCCSS()->get_api_queue();
+		$api_queue = wp_criticalcss()->get_api_queue();
 
 		if ( $api_queue->get_item_exists( $item ) ) {
 			return false;
 		}
 
-		$css_hash  = WPCCSS()->get_data_manager()->get_css_hash( $item );
-		$html_hash = WPCCSS()->get_data_manager()->get_html_hash( $item );
-		$url       = WPCCSS()->get_permalink( $item );
+		$css_hash  = wp_criticalcss()->get_data_manager()->get_css_hash( $item );
+		$html_hash = wp_criticalcss()->get_data_manager()->get_html_hash( $item );
+		$url       = wp_criticalcss()->get_permalink( $item );
 		if ( empty( $url ) ) {
 			return false;
 		}
-		$result = wp_remote_get( WPCCSS()->get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', [], $item ) );
+		$result = wp_remote_get( wp_criticalcss()->get_permalink( $item ), apply_filters( 'wp_criticalcss_web_check_request_args', [], $item ) );
 
 		if ( $result instanceof \WP_Error ) {
 			if ( empty( $item['error'] ) ) {
@@ -145,10 +145,10 @@ class Process extends ProcessAbstract {
 		if ( $changed ) {
 			$item['css_hash']  = $css_hash;
 			$item['html_hash'] = $html_hash;
-			WPCCSS()->get_integration_manager()->disable_integrations();
-			WPCCSS()->get_cache_manager()->purge_page_cache( $item['type'], $item['object_id'], WPCCSS()->get_permalink( $item ) );
-			WPCCSS()->get_integration_manager()->enable_integrations();
-			WPCCSS()->get_data_manager()->set_cache( $item, '' );
+			wp_criticalcss()->get_integration_manager()->disable_integrations();
+			wp_criticalcss()->get_cache_manager()->purge_page_cache( $item['type'], $item['object_id'], wp_criticalcss()->get_permalink( $item ) );
+			wp_criticalcss()->get_integration_manager()->enable_integrations();
+			wp_criticalcss()->get_data_manager()->set_cache( $item, '' );
 			$api_queue->push_to_queue( $item )->save();
 
 		}

@@ -2,8 +2,12 @@
 
 namespace WP\CriticalCSS;
 
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+
 /**
  * Class Request
+ *
+ * @property string $template
  */
 class Request extends ComponentAbstract {
 	/**
@@ -19,7 +23,6 @@ class Request extends ComponentAbstract {
 	 * WP_CriticalCSS_Request constructor.
 	 */
 	public function init() {
-		parent::init();
 		add_action( 'init', [
 			$this,
 			'add_rewrite_rules',
@@ -32,7 +35,7 @@ class Request extends ComponentAbstract {
 			$this,
 			'update_request',
 		] );
-		if ( ! empty( $this->settings['template_cache'] ) && 'on' == $this->settings['template_cache'] ) {
+		if ( ! empty( $this->settings['template_cache'] ) && 'on' === $this->settings['template_cache'] ) {
 			add_action( 'template_include', [
 				$this,
 				'template_include',
@@ -210,9 +213,9 @@ class Request extends ComponentAbstract {
 		$object_id = absint( $object_id );
 
 		if ( ! isset( $type ) ) {
-			WPCCSS()->get_integration_manager()->disable_integrations();
+			wp_criticalcss()->get_integration_manager()->disable_integrations();
 			$url = site_url( $wp->request );
-			WPCCSS()->get_integration_manager()->enable_integrations();
+			wp_criticalcss()->get_integration_manager()->enable_integrations();
 			$type = 'url';
 			unset( $object_id );
 		}

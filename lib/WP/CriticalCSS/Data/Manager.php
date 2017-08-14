@@ -2,14 +2,15 @@
 
 namespace WP\CriticalCSS\Data;
 
-use WP\CriticalCSS;
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 
 /**
  * Class Manager
  *
  * @package WP\CriticalCSS\Data
+ * @property \WP\CriticalCSS $plugin
  */
-class Manager extends CriticalCSS\ComponentAbstract {
+class Manager extends ComponentAbstract {
 
 	/**
 	 * @param array $item
@@ -29,14 +30,14 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	public function get_item_data( $item = [], $name ) {
 		$value = null;
 		if ( empty( $item ) ) {
-			$item = WPCCSS()->get_request()->get_current_page_type();
+			$item = $this->plugin->request->get_current_page_type();
 		}
 		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
 			if ( 'cache' === $name ) {
 				$name = 'ccss';
 			}
 			$name  = [ $name, md5( $item['template'] ) ];
-			$value = $this->app->get_cache_manager()->get_store()->get_cache_fragment( $name );
+			$value = $this->plugin->cache_manager->get_store()->get_cache_fragment( $name );
 		} else {
 			if ( 'url' === $item['type'] ) {
 				if ( 'cache' === $name ) {
@@ -87,14 +88,14 @@ class Manager extends CriticalCSS\ComponentAbstract {
 				$name = 'ccss';
 			}
 			$name = [ $name, md5( $item['template'] ) ];
-			$this->app->get_cache_manager()->get_store()->update_cache_fragment( $name, $value );
+			$this->plugin->cache_manager->get_store()->update_cache_fragment( $name, $value );
 		} else {
 			if ( 'url' === $item['type'] ) {
 				if ( 'cache' === $name ) {
 					$name = 'ccss';
 				}
 				$name = [ $name, md5( $item['url'] ) ];
-				$this->app->get_cache_manager()->get_store()->update_cache_fragment( $name, $value );
+				$this->plugin->cache_manager->get_store()->update_cache_fragment( $name, $value );
 			} else {
 				$name  = "criticalcss_{$name}";
 				$value = wp_slash( $value );
@@ -167,13 +168,20 @@ class Manager extends CriticalCSS\ComponentAbstract {
 			'type',
 			'url',
 		];
-		if ( 'on' == $this->settings['template_cache'] ) {
+		if ( 'on' === $this->settings['template_cache'] ) {
 
-			$template = $this->app->get_request()->get_template();
+			$template = $this->plugin->request->template;
 			$parts    = [ 'template' ];
 		}
 		$type = compact( $parts );
 
 		return md5( serialize( $type ) );
+	}
+
+	/**
+	 *
+	 */
+	public function init() {
+		// noop
 	}
 }

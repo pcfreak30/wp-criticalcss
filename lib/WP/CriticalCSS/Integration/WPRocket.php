@@ -2,8 +2,17 @@
 
 namespace WP\CriticalCSS\Integration;
 
+/**
+ * Class WPRocket
+ *
+ * @package WP\CriticalCSS\Integration
+ * @property \WP\CriticalCSS $plugin
+ */
 class WPRocket extends IntegrationAbstract {
 
+	/**
+	 *
+	 */
 	public function init() {
 		if ( function_exists( 'get_rocket_option' ) ) {
 			parent::init();
@@ -15,19 +24,19 @@ class WPRocket extends IntegrationAbstract {
 	 */
 	public function enable() {
 		add_action( 'after_rocket_clean_domain', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_transients',
 		] );
 		add_action( 'after_rocket_clean_post', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_post_transient',
 		] );
 		add_action( 'after_rocket_clean_term', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_term_transient',
 		] );
 		add_action( 'after_rocket_clean_home', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_home_transient',
 		] );
 		add_action( 'wp_criticalcss_nocache', [
@@ -60,19 +69,19 @@ class WPRocket extends IntegrationAbstract {
 	 */
 	public function disable() {
 		remove_action( 'after_rocket_clean_domain', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_transients',
 		] );
 		remove_action( 'after_rocket_clean_post', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_post_transient',
 		] );
 		remove_action( 'after_rocket_clean_term', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_term_transient',
 		] );
 		remove_action( 'after_rocket_clean_home', [
-			WPCCSS()->get_cache_manager(),
+			$this->plugin->cache_manager,
 			'reset_web_check_home_transient',
 		] );
 		remove_action( 'after_rocket_clean_domain', 'rocket_clean_wpengine' );
@@ -125,6 +134,9 @@ class WPRocket extends IntegrationAbstract {
 		return get_rocket_purge_cron_interval();
 	}
 
+	/**
+	 *
+	 */
 	public function disable_cache() {
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true );

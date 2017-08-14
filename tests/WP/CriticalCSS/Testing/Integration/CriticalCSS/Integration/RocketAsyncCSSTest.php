@@ -11,7 +11,7 @@ class RocketAsyncCSSTest extends TestCase {
 
 	public function test_cache_exists() {
 		global $wp;
-		WPCCSS()->init();
+		wp_criticalcss()->init();
 		do_action_ref_array( 'wp', [ &$wp ] );
 		$this->assertEquals(
 			10, has_action(
@@ -49,7 +49,7 @@ class RocketAsyncCSSTest extends TestCase {
 	 * @runInSeparateProcess
 	 */
 	public function test_nocache_page() {
-		WPCCSS()->init();
+		wp_criticalcss()->init();
 		do_action( 'init' );
 		flush_rewrite_rules();
 		$this->go_to( home_url( '/nocache' ) );

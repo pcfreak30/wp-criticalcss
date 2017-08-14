@@ -6,7 +6,7 @@ use WP\CriticalCSS\Testing\Integration\TestCase;
 
 class ManagerTest extends TestCase {
 	public function test_set_item_data_post() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$post = $this->factory->post->create_and_get();
@@ -16,7 +16,7 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_set_item_data_term() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$term = $this->factory->term->create_and_get();
@@ -26,7 +26,7 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_set_item_data_author() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$this->factory->post->create( [ 'post_author' => 1 ] );
@@ -36,7 +36,7 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_set_item_data_url() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$url = home_url();
@@ -46,11 +46,11 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_set_item_data_template() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$template = locate_template( 'index.php' );
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
 		$instance->init();
-		WPCCSS()->get_request()->template_include( $template );
+		wp_criticalcss()->get_request()->template_include( $template );
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
 		$instance->get_data_manager()->set_item_data( $instance->get_request()->get_current_page_type(), 'test', true );
@@ -58,7 +58,7 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_data_post() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$post = $this->factory->post->create_and_get();
@@ -68,7 +68,7 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_data_term() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$term = $this->factory->term->create_and_get();
@@ -78,7 +78,7 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_data_author() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$this->factory->post->create( [ 'post_author' => 1 ] );
@@ -88,7 +88,7 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_data_url() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$instance->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
 		$instance->init();
 		$url = home_url();
@@ -98,11 +98,11 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_data_template() {
-		$instance = WPCCSS();
+		$instance = wp_criticalcss();
 		$template = locate_template( 'index.php' );
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
 		$instance->init();
-		WPCCSS()->get_request()->template_include( $template );
+		wp_criticalcss()->get_request()->template_include( $template );
 		$post = $this->factory->post->create_and_get();
 		$this->go_to( get_permalink( $post->ID ) );
 		$instance->get_data_manager()->set_item_data( $instance->get_request()->get_current_page_type(), 'test', true );
@@ -110,10 +110,10 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_hash_object() {
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
-		WPCCSS()->init();
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->init();
 		$this->assertEquals(
-			'2c4eebcf19a6fa7b1d5e085ee453571b', WPCCSS()->get_data_manager()->get_item_hash(
+			'2c4eebcf19a6fa7b1d5e085ee453571b', wp_criticalcss()->get_data_manager()->get_item_hash(
 			[
 				'object_id' => 1,
 				'type'      => 'post',
@@ -123,11 +123,11 @@ class ManagerTest extends TestCase {
 	}
 
 	public function test_get_item_hash_template() {
-		WPCCSS()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
-		WPCCSS()->init();
+		wp_criticalcss()->get_settings_manager()->update_settings( [ 'template_cache' => 'on' ] );
+		wp_criticalcss()->init();
 		$template = locate_template( 'index.php' );
 		$this->assertEquals(
-			'ccdec35a9d8b3fd7e5a079b4512d3c08', WPCCSS()->get_data_manager()->get_item_hash(
+			'ccdec35a9d8b3fd7e5a079b4512d3c08', wp_criticalcss()->get_data_manager()->get_item_hash(
 			[
 				'template'  => $template,
 				'object_id' => 1,

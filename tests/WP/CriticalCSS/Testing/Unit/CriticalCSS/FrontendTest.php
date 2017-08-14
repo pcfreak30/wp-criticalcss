@@ -11,10 +11,10 @@ class FrontendTest extends TestCase {
 	public function test_init_print_styles_hook() {
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
 		\WP_Mock::expectActionAdded( 'wp_print_styles', [
-			WPCCSS()->get_frontend(),
+			wp_criticalcss()->get_frontend(),
 			'print_styles',
 		], 7 );
-		WPCCSS()->get_frontend()->init();
+		wp_criticalcss()->get_frontend()->init();
 	}
 
 }

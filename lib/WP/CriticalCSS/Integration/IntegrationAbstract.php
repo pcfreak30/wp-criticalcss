@@ -4,12 +4,16 @@ namespace WP\CriticalCSS\Integration;
 /**
  * Class IntegrationAbstract
  */
+
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+
 /**
  * Class IntegrationAbstract
  *
  * @package WP\CriticalCSS\Integration
+ * @property \WP\CriticalCSS $plugin
  */
-abstract class IntegrationAbstract {
+abstract class IntegrationAbstract extends ComponentAbstract {
 
 	/**
 	 *

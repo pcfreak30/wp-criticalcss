@@ -3,10 +3,10 @@
 
 namespace WP\CriticalCSS;
 
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 
 class Frontend extends ComponentAbstract {
 	public function init() {
-		parent::init();
 		if ( ! is_admin() ) {
 			add_action(
 				'wp_print_styles', [

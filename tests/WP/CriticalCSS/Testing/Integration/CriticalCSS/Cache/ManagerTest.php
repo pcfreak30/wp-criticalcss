@@ -7,11 +7,11 @@ use WP\CriticalCSS\Testing\Integration\TestCase;
 class ManagerTest extends TestCase {
 
 	public function test_init_template_cache_off() {
-		WPCCSS()->init();
+		wp_criticalcss()->init();
 		$this->assertEquals(
 			10, has_action(
 				'post_updated', [
-					WPCCSS()->get_cache_manager(),
+					wp_criticalcss()->get_cache_manager(),
 					'reset_web_check_post_transient',
 				]
 			)
@@ -19,7 +19,7 @@ class ManagerTest extends TestCase {
 		$this->assertEquals(
 			10, has_action(
 				'edited_term', [
-					WPCCSS()->get_cache_manager(),
+					wp_criticalcss()->get_cache_manager(),
 					'reset_web_check_term_transient',
 				]
 			)

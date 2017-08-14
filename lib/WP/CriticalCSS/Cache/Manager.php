@@ -3,15 +3,16 @@
 namespace WP\CriticalCSS\Cache;
 
 use pcfreak30\WordPress\Cache\Store;
-use WP\CriticalCSS;
+use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 
 /**
  * Class Manager
  *
  * @package WP\CriticalCSS\Cache
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ * @property \WP\CriticalCSS $plugin
  */
-class Manager extends CriticalCSS\ComponentAbstract {
+class Manager extends ComponentAbstract {
 
 	/**
 	 * @var \pcfreak30\WordPress\Cache\Store
@@ -33,7 +34,6 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 *
 	 */
 	public function init() {
-		parent::init();
 		add_action(
 			'after_switch_theme', [
 				$this,
@@ -60,7 +60,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 				]
 			);
 		}
-		$this->store->set_prefix( CriticalCSS::TRANSIENT_PREFIX );
+		$this->store->set_prefix( $this->plugin->get_transient_prefix() );
 		$interval = 0;
 		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
 			$interval = get_rocket_purge_cron_interval();
@@ -69,10 +69,20 @@ class Manager extends CriticalCSS\ComponentAbstract {
 		$this->store->set_max_branch_length( apply_filters( 'wp_criticalcss_max_branch_length', 50 ) );
 	}
 
+	/**
+	 * @param array $path
+	 *
+	 * @return bool|mixed
+	 */
 	public function delete_cache_branch( $path = [] ) {
 		return $this->store->delete_cache_branch( $path );
 	}
 
+	/**
+	 * @param array $path
+	 *
+	 * @return bool
+	 */
 	public function delete_cache_leaf( $path = [] ) {
 		return $this->store->delete_cache_leaf( $path );
 	}
@@ -121,7 +131,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 */
 	public function reset_web_check_post_transient( $post ) {
 		$post = get_post( $post );
-		$hash = $this->app->get_data_manager()->get_item_hash(
+		$hash = $this->plugin->data_manager->get_item_hash(
 			[
 				'object_id' => $post->ID,
 				'type'      => 'post',
@@ -137,7 +147,7 @@ class Manager extends CriticalCSS\ComponentAbstract {
 	 */
 	public function reset_web_check_term_transient( $term ) {
 		$term = get_term( $term );
-		$hash = $this->app->get_data_manager()->get_item_hash(
+		$hash = $this->plugin->data_manager->get_item_hash(
 			[
 				'object_id' => $term->term_id,
 				'type'      => 'term',
@@ -167,14 +177,14 @@ class Manager extends CriticalCSS\ComponentAbstract {
 			}
 		}
 		if ( ! empty( $post_id ) && get_permalink( $post_id ) == site_url() ) {
-			$hash = $this->app->get_data_manager()->get_item_hash(
+			$hash = $this->plugin->data_manager->get_item_hash(
 				[
 					'object_id' => $post_id,
 					'type'      => 'post',
 				]
 			);
 		} else {
-			$hash = $this->app->get_data_manager()->get_item_hash(
+			$hash = $this->plugin->data_manager->get_item_hash(
 				[
 					'type' => 'url',
 					'url'  => site_url(),

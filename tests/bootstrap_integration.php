@@ -29,7 +29,7 @@ function _manually_load_plugin() {
 	include dirname( dirname( __FILE__ ) ) . '/wp-criticalcss.php';
 	remove_action( 'plugins_loaded', 'wp_criticalcss_init' );
 	function wp_criticalcss_init_integration() {
-		wpccss_container( 'integration_test' );
+		wp_criticalcss_container( 'integration_test' );
 	}
 
 	add_action( 'plugins_loaded', 'wp_criticalcss_init_integration' );

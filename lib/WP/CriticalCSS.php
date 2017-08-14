@@ -2,9 +2,25 @@
 
 namespace WP;
 
-use WP\CriticalCSS\ComponentAbstract;
 
-class CriticalCSS {
+use pcfreak30\WordPress\Plugin\Framework\PluginAbstract;
+
+/**
+ * Class CriticalCSS
+ *
+ * @package WP
+ * @property CriticalCSS\Cache\Manager                $cache_manager
+ * @property CriticalCSS\Request                      $request
+ * @property CriticalCSS\Data\Manager                 $data_manager
+ * @property CriticalCSS\Integration\Manager          $integration_manager
+ * @property CriticalCSS\Settings\Manager             $settings_manager
+ * @property CriticalCSS\API\Background\Process       $api_queue
+ * @property CriticalCSS\Web\Check\Background\Process $web_check_queue
+ * @property CriticalCSS\Frontend                     $frontend
+ * @property CriticalCSS\Admin\UI                     $admin_ui
+ * @property array                                    $settings
+ */
+class CriticalCSS extends PluginAbstract {
 	/**
 	 *
 	 */
@@ -24,6 +40,11 @@ class CriticalCSS {
 	 *
 	 */
 	const TRANSIENT_PREFIX = 'wp_criticalcss_';
+
+	/**
+	 *
+	 */
+	const PLUGIN_SLUG = 'wp-criticalcss';
 	/**
 	 * @var array
 	 */
@@ -84,6 +105,19 @@ class CriticalCSS {
 	protected $frontend;
 
 
+	/**
+	 * CriticalCSS constructor.
+	 *
+	 * @param \WP\CriticalCSS\Settings\Manager             $settings_manager
+	 * @param \WP\CriticalCSS\Admin\UI                     $admin_ui
+	 * @param \WP\CriticalCSS\Data\Manager                 $data_manager
+	 * @param \WP\CriticalCSS\Cache\Manager                $cache_manager
+	 * @param \WP\CriticalCSS\Request                      $request
+	 * @param \WP\CriticalCSS\Integration\Manager          $integration_manager
+	 * @param \WP\CriticalCSS\API\Background\Process       $api_queue
+	 * @param \WP\CriticalCSS\Frontend                     $frontend
+	 * @param \WP\CriticalCSS\Web\Check\Background\Process $web_check_queue
+	 */
 	public function __construct(
 		CriticalCSS\Settings\Manager $settings_manager,
 		CriticalCSS\Admin\UI $admin_ui,
@@ -96,7 +130,6 @@ class CriticalCSS {
 		CriticalCSS\Web\Check\Background\Process $web_check_queue
 	) {
 		$this->settings_manager    = $settings_manager;
-		$this->settings            = $this->settings_manager->get_settings();
 		$this->admin_ui            = $admin_ui;
 		$this->data_manager        = $data_manager;
 		$this->cache_manager       = $cache_manager;
@@ -105,16 +138,18 @@ class CriticalCSS {
 		$this->api_queue           = $api_queue;
 		$this->web_check_queue     = $web_check_queue;
 		$this->frontend            = $frontend;
-		$this->set_parent();
+		parent::__construct();
 	}
 
-	protected function set_parent() {
-		foreach ( get_object_vars( $this ) as &$property ) {
-			if ( $property instanceof ComponentAbstract ) {
-				$property->set_app( $this );
-			}
+	protected function setup_components() {
+		$components = $this->get_components();
+		$this->set_component_parents( $components );
+		$this->settings = $this->settings_manager->get_settings();
+		foreach ( $components as $component ) {
+			$component->init();
 		}
 	}
+
 
 	/**
 	 * @return \WP\CriticalCSS\Admin\UI
@@ -241,29 +276,10 @@ class CriticalCSS {
 		flush_rewrite_rules();
 	}
 
-
 	/**
 	 *
 	 */
-	public
-	function init() {
-		$this->init_components();
-	}
-
-	public
-	function init_components() {
-		foreach ( $this as $property ) {
-			if ( $property instanceof ComponentAbstract ) {
-				$property->init();
-			}
-		}
-	}
-
-	/**
-	 *
-	 */
-	public
-	function deactivate() {
+	public function deactivate() {
 		flush_rewrite_rules();
 	}
 
@@ -349,15 +365,6 @@ class CriticalCSS {
 		return $this->integration_manager;
 	}
 
-	public
-	function __destruct() {
-		foreach ( get_object_vars( $this ) as $property ) {
-			if ( $property instanceof ComponentAbstract ) {
-				$property->__destruct();
-			}
-		}
-	}
-
 	/**
 	 * @param array $settings
 	 */
@@ -366,6 +373,34 @@ class CriticalCSS {
 		$settings
 	) {
 		$this->settings = $settings;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function uninstall() {
+		// noop
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_option_name() {
+		return static::OPTIONNAME;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_lang_domain() {
+		return static::LANG_DOMAIN;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_transient_prefix() {
+		return static::TRANSIENT_PREFIX;
 	}
 
 }
