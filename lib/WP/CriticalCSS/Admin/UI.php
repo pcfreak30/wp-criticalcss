@@ -4,7 +4,7 @@ namespace WP\CriticalCSS\Admin;
 
 use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 use WP\CriticalCSS;
-use WP\CriticalCSS\Queue\API\TableAbstract;
+use WP\CriticalCSS\Queue\API\Table;
 
 /**
  * Class UI
@@ -27,11 +27,11 @@ class UI extends ComponentAbstract {
 	/**
 	 * UI constructor.
 	 *
-	 * @param \WP\CriticalCSS\Settings\API            $settings_ui
-	 * @param \WP\CriticalCSS\API                     $api
-	 * @param \WP\CriticalCSS\Queue\API\TableAbstract $api_table
+	 * @param \WP\CriticalCSS\Settings\API    $settings_ui
+	 * @param \WP\CriticalCSS\API             $api
+	 * @param \WP\CriticalCSS\Queue\API\Table $api_table
 	 */
-	public function __construct( \WP\CriticalCSS\Settings\API $settings_ui, CriticalCSS\API $api, TableAbstract $api_table ) {
+	public function __construct( \WP\CriticalCSS\Settings\API $settings_ui, CriticalCSS\API $api, Table $api_table ) {
 		$this->settings_ui = $settings_ui;
 		$this->api         = $api;
 		$this->api_table   = $api_table;

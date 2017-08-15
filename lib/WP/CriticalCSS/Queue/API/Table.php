@@ -7,7 +7,7 @@ namespace WP\CriticalCSS\Queue\API;
 use WP\CriticalCSS;
 use WP\CriticalCSS\Queue\ListTableAbstract;
 
-class TableAbstract extends ListTableAbstract {
+class Table extends ListTableAbstract {
 	/**
 	 * @return array
 	 */
