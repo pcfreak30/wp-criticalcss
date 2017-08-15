@@ -23,7 +23,6 @@ class Process extends ProcessAbstract {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-
 		$url = wp_criticalcss()->get_permalink( $item );
 		if ( isset( $this->_processed_urls[ $url ] ) ) {
 			return false;
@@ -159,11 +158,11 @@ class Process extends ProcessAbstract {
 		return false;
 	}
 
-	private function set_pending( $item ) {
+	private function set_pending() {
 		$this->set_status( 'pending' );
 	}
 
-	private function set_processing( $item ) {
+	private function set_processing() {
 		$this->set_status( Table::STATUS_PROCESSING );
 	}
 
