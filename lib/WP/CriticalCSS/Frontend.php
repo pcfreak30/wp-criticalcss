@@ -43,8 +43,8 @@ class Frontend extends ComponentAbstract {
 	 *
 	 */
 	public function wp_action() {
-		set_query_var( 'nocache', $this->app->get_request()->is_no_cache() );
-		$this->app->get_integration_manager()->enable_integrations();
+		set_query_var( 'nocache', $this->plugin->request->is_no_cache() );
+		$this->plugin->integration_manager->enable_integrations();
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Frontend extends ComponentAbstract {
 			do_action( 'wp_criticalcss_nocache' );
 		}
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
-			$cache = $this->app->get_data_manager()->get_cache();
+			$cache = $this->plugin->data_manager->get_cache();
 			$cache = apply_filters( 'wp_criticalcss_print_styles_cache', $cache );
 
 			do_action( 'wp_criticalcss_before_print_styles', $cache );
@@ -65,17 +65,17 @@ class Frontend extends ComponentAbstract {
 				<style type="text/css" id="criticalcss" data-no-minify="1"><?php echo $cache ?></style>
 				<?php
 			}
-			$type  = $this->app->get_request()->get_current_page_type();
-			$hash  = $this->app->get_data_manager()->get_item_hash( $type );
-			$check = $this->app->get_cache_manager()->get_cache_fragment( [ 'webcheck', $hash ] );
+			$type  = $this->plugin->request->get_current_page_type();
+			$hash  = $this->plugin->data_manager->get_item_hash( $type );
+			$check = $this->plugin->cache_manager->get_cache_fragment( [ 'webcheck', $hash ] );
 			if ( 'on' === $this->settings['template_cache'] && ! empty( $type['template'] ) ) {
-				if ( empty( $cache ) && ! $this->app->get_api_queue()->get_item_exists( $type ) ) {
-					$this->app->get_api_queue()->push_to_queue( $type )->save();
+				if ( empty( $cache ) && ! $this->plugin->api_queue->get_item_exists( $type ) ) {
+					$this->plugin->api_queue->push_to_queue( $type )->save();
 				}
 			} else {
-				if ( empty( $check ) && ! $this->app->get_web_check_queue()->get_item_exists( $type ) ) {
-					$this->app->get_web_check_queue()->push_to_queue( $type )->save();
-					$this->app->get_cache_manager()->update_cache_fragment( [ 'webcheck', $hash ], true );
+				if ( empty( $check ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
+					$this->plugin->web_check_queue->push_to_queue( $type )->save();
+					$this->plugin->cache_manager->update_cache_fragment( [ 'webcheck', $hash ], true );
 				}
 			}
 
