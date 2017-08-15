@@ -308,11 +308,19 @@ class UI extends ComponentAbstract {
 			$value['force_web_check'] = 'off';
 			$this->plugin->get_cache_manager()->purge_page_cache();
 		}
+		if ( $value['web_check_interval'] != $old_value['web_check_interval'] ) {
+			$scheduled = wp_next_scheduled( 'wp_criticalcss_purge_log' );
+			if ( $scheduled ) {
+				wp_unschedule_event( $scheduled, 'wp_criticalcss_purge_log' );
+			}
+
+		}
 
 		if ( is_multisite() ) {
 			update_site_option( $this->plugin->get_option_name(), $value );
 			$value = $original_old_value;
 		}
+
 
 		return $value;
 	}
