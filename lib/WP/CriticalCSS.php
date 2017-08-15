@@ -4,6 +4,15 @@ namespace WP;
 
 
 use pcfreak30\WordPress\Plugin\Framework\PluginAbstract;
+use WP\CriticalCSS\Admin\UI;
+use WP\CriticalCSS\Cache\Manager as CacheManager;
+use WP\CriticalCSS\Data\Manager as DataManager;
+use WP\CriticalCSS\Frontend;
+use WP\CriticalCSS\Installer;
+use WP\CriticalCSS\Integration\Manager as IntegrationManager;
+use WP\CriticalCSS\Settings\Manager as SettingsManager;
+use WP\CriticalCSS\Web\Check\Background\Process as BackgroundProcess;
+use WP\CriticalCSS\Web\Check\Background\Process as WebCheckProcess;
 
 /**
  * Class CriticalCSS
@@ -103,6 +112,10 @@ class CriticalCSS extends PluginAbstract {
 	 * @var \WP\CriticalCSS\Frontend
 	 */
 	protected $frontend;
+	/**
+	 * @var \WP\CriticalCSS\Installer
+	 */
+	private $installer;
 
 
 	/**
@@ -117,17 +130,19 @@ class CriticalCSS extends PluginAbstract {
 	 * @param \WP\CriticalCSS\API\Background\Process       $api_queue
 	 * @param \WP\CriticalCSS\Frontend                     $frontend
 	 * @param \WP\CriticalCSS\Web\Check\Background\Process $web_check_queue
+	 * @param \WP\CriticalCSS\Installer                    $installer
 	 */
 	public function __construct(
-		CriticalCSS\Settings\Manager $settings_manager,
-		CriticalCSS\Admin\UI $admin_ui,
-		CriticalCSS\Data\Manager $data_manager,
-		CriticalCSS\Cache\Manager $cache_manager,
+		SettingsManager $settings_manager,
+		UI $admin_ui,
+		DataManager $data_manager,
+		CacheManager $cache_manager,
 		CriticalCSS\Request $request,
-		CriticalCSS\Integration\Manager $integration_manager,
-		CriticalCSS\API\Background\Process $api_queue,
-		CriticalCSS\Frontend $frontend,
-		CriticalCSS\Web\Check\Background\Process $web_check_queue
+		IntegrationManager $integration_manager,
+		BackgroundProcess $api_queue,
+		Frontend $frontend,
+		WebCheckProcess $web_check_queue,
+		Installer $installer
 	) {
 		$this->settings_manager    = $settings_manager;
 		$this->admin_ui            = $admin_ui;
@@ -138,6 +153,7 @@ class CriticalCSS extends PluginAbstract {
 		$this->api_queue           = $api_queue;
 		$this->web_check_queue     = $web_check_queue;
 		$this->frontend            = $frontend;
+		$this->installer           = $installer;
 		parent::__construct();
 	}
 
@@ -202,78 +218,14 @@ class CriticalCSS extends PluginAbstract {
 	 *
 	 */
 	public function activate() {
-		global $wpdb;
-		$settings    = $this->settings_manager->get_settings();
-		$no_version  = ( ! empty( $settings ) && empty( $settings['version'] ) ) || empty( $settings );
-		$version_0_3 = false;
-		$version_0_4 = false;
-		$version_0_5 = false;
-		if ( ! $no_version ) {
-			$version     = $settings['version'];
-			$version_0_3 = version_compare( '0.3.0', $version ) === 1;
-			$version_0_4 = version_compare( '0.4.0', $version ) === 1;
-			$version_0_5 = version_compare( '0.5.0', $version ) === 1;
-		}
-		if ( $no_version || $version_0_3 || $version_0_4 ) {
-			remove_action(
-				'update_option_criticalcss', [
-					$this,
-					'after_options_updated',
-				]
-			);
-			if ( isset( $settings['disable_autopurge'] ) ) {
-				unset( $settings['disable_autopurge'] );
-				$this->settings_manager->update_settings( $settings );
-			}
-			if ( isset( $settings['expire'] ) ) {
-				unset( $settings['expire'] );
-				$this->settings_manager->update_settings( $settings );
-			}
-		}
-		if ( $no_version || $version_0_3 || $version_0_4 || $version_0_5 ) {
-			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_%', '_transient_timeout_criticalcss_%' ) );
-		}
-
-		if ( is_multisite() ) {
-			foreach (
-				get_sites(
-					[
-						'fields'       => 'ids',
-						'site__not_in' => [ 1 ],
-					]
-				) as $blog_id
-			) {
-				switch_to_blog( $blog_id );
-				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_web_check_queue IF EXISTS" );
-				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_api_queue IF EXISTS" );
-				restore_current_blog();
-			}
-		}
-
-		$this->settings_manager->update_settings(
-			array_merge(
-				[
-					'web_check_interval' => DAY_IN_SECONDS,
-					'template_cache'     => 'off',
-				], $this->settings_manager->get_settings(), [
-					'version' => self::VERSION,
-				]
-			)
-		);
-
-		$this->request->add_rewrite_rules();
-
-		$this->web_check_queue->create_table();
-		$this->api_queue->create_table();
-
-		flush_rewrite_rules();
+		$this->installer->activate();
 	}
 
 	/**
 	 *
 	 */
 	public function deactivate() {
-		flush_rewrite_rules();
+		$this->installer->deactivate();
 	}
 
 	/**
