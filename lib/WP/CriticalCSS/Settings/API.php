@@ -13,6 +13,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @link    https://tareq.co Tareq Hasan
  * @example example/oop-example.php How to use the class
  * @SuppressWarnings(PHPMD)
+ * @property \WP\CriticalCSS $plugin
  */
 class API extends ComponentAbstract {
 
@@ -205,7 +206,7 @@ class API extends ComponentAbstract {
 	 */
 	public function get_option( $option, $section, $default = '' ) {
 
-		$options = get_option( $section );
+		$options = $this->plugin->settings_manager->get_settings();
 
 		if ( isset( $options[ $option ] ) ) {
 			return $options[ $option ];
