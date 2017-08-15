@@ -57,13 +57,13 @@ class Frontend extends ComponentAbstract {
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
 			$manual       = apply_filters( 'wp_criticalcss_manual_post_css', true );
 			$manual_cache = null;
-			$fallback_css = $this->plugin->settings_manager->get_setting( 'fallback_css' );
+			$fallback_css = trim( $this->plugin->settings_manager->get_setting( 'fallback_css' ) );
 
 			if ( $manual ) {
-				$manual_cache = $this->plugin->data_manager->get_item_data( 'manual_css' );
+				$manual_cache = trim( $this->plugin->data_manager->get_item_data( 'manual_css' ) );
 			}
 
-			$cache = $this->plugin->data_manager->get_cache();
+			$cache = trim( $this->plugin->data_manager->get_cache() );
 			if ( 'on' === $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) ) {
 				$cache = $manual_cache;
 				if ( empty( $cache ) ) {
