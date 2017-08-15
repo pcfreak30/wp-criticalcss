@@ -108,13 +108,14 @@ class UI extends ComponentAbstract {
 	}
 
 	public function wp_loaded_action() {
-		foreach ( get_taxonomies() as $tax ) {
-			add_action( "{$tax}_edit_form", [
-				$this,
-				'render_post_css_metabox',
-			] );
+		if ( apply_filters( 'wp_criticalcss_manual_post_css', true ) ) {
+			foreach ( get_taxonomies() as $tax ) {
+				add_action( "{$tax}_edit_form", [
+					$this,
+					'render_post_css_metabox',
+				] );
+			}
 		}
-
 	}
 
 
