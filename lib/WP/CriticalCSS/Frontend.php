@@ -55,7 +55,14 @@ class Frontend extends ComponentAbstract {
 			do_action( 'wp_criticalcss_nocache' );
 		}
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
-			$manual       = apply_filters( 'wp_criticalcss_manual_post_css', true );
+			$request = $this->plugin->request->get_current_page_type();
+			$manual  = true;
+			if ( 'post' === $request['type'] ) {
+				$manual = apply_filters( 'wp_criticalcss_manual_post_css', true );
+			}
+			if ( 'term' === $request['type'] ) {
+				$manual = apply_filters( 'wp_criticalcss_manual_term_css', true );
+			}
 			$manual_cache = null;
 			$fallback_css = trim( $this->plugin->settings_manager->get_setting( 'fallback_css' ) );
 
