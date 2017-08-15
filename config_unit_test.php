@@ -23,3 +23,9 @@ $container->addRule(
 		'instanceOf' => 'WP\\CriticalCSS\\Testing\Unit\\CriticalCSS\\Settings\\ManagerMock',
 	]
 );
+$container->addRule( '\WP\CriticalCSS\Web\Check\Background\Process', [
+	'shared' => true,
+] );
+$container->addRule( '\WP\CriticalCSS\API\Background\Process', [
+	'shared' => true,
+] );
