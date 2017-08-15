@@ -43,7 +43,7 @@ class UI extends ComponentAbstract {
 	 */
 	public function init() {
 		$this->setup_components();
-		$this->api_table->init();
+
 		if ( is_admin() ) {
 			add_action( 'network_admin_menu', [
 				$this,
@@ -200,7 +200,7 @@ class UI extends ComponentAbstract {
 			'default' => 20,
 			'option'  => 'queue_items_per_page',
 		] );
-		$this->api_table = $this->plugin->container->create( '\\WP\\CriticalCSS\\Queue\\API\\TableAbstract', [ wp_criticalcss()->api_queue ] );
+		$this->api_table->init();
 	}
 
 	/**
