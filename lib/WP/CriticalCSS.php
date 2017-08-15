@@ -10,6 +10,8 @@ use WP\CriticalCSS\Data\Manager as DataManager;
 use WP\CriticalCSS\Frontend;
 use WP\CriticalCSS\Installer;
 use WP\CriticalCSS\Integration\Manager as IntegrationManager;
+use WP\CriticalCSS\Log;
+use WP\CriticalCSS\Request;
 use WP\CriticalCSS\Settings\Manager as SettingsManager;
 use WP\CriticalCSS\Web\Check\Background\Process as BackgroundProcess;
 use WP\CriticalCSS\Web\Check\Background\Process as WebCheckProcess;
@@ -18,16 +20,18 @@ use WP\CriticalCSS\Web\Check\Background\Process as WebCheckProcess;
  * Class CriticalCSS
  *
  * @package WP
- * @property CriticalCSS\Cache\Manager                $cache_manager
- * @property CriticalCSS\Request                      $request
- * @property CriticalCSS\Data\Manager                 $data_manager
- * @property CriticalCSS\Integration\Manager          $integration_manager
- * @property CriticalCSS\Settings\Manager             $settings_manager
- * @property CriticalCSS\API\Background\Process       $api_queue
- * @property CriticalCSS\Web\Check\Background\Process $web_check_queue
- * @property CriticalCSS\Frontend                     $frontend
- * @property CriticalCSS\Admin\UI                     $admin_ui
- * @property array                                    $settings
+ * @property CacheManager       $cache_manager
+ * @property Request            $request
+ * @property DataManager        $data_manager
+ * @property IntegrationManager $integration_manager
+ * @property SettingsManager    $settings_manager
+ * @property BackgroundProcess  $api_queue
+ * @property WebCheckProcess    $web_check_queue
+ * @property Frontend           $frontend
+ * @property UI                 $admin_ui
+ * @property array              $settings
+ * @property Installer          $installer
+ * @property Log                $log
  */
 class CriticalCSS extends PluginAbstract {
 	/**
@@ -116,21 +120,26 @@ class CriticalCSS extends PluginAbstract {
 	 * @var \WP\CriticalCSS\Installer
 	 */
 	private $installer;
+	/**
+	 * @var \WP\CriticalCSS\Log
+	 */
+	private $log;
 
 
 	/**
 	 * CriticalCSS constructor.
 	 *
-	 * @param \WP\CriticalCSS\Settings\Manager             $settings_manager
-	 * @param \WP\CriticalCSS\Admin\UI                     $admin_ui
-	 * @param \WP\CriticalCSS\Data\Manager                 $data_manager
-	 * @param \WP\CriticalCSS\Cache\Manager                $cache_manager
-	 * @param \WP\CriticalCSS\Request                      $request
-	 * @param \WP\CriticalCSS\Integration\Manager          $integration_manager
-	 * @param \WP\CriticalCSS\API\Background\Process       $api_queue
-	 * @param \WP\CriticalCSS\Frontend                     $frontend
-	 * @param \WP\CriticalCSS\Web\Check\Background\Process $web_check_queue
-	 * @param \WP\CriticalCSS\Installer                    $installer
+	 * @param \WP\CriticalCSS\Settings\Manager                                                    $settings_manager
+	 * @param \WP\CriticalCSS\Admin\UI                                                            $admin_ui
+	 * @param \WP\CriticalCSS\Data\Manager                                                        $data_manager
+	 * @param \WP\CriticalCSS\Cache\Manager                                                       $cache_manager
+	 * @param \WP\CriticalCSS\Request                                                             $request
+	 * @param \WP\CriticalCSS\Integration\Manager                                                 $integration_manager
+	 * @param \WP\CriticalCSS\API\Background\Process|\WP\CriticalCSS\Web\Check\Background\Process $api_queue
+	 * @param \WP\CriticalCSS\Frontend                                                            $frontend
+	 * @param \WP\CriticalCSS\Web\Check\Background\Process                                        $web_check_queue
+	 * @param \WP\CriticalCSS\Installer                                                           $installer
+	 * @param \WP\CriticalCSS\Log                                                                 $log
 	 */
 	public function __construct(
 		SettingsManager $settings_manager,
@@ -142,7 +151,8 @@ class CriticalCSS extends PluginAbstract {
 		BackgroundProcess $api_queue,
 		Frontend $frontend,
 		WebCheckProcess $web_check_queue,
-		Installer $installer
+		Installer $installer,
+		Log $log
 	) {
 		$this->settings_manager    = $settings_manager;
 		$this->admin_ui            = $admin_ui;
@@ -154,6 +164,7 @@ class CriticalCSS extends PluginAbstract {
 		$this->web_check_queue     = $web_check_queue;
 		$this->frontend            = $frontend;
 		$this->installer           = $installer;
+		$this->log                 = $log;
 		parent::__construct();
 	}
 
@@ -342,6 +353,13 @@ class CriticalCSS extends PluginAbstract {
 	 */
 	public function get_transient_prefix() {
 		return static::TRANSIENT_PREFIX;
+	}
+
+	/**
+	 * @return \WP\CriticalCSS\Log
+	 */
+	public function get_log() {
+		return $this->log;
 	}
 
 	protected function setup_components() {
