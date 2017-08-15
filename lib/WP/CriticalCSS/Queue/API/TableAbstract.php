@@ -1,43 +1,13 @@
 <?php
 
-namespace WP\CriticalCSS\Queue;
+
+namespace WP\CriticalCSS\Queue\API;
+
 
 use WP\CriticalCSS;
-use WP\CriticalCSS\API\Background\Process;
+use WP\CriticalCSS\Queue\ListTableAbstract;
 
-require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
-
-/**
- * Class ListTable
- */
-class ListTable extends \WP_List_Table {
-	/**
-	 * @var Process
-	 */
-	private $_api_queue;
-
-	/**
-	 * ListTable constructor.
-	 *
-	 * @param \WP\CriticalCSS\API\Background\Process $api_queue
-	 *
-	 */
-	public function __construct( Process $api_queue ) {
-		$this->_api_queue = $api_queue;
-		parent::__construct( [
-			'singular' => __( 'Queue Item', 'criticalcss' ),
-			'plural'   => __( 'Queue Items', 'criticalcss' ),
-			'ajax'     => false,
-		] );
-	}
-
-	/**
-	 *
-	 */
-	public function no_items() {
-		_e( 'Nothing in the queue.', 'sp' );
-	}
-
+class TableAbstract extends ListTableAbstract {
 	/**
 	 * @return array
 	 */
@@ -57,50 +27,26 @@ class ListTable extends \WP_List_Table {
 		return $columns;
 	}
 
-	/**
-	 *
-	 */
-	public function prepare_items() {
-		global $wpdb;
-
-		$this->_column_headers = $this->get_column_info();
-		$this->_process_bulk_action();
-
-		$per_page = $this->get_items_per_page( 'queue_items_per_page', 20 );
-
-		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}wp_criticalcss_api_queue";
-		} else {
-			$table = "{$wpdb->prefix}wp_criticalcss_api_queue";
-		}
-
-		$total_items = $wpdb->get_var( "SELECT COUNT(id) FROM {$table}" );
-
-		$paged = $this->get_pagenum();
-		$start = ( $paged - 1 ) * $per_page;
-
-		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY LOCATE('queue_id', {$table}.data) DESC, LOCATE('queue_index', {$table}.data) DESC LIMIT %d,%d", $start, $per_page ), ARRAY_A );
-
-		usort( $this->items, [ $this, 'sort_items' ] );
-
-		$this->set_pagination_args( [
-			'total_items' => $total_items,
-			'per_page'    => $per_page,
-			'total_pages' => ceil( $total_items / $per_page ),
+	public function __construct( array $args = [] ) {
+		parent::__construct( [
+			'singular' => __( 'Queue Item', 'criticalcss' ),
+			'plural'   => __( 'Queue Items', 'criticalcss' ),
+			'ajax'     => false,
 		] );
 	}
 
-	private function _process_bulk_action() {
-		if ( 'purge' === $this->current_action() ) {
-			wp_criticalcss()->get_api_queue()->purge();
-			wp_criticalcss()->get_cache_manager()->reset_web_check_transients();
-		}
+	protected function do_prepare_items() {
+		$wpdb        = wp_criticalcss()->wpdb;
+		$table       = $this->get_table_name();
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY LOCATE('queue_id', {$table}.data) DESC, LOCATE('queue_index', {$table}.data) DESC LIMIT %d,%d", $this->start, $this->per_page ), ARRAY_A );
+		usort( $this->items, [ $this, 'sort_items' ] );
 	}
 
-	protected function get_bulk_actions() {
-		return [
-			'purge' => __( 'Purge', wp_criticalcss()->get_lang_domain() ),
-		];
+	protected function process_bulk_action() {
+		if ( 'purge' === $this->current_action() ) {
+			$this->queue->purge();
+			wp_criticalcss()->get_cache_manager()->reset_web_check_transients();
+		}
 	}
 
 	/**
