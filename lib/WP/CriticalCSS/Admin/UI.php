@@ -123,22 +123,28 @@ class UI extends ComponentAbstract {
 			'name'  => 'force_web_check',
 			'label' => 'Force Web Check',
 			'type'  => 'checkbox',
-			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', CriticalCSS::LANG_DOMAIN ),
+			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
 		] );
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'template_cache',
 			'label' => 'Template Cache',
 			'type'  => 'checkbox',
-			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url.', CriticalCSS::LANG_DOMAIN ),
+			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url.', $this->plugin->get_lang_domain() ),
 		] );
 		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
 			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 				'name'  => 'web_check_interval',
 				'label' => 'Web Check Interval',
 				'type'  => 'number',
-				'desc'  => __( 'How often in seconds web pages should be checked for changes to re-generate CSS', CriticalCSS::LANG_DOMAIN ),
+				'desc'  => __( 'How often in seconds web pages should be checked for changes to re-generate CSS', $this->plugin->get_lang_domain() ),
 			] );
 		}
+		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+			'name'  => 'force_include_styles',
+			'label' => 'Force Include Styles',
+			'type'  => 'textarea',
+			'desc'  => __( 'A list of CSS selectors and/or regex patterns for css selectors', $this->plugin->get_lang_domain() ),
+		] );
 		$this->settings_ui->admin_init();
 	}
 
