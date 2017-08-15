@@ -9,6 +9,7 @@ use WP\CriticalCSS\Queue\ListTableAbstract;
 class Table extends ListTableAbstract {
 	const TABLE_NAME = 'web_check';
 	const STATUS_PROCESSING = 'processing';
+	const STATUS_PENDING = 'pending';
 
 	public function __construct( array $args = [] ) {
 		parent::__construct( [
