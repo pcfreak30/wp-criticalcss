@@ -8,15 +8,22 @@ use WP\CriticalCSS;
 use WP\CriticalCSS\Queue\ListTableAbstract;
 
 class Table extends ListTableAbstract {
+	public function __construct( array $args = [] ) {
+		parent::__construct( [
+			'singular' => __( 'Web Check Queue Item', 'criticalcss' ),
+			'plural'   => __( 'Web Check Queue Queue Items', 'criticalcss' ),
+			'ajax'     => false,
+		] );
+	}
+
 	/**
 	 * @return array
 	 */
 	public function get_columns() {
 		$columns = [
-			'url'            => __( 'URL', wp_criticalcss()->get_lang_domain() ),
-			'template'       => __( 'Template', wp_criticalcss()->get_lang_domain() ),
-			'status'         => __( 'Status', wp_criticalcss()->get_lang_domain() ),
-			'queue_position' => __( 'Queue Position', wp_criticalcss()->get_lang_domain() ),
+			'url'      => __( 'URL', wp_criticalcss()->get_lang_domain() ),
+			'template' => __( 'Template', wp_criticalcss()->get_lang_domain() ),
+			'status'   => __( 'Status', wp_criticalcss()->get_lang_domain() ),
 		];
 		if ( is_multisite() ) {
 			$columns = array_merge( [
@@ -27,25 +34,17 @@ class Table extends ListTableAbstract {
 		return $columns;
 	}
 
-	public function __construct( array $args = [] ) {
-		parent::__construct( [
-			'singular' => __( 'Queue Item', 'criticalcss' ),
-			'plural'   => __( 'Queue Items', 'criticalcss' ),
-			'ajax'     => false,
-		] );
-	}
-
 	protected function do_prepare_items() {
 		$wpdb        = wp_criticalcss()->wpdb;
 		$table       = $this->get_table_name();
-		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY LOCATE('queue_id', {$table}.data) DESC, LOCATE('queue_index', {$table}.data) DESC LIMIT %d,%d", $this->start, $this->per_page ), ARRAY_A );
-		usort( $this->items, [ $this, 'sort_items' ] );
+		$this->items = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$table} ORDER BY CAST({$table}.status AS INT) DESC LIMIT %d,%d", $this->start, $this->per_page ), ARRAY_A );
 	}
 
 	protected function process_purge_action() {
 		parent::process_purge_action();
 		wp_criticalcss()->get_cache_manager()->reset_web_check_transients();
 	}
+
 	/**
 	 * @param array $item
 	 *
@@ -135,39 +134,5 @@ class Table extends ListTableAbstract {
 		} else {
 			return __( 'Pending', wp_criticalcss()->get_lang_domain() );
 		}
-	}
-
-	/**
-	 * @param array $item
-	 *
-	 * @return string
-	 */
-	protected function column_queue_position( array $item ) {
-		$data = maybe_unserialize( $item['data'] );
-		if ( ! isset( $data['queue_id'], $data['queue_index'] ) ) {
-			return __( 'N/A', wp_criticalcss()->get_lang_domain() );
-		}
-
-		return $data['queue_index'];
-	}
-
-	/**
-	 * @param array $a
-	 * @param array $b
-	 *
-	 * @return int
-	 */
-	private function sort_items( $a, $b ) {
-		$a['data'] = maybe_unserialize( $a['data'] );
-		$b['data'] = maybe_unserialize( $b['data'] );
-		if ( isset( $a['data']['queue_index'] ) ) {
-			if ( isset( $b['data']['queue_index'] ) ) {
-				return $a['data']['queue_index'] > $b['data']['queue_index'] ? 1 : - 1;
-			}
-
-			return 1;
-		}
-
-		return - 1;
 	}
 }
