@@ -51,6 +51,7 @@ class Process extends ProcessAbstract {
 				$item['error'] ++;
 				sleep( 1 );
 				$this->set_pending();
+
 				return $item;
 			}
 
@@ -161,7 +162,7 @@ class Process extends ProcessAbstract {
 	}
 
 	private function set_pending() {
-		$this->set_status( 'pending' );
+		$this->set_status( Table::STATUS_PENDING );
 	}
 
 	private function set_processing() {
@@ -170,8 +171,9 @@ class Process extends ProcessAbstract {
 
 	private function set_status( $status ) {
 		$batch          = $this->get_batch();
-		$data           = &end( $batch->data );
+		$data           = end( $batch->data );
 		$data['status'] = $status;
+		$batch->data    = [ $data ];
 		$this->update( $batch->key, $batch->data );
 	}
 }
