@@ -82,6 +82,22 @@ class Table extends ListTableAbstract {
 	 *
 	 * @return string
 	 */
+	protected function column_template( array $item ) {
+		$settings = wp_criticalcss()->get_settings_manager()->get_settings();
+		if ( 'on' === $settings['template_cache'] ) {
+			if ( ! empty( $item['template'] ) ) {
+				return $item['template'];
+			}
+		}
+
+		return __( 'N/A', wp_criticalcss()->get_lang_domain() );
+	}
+
+	/**
+	 * @param array $item
+	 *
+	 * @return string
+	 */
 	protected function column_status( array $item ) {
 		$data = maybe_unserialize( $item['data'] );
 		if ( ! empty( $data ) && ! empty( $data['status'] ) ) {
