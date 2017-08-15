@@ -6,6 +6,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 use WP\CriticalCSS;
 use WP\CriticalCSS\API;
 use WP\CriticalCSS\Queue\API\Table as APITable;
+use WP\CriticalCSS\Queue\Log\Table as LogTable;
 use WP\CriticalCSS\Queue\Web\Check\Table as WebCheckTable;
 use WP\CriticalCSS\Settings\API as SettingsAPI;
 
@@ -30,6 +31,7 @@ class UI extends ComponentAbstract {
 	 * @var \WP\CriticalCSS\Queue\Web\Check\Table
 	 */
 	private $web_check_table;
+	private $log_table;
 
 	/**
 	 * UI constructor.
@@ -38,12 +40,14 @@ class UI extends ComponentAbstract {
 	 * @param \WP\CriticalCSS\API                              $api
 	 * @param APITable                                         $api_table
 	 * @param WebCheckTable                                    $web_check_table
+	 * @param \WP\CriticalCSS\Queue\Log\Table                  $log_table
 	 */
-	public function __construct( SettingsAPI $settings_ui, API $api, APITable $api_table, WebCheckTable $web_check_table ) {
+	public function __construct( SettingsAPI $settings_ui, API $api, APITable $api_table, WebCheckTable $web_check_table, LogTable $log_table ) {
 		$this->settings_ui     = $settings_ui;
 		$this->api             = $api;
 		$this->api_table       = $api_table;
 		$this->web_check_table = $web_check_table;
+		$this->log_table       = $log_table;
 	}
 
 
@@ -71,6 +75,10 @@ class UI extends ComponentAbstract {
 				'delete_dummy_option',
 			], 10, 2 );
 			add_action( 'update_option_wp_criticalcss_api_queue', [
+				$this,
+				'delete_dummy_option',
+			], 10, 2 );
+			add_action( 'update_option_wp_criticalcss_log', [
 				$this,
 				'delete_dummy_option',
 			], 10, 2 );
@@ -152,6 +160,11 @@ class UI extends ComponentAbstract {
 			'title' => 'API Queue',
 			'form'  => false,
 		] );
+		$this->settings_ui->add_section( [
+			'id'    => 'wp_criticalcss_log',
+			'title' => 'Processed Log',
+			'form'  => false,
+		] );
 		?>
 		<style type="text/css">
 			.form-table .api_queue > th, .form-table .web_check_queue > th {
@@ -208,6 +221,24 @@ class UI extends ComponentAbstract {
 			'desc'  => ob_get_clean(),
 		] );
 
+		ob_start(); ?>
+		<p>
+			<?php _e( 'What is this? This is a list of all processed pages and/or templates. This log will clear when critical css expires.', $this->plugin->get_lang_domain() ); ?>
+		</p>
+		<form method="post">
+			<?php
+			$this->log_table->prepare_items();
+			$this->log_table->display();
+			?>
+		</form>
+		<?php
+		$this->settings_ui->add_field( 'wp_criticalcss_log', [
+			'name'  => 'log',
+			'label' => null,
+			'type'  => 'html',
+			'desc'  => ob_get_clean(),
+		] );
+
 
 		$this->settings_ui->admin_init();
 		$this->settings_ui->show_navigation();
@@ -256,6 +287,7 @@ class UI extends ComponentAbstract {
 	public function screen_option() {
 		$this->api_table->init();
 		$this->web_check_table->init();
+		$this->log_table->init();
 	}
 
 	/**
