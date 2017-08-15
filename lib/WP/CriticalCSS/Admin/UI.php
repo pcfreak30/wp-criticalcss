@@ -178,10 +178,14 @@ class UI extends ComponentAbstract {
 			] );
 		}
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
-			'name'  => 'force_include_styles',
-			'label' => 'Force Include Styles',
-			'type'  => 'textarea',
-			'desc'  => __( 'A list of CSS selectors and/or regex patterns for css selectors', $this->plugin->get_lang_domain() ),
+			'name'              => 'force_include_styles',
+			'label'             => 'Force Include Styles',
+			'type'              => 'textarea',
+			'desc'              => __( 'A list of CSS selectors and/or regex patterns for css selectors', $this->plugin->get_lang_domain() ),
+			'sanitize_callback' => [
+				$this,
+				'validate_force_include_styles',
+			],
 		] );
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'fallback_css',
@@ -322,6 +326,26 @@ class UI extends ComponentAbstract {
 		}
 
 		return ! $valid ? $valid : $options['apikey'];
+	}
+
+	public function validate_force_include_styles( $options ) {
+		$valid = true;
+		if ( ! empty( $options['force_include_styles'] ) ) {
+			$lines = explode( "\n", $options['force_include_styles'] );
+			$lines = array_map( 'trim', $lines );
+			foreach ( $lines as $index => $line ) {
+				if ( '/' === $line[0] && '/' === $line[ strlen( $line ) - 1 ] && ! preg_match( '/^\/.*?\/[gimy]*$/', $line ) ) {
+					add_settings_error( 'force_include_styles', 'invalid_force_include_styles_regex', sprintf( 'Line %d is an invalid regex for a force included style', $index + 1 ) );
+					$valid = false;
+					break;
+				}
+			}
+			if ( $valid ) {
+				$options['force_include_styles'] = implode( "\n", $lines );
+			}
+		}
+
+		return ! $valid ? $valid : $options['force_include_styles'];
 	}
 
 	/**
