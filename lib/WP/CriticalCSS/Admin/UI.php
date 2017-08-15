@@ -306,7 +306,7 @@ class UI extends ComponentAbstract {
 
 		if ( isset( $value['force_web_check'] ) && 'on' === $value['force_web_check'] ) {
 			$value['force_web_check'] = 'off';
-			$this->app->get_cache_manager()->reset_web_check_transients();
+			$this->plugin->get_cache_manager()->reset_web_check_transients();
 		}
 
 		if ( is_multisite() ) {
