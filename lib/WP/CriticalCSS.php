@@ -157,15 +157,12 @@ class CriticalCSS extends PluginAbstract {
 		parent::__construct();
 	}
 
-	protected function setup_components() {
-		$components = $this->get_components();
-		$this->set_component_parents( $components );
-		$this->settings = $this->settings_manager->get_settings();
-		foreach ( $components as $component ) {
-			$component->init();
-		}
+	/**
+	 * @return \WP\CriticalCSS\Installer
+	 */
+	public function get_installer() {
+		return $this->installer;
 	}
-
 
 	/**
 	 * @return \WP\CriticalCSS\Admin\UI
@@ -212,14 +209,13 @@ class CriticalCSS extends PluginAbstract {
 	/**
 	 *
 	 */
-
+	public function activate() {
+		$this->installer->activate();
+	}
 
 	/**
 	 *
 	 */
-	public function activate() {
-		$this->installer->activate();
-	}
 
 	/**
 	 *
@@ -346,6 +342,15 @@ class CriticalCSS extends PluginAbstract {
 	 */
 	public function get_transient_prefix() {
 		return static::TRANSIENT_PREFIX;
+	}
+
+	protected function setup_components() {
+		$components = $this->get_components();
+		$this->set_component_parents( $components );
+		$this->settings = $this->settings_manager->get_settings();
+		foreach ( $components as $component ) {
+			$component->init();
+		}
 	}
 
 }
