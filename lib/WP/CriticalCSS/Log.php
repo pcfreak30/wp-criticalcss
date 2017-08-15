@@ -11,7 +11,7 @@ class Log extends ComponentAbstract {
 	 *
 	 */
 	public function init() {
-
+		add_action( 'wp_criticalcss_purge_log', [ $this, 'purge' ] );
 	}
 
 	public function create_table() {
