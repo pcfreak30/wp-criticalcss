@@ -46,6 +46,12 @@ class Manager extends ComponentAbstract {
 				'reset_web_check_transients',
 			]
 		);
+		add_action(
+			'wp_criticalcss_purge_cache', [
+				$this,
+				'reset_web_check_transients',
+			]
+		);
 		if ( ! ( ! empty( $this->settings['template_cache'] ) && 'on' === $this->settings['template_cache'] ) ) {
 			add_action(
 				'post_updated', [
