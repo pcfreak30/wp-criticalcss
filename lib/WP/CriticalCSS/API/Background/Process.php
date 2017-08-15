@@ -111,6 +111,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 					wp_criticalcss()->data_manager->set_cache( $item, $result->css );
 					wp_criticalcss()->data_manager->set_css_hash( $item, $item['css_hash'] );
 					wp_criticalcss()->data_manager->set_html_hash( $item, $item['html_hash'] );
+					wp_criticalcss()->log->insert( $item );
 				}
 			}
 		} else {
