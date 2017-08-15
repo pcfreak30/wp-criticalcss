@@ -97,7 +97,13 @@ class Request extends ComponentAbstract {
 	}
 
 	public function add_cron_schedules( $schedules ) {
-		$schedules['wp_criticalcss_log_purge_schedule'] = $this->plugin->settings_manager->get_setting( 'web_check_interval' );
+		$interval                                       = (int) $this->plugin->settings_manager->get_setting( 'web_check_interval' );
+		$display_interval                               = round( $interval / 60, 2 );
+		$display_interval                               = sprintf( __( ( 1 < $display_interval || 0 == $display_interval ? 'Every %f Minutes' : 'Every %f Minute' ), $this->plugin->get_safe_slug() ), $display_interval );
+		$schedules['wp_criticalcss_log_purge_schedule'] = [
+			'interval' => $interval,
+			'display'  => $display_interval,
+		];
 
 		return $schedules;
 	}
