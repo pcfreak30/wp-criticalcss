@@ -4,6 +4,7 @@ namespace WP\CriticalCSS\Admin;
 
 use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 use WP\CriticalCSS;
+use WP\CriticalCSS\Queue\API\TableAbstract;
 
 /**
  * Class UI
@@ -15,27 +16,34 @@ class UI extends ComponentAbstract {
 	/**
 	 * @var \WP\CriticalCSS\Settings\API
 	 */
-	protected $settings_ui;
+	private $settings_ui;
+	/**
+	 * @var \WP\CriticalCSS\Queue\ListTableAbstract
+	 */
+	private $api_table;
+
+	private $api;
 
 	/**
 	 * UI constructor.
 	 *
-	 * @param \WP\CriticalCSS\Settings\API $settings_ui
+	 * @param \WP\CriticalCSS\Settings\API            $settings_ui
+	 * @param \WP\CriticalCSS\API                     $api
+	 * @param \WP\CriticalCSS\Queue\API\TableAbstract $api_table
 	 */
-	public function __construct( \WP\CriticalCSS\Settings\API $settings_ui ) {
+	public function __construct( \WP\CriticalCSS\Settings\API $settings_ui, CriticalCSS\API $api, TableAbstract $api_table ) {
 		$this->settings_ui = $settings_ui;
+		$this->api         = $api;
+		$this->api_table   = $api_table;
 	}
 
-	/**
-	 * @var \WP\CriticalCSS\Queue\ListTable
-	 */
-	protected $queue_table;
 
 	/**
 	 *
 	 */
 	public function init() {
 		$this->setup_components();
+		$this->api_table->init();
 		if ( is_admin() ) {
 			add_action( 'network_admin_menu', [
 				$this,
@@ -130,8 +138,8 @@ class UI extends ComponentAbstract {
 		</style>
 		<form method="post">
 			<?php
-			$this->queue_table->prepare_items();
-			$this->queue_table->display();
+			$this->api_table->prepare_items();
+			$this->api_table->display();
 			?>
 		</form>
 		<?php
@@ -167,8 +175,8 @@ class UI extends ComponentAbstract {
 		if ( ! $valid ) {
 			return $valid;
 		}
-		$api = $this->plugin->container->create( '\\WP\\CriticalCSS\\API', [ $options['apikey'] ] );
-		if ( ! $api->ping() ) {
+		$this->api->set_api_key( $options['apikey'] );
+		if ( ! $this->api->ping() ) {
 			add_settings_error( 'apikey', 'invalid_apikey', 'CriticalCSS.com API Key is invalid' );
 			$valid = false;
 		}
@@ -192,8 +200,7 @@ class UI extends ComponentAbstract {
 			'default' => 20,
 			'option'  => 'queue_items_per_page',
 		] );
-		$this->plugin->container->create( '\\WP\\CriticalCSS\\Queue\\ListTable', [ wp_criticalcss()->api_queue ] );
-		$this->queue_table = new CriticalCSS\Queue\ListTable( wp_criticalcss()->api_queue );
+		$this->api_table = $this->plugin->container->create( '\\WP\\CriticalCSS\\Queue\\API\\TableAbstract', [ wp_criticalcss()->api_queue ] );
 	}
 
 	/**
