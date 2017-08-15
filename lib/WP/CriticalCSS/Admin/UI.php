@@ -156,7 +156,7 @@ class UI extends ComponentAbstract {
 				'name'  => 'web_check_interval',
 				'label' => 'Web Check Interval',
 				'type'  => 'number',
-				'desc'  => __( 'How often in seconds web pages should be checked for changes to re-generate CSS', $this->plugin->get_lang_domain() ),
+				'desc'  => __( 'How often in seconds web pages should be checked for changes to re-generate CSS.', $this->plugin->get_lang_domain() ),
 			] );
 		}
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
@@ -164,6 +164,12 @@ class UI extends ComponentAbstract {
 			'label' => 'Force Include Styles',
 			'type'  => 'textarea',
 			'desc'  => __( 'A list of CSS selectors and/or regex patterns for css selectors', $this->plugin->get_lang_domain() ),
+		] );
+		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+			'name'  => 'fallback_css',
+			'label' => 'Fallback CSS',
+			'type'  => 'textarea',
+			'desc'  => __( 'Global CSS to use as a fallback if generated and manual post css don\'t exist.', $this->plugin->get_lang_domain() ),
 		] );
 		$this->settings_ui->admin_init();
 	}
