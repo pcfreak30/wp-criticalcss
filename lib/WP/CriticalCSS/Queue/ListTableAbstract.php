@@ -13,7 +13,7 @@ abstract class ListTableAbstract extends \WP_List_Table {
 	/**
 	 *
 	 */
-	const TABLE_NAME = 'api';
+	const TABLE_NAME = '';
 	/**
 	 * @var int
 	 */
@@ -43,6 +43,11 @@ abstract class ListTableAbstract extends \WP_List_Table {
 	}
 
 	public function init() {
+		add_screen_option( 'per_page', [
+			'label'   => ucfirst( static::TABLE_NAME ) . ' Queue Items',
+			'default' => 20,
+			'option'  => static::TABLE_NAME . '_queue_items_per_page',
+		] );
 		parent::__construct( $this->args );
 	}
 
@@ -64,7 +69,9 @@ abstract class ListTableAbstract extends \WP_List_Table {
 	 *
 	 */
 	public function prepare_items() {
+		$this->pre_prepare_items();
 		$this->do_prepare_items();
+		$this->post_prepare_items();
 	}
 
 	/**
