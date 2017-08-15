@@ -31,6 +31,7 @@ class Request extends ComponentAbstract {
 			$this,
 			'check_log_cron',
 		] );
+		add_filter( 'cron_schedules', [ $this, 'add_cron_schedules' ] );
 		add_filter( 'rewrite_rules_array', [
 			$this,
 			'fix_rewrites',
@@ -88,11 +89,17 @@ class Request extends ComponentAbstract {
 		$scheduled   = wp_next_scheduled( 'wp_criticalcss_purge_log' );
 		$integration = apply_filters( 'wp_criticalcss_cache_integration', false );
 		if ( ! $scheduled && ! $integration ) {
-			wp_schedule_single_event( time() + (int) $this->plugin->settings_manager->get_setting( 'web_check_interval' ), 'wp_criticalcss_purge_log' );
+			wp_schedule_event( time() + (int) $this->plugin->settings_manager->get_setting( 'web_check_interval' ), 'wp_criticalcss_log_purge_schedule', 'wp_criticalcss_purge_log' );
 		}
 		if ( $scheduled && $integration ) {
 			wp_unschedule_event( $scheduled, 'wp_criticalcss_purge_log' );
 		}
+	}
+
+	public function add_cron_schedules( $schedules ) {
+		$schedules['wp_criticalcss_log_purge_schedule'] = $this->plugin->settings_manager->get_setting( 'web_check_interval' );
+
+		return $schedules;
 	}
 
 	/**
