@@ -27,6 +27,10 @@ class Request extends ComponentAbstract {
 			$this,
 			'add_rewrite_rules',
 		] );
+		add_action( 'init', [
+			$this,
+			'check_log_cron',
+		] );
 		add_filter( 'rewrite_rules_array', [
 			$this,
 			'fix_rewrites',
@@ -35,7 +39,7 @@ class Request extends ComponentAbstract {
 			$this,
 			'update_request',
 		] );
-		if ( ! empty( $this->settings['template_cache'] ) && 'on' === $this->settings['template_cache'] ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
 			add_action( 'template_include', [
 				$this,
 				'template_include',
@@ -59,6 +63,7 @@ class Request extends ComponentAbstract {
 			$this,
 			'redirect_canonical',
 		] );
+
 	}
 
 	/**
@@ -76,6 +81,17 @@ class Request extends ComponentAbstract {
 			if ( ! empty( $tax->rewrite ) ) {
 				add_rewrite_rule( $tax->rewrite['slug'] . '/(.+?)/nocache/?$', 'index.php?' . $tax_id . '=$matches[1]&nocache', 'top' );
 			}
+		}
+	}
+
+	public function check_log_cron() {
+		$scheduled   = wp_next_scheduled( 'wp_criticalcss_purge_log' );
+		$integration = apply_filters( 'wp_criticalcss_cache_integration', false );
+		if ( ! $scheduled && ! $integration ) {
+			wp_schedule_single_event( time() + (int) $this->plugin->settings_manager->get_setting( 'web_check_interval' ), 'wp_criticalcss_purge_log' );
+		}
+		if ( $scheduled && $integration ) {
+			wp_unschedule_event( $scheduled, 'wp_criticalcss_purge_log' );
 		}
 	}
 
