@@ -86,9 +86,17 @@ abstract class ListTableAbstract extends \WP_List_Table {
 	}
 
 	/**
-	 * @return mixed
+	 * @return void
 	 */
-	abstract protected function process_bulk_action();
+	protected function process_bulk_action() {
+		if ( 'purge' === $this->current_action() ) {
+			$this->process_purge_action();
+		}
+	}
+
+	protected function process_purge_action() {
+		$this->queue->purge();
+	}
 
 	/**
 	 * @return string
