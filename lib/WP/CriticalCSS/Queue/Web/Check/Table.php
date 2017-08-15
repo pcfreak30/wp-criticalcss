@@ -13,8 +13,8 @@ class Table extends ListTableAbstract {
 
 	public function __construct( array $args = [] ) {
 		parent::__construct( [
-			'singular' => __( 'Web Check Queue Item', 'criticalcss' ),
-			'plural'   => __( 'Web Check Queue Queue Items', 'criticalcss' ),
+			'singular' => __( 'Web Check Queue Item', wp_criticalcss()->get_lang_domain() ),
+			'plural'   => __( 'Web Check Queue Queue Items', wp_criticalcss()->get_lang_domain() ),
 			'ajax'     => false,
 		] );
 	}
