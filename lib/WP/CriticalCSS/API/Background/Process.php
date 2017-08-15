@@ -2,6 +2,8 @@
 
 namespace WP\CriticalCSS\API\Background;
 
+use WP\CriticalCSS\API;
+
 /**
  * Class Process
  *
@@ -9,7 +11,21 @@ namespace WP\CriticalCSS\API\Background;
  */
 class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 	protected $action = 'wp_criticalcss_api';
-	private $_ping_checked = false;
+	private $ping_checked = false;
+	/**
+	 * @var \WP\CriticalCSS\API
+	 */
+	private $api;
+
+	/**
+	 * Process constructor.
+	 *
+	 * @param \WP\CriticalCSS\API $api
+	 */
+	public function __construct( API $api ) {
+		$this->api = $api;
+		parent::__construct();
+	}
 
 	/**
 	 * Task
@@ -24,6 +40,9 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
+		if ( null === $this->api->parent ) {
+			$this->api->parent = wp_criticalcss();
+		}
 		$settings = wp_criticalcss()->settings_manager->settings;
 
 		if ( empty( $settings ) || empty( $settings['apikey'] ) ) {
@@ -33,11 +52,9 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + 8 >= time() ) {
 			return $item;
 		}
-		$api         = wp_criticalcss()->container->create( '\\WP\\CriticalCSS\\API', [ $settings['apikey'] ] );
-		$api->parent = wp_criticalcss();
-		if ( ! $this->_ping_checked ) {
-			if ( $api->ping() ) {
-				$this->_ping_checked = true;
+		if ( ! $this->ping_checked ) {
+			if ( $this->api->ping() ) {
+				$this->ping_checked = true;
 			} else {
 				return false;
 			}
@@ -47,7 +64,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 		if ( empty( $url ) ) {
 			return false;
 		}
-		$bad_urls = $api->get_invalid_url_regexes();
+		$bad_urls = $this->api->get_invalid_url_regexes();
 		$bad_urls = array_filter( $bad_urls, function ( $regex ) use ( $url ) {
 			return preg_match( "~$regex~", $url );
 		} );
@@ -58,7 +75,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			return false;
 		}
 		if ( ! empty( $item['queue_id'] ) ) {
-			$result = $api->get_result( $item['queue_id'] );
+			$result = $this->api->get_result( $item['queue_id'] );
 			if ( $result instanceof \WP_Error ) {
 				return false;
 			}
@@ -97,7 +114,7 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 				}
 			}
 		} else {
-			$result = $api->generate( $item );
+			$result = $this->api->generate( $item );
 			if ( $result instanceof \WP_Error ) {
 				return false;
 			}
