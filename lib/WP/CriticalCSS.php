@@ -202,13 +202,6 @@ class CriticalCSS extends PluginAbstract {
 	 *
 	 */
 	public function activate() {
-
-		if ( ! ( defined( 'WP_CRITICALCSS_COMPOSER_RAN' ) && WP_CRITICALCSS_COMPOSER_RAN ) ) {
-			include_once dirname( dirname( __DIR__ ) ) . '/wordpress-web-composer/class-wordpress-web-composer.php';
-			$web_composer = new \WordPress_Web_Composer( 'wp_criticalcss' );
-			$web_composer->set_install_target( __DIR__ );
-			$web_composer->run();
-		}
 		global $wpdb;
 		$settings    = $this->settings_manager->get_settings();
 		$no_version  = ( ! empty( $settings ) && empty( $settings['version'] ) ) || empty( $settings );
