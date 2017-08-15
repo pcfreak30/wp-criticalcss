@@ -60,7 +60,7 @@ class API extends ComponentAbstract {
 		}
 		$api_url    = self::BASE_URL;
 		$query_args = array_merge( $query_args, [
-			'version' => CriticalCSS::VERSION,
+			'version' => $this->plugin->get_version(),
 		] );
 		$auth_args  = [];
 		if ( $auth ) {
@@ -100,14 +100,28 @@ class API extends ComponentAbstract {
 	 * @return array|bool|mixed|object
 	 */
 	public function generate( array $item ) {
+		$force_styles    = $this->plugin->settings_manager->get_setting( 'force_include_styles' );
+		$force_selectors = [];
+		if ( ! empty( $force_styles ) ) {
+			$lines = explode( "\n", $force_styles );
+			$lines = array_map( 'trim', $lines );
+			foreach ( $lines as $index => $line ) {
+				$selector = [ 'value' => $line ];
+				if ( preg_match( '/^\/.*?\/[gimy]*$/', $line ) ) {
+					$selector['type'] = 'RegExp';
+				}
+				$force_selectors[] = $selector;
+			}
+		}
 		$response = $this->_send_request( 'post', 'generate', true, [], [
 			'body' => [
 				'height'                   => 900,
 				'width'                    => 1300,
-				'url'                      => $this->app->get_permalink( $item ),
+				'url'                      => $this->plugin->get_permalink( $item ),
 				'aff'                      => 3,
-				'version'                  => CriticalCSS::VERSION,
-				'wpCriticalCssQueueLength' => $this->app->get_api_queue()->get_length(),
+				'version'                  => $this->plugin->get_version(),
+				'wpCriticalCssQueueLength' => $this->plugin->api_queue->get_length(),
+				'forceIncludeCssSelectors' => $force_selectors,
 			],
 		] );
 
