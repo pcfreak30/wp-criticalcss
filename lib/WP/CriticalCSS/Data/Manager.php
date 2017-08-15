@@ -44,7 +44,7 @@ class Manager extends ComponentAbstract {
 					$name = 'ccss';
 				}
 				$name  = [ $name, md5( $item['url'] ) ];
-				$value = $this->app->get_cache_manager()->get_store()->get_cache_fragment( $name );
+				$value = $this->plugin->get_cache_manager()->get_store()->get_cache_fragment( $name );
 			} else {
 				$name = "criticalcss_{$name}";
 				switch ( $item['type'] ) {
