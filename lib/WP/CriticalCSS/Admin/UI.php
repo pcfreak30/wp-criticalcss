@@ -77,15 +77,19 @@ class UI extends ComponentAbstract {
 			add_action( 'update_option_wp_criticalcss_api_queue', [
 				$this,
 				'delete_dummy_option',
-			], 10, 2 );
+			] );
 			add_action( 'update_option_wp_criticalcss_log', [
 				$this,
 				'delete_dummy_option',
-			], 10, 2 );
+			] );
 			add_action( 'init', [
 				$this,
 				'init_action',
-			], 10, 2 );
+			] );
+			add_action( 'wp_loaded', [
+				$this,
+				'wp_loaded_action',
+			] );
 		}
 	}
 
@@ -95,8 +99,22 @@ class UI extends ComponentAbstract {
 			add_action( 'save_post', [
 				$this,
 				'save_meta_boxes',
-			], 10, 2 );
+			] );
+			add_action( 'edit_term', [
+				$this,
+				'save_meta_boxes',
+			] );
 		}
+	}
+
+	public function wp_loaded_action() {
+		foreach ( get_taxonomies() as $tax ) {
+			add_action( "{$tax}_edit_form", [
+				$this,
+				'render_post_css_metabox',
+			] );
+		}
+
 	}
 
 
@@ -382,29 +400,82 @@ class UI extends ComponentAbstract {
 
 	public function render_post_css_metabox() {
 		$slug = $this->plugin->get_safe_slug();
-		?>
-		<input type="hidden" name="<?php echo $slug ?>_post_css_nonce" id="<?php echo $slug ?>_post_css_nonce"
-			   value="<?php echo wp_create_nonce( "{$slug}_save_post_css" ) ?>"/>
+		$type = '';
+		switch ( $this->current_screen->base ) {
+			case "term":
+				$type      = 'term';
+				$object_id = $this->tag->term_id;
+				break;
+			case "post":
+				$type      = 'post';
+				$object_id = $this->post->ID;
+				break;
+		}
+		if ( 'term' === $type ):
+			?>
+			<table class="form-table">
+			<tr class="form-field">
+			<th>
+		<?php endif; ?>
+		<input type="hidden" name="<?php echo $slug ?>_<?php echo $type ?>_css_nonce"
+			   id="<?php echo $slug ?>_<?php echo $type ?>_css_nonce"
+			   value="<?php echo wp_create_nonce( "{$slug}_save_{$type}_css" ) ?>"/>
 		<?php
 		$css = $this->plugin->data_manager->get_item_data( [
-			'type'      => 'post',
-			'object_id' => $this->post->ID,
+			'type'      => $type,
+			'object_id' => $object_id,
 		], 'manual_css' );
 		$css = wp_unslash( $css );
+
+	if ( 'term' === $type ):
 		?>
-		<h2><?php _e( 'Enter your manual critical css here:', $this->plugin->get_lang_domain() ); ?></h2>
-		<textarea name="<?php echo $slug ?>_post_css" class="widefat" rows="10"><?php echo $css ?></textarea> <?php
+		<label for="<?php echo $slug ?>_<?php echo $type ?>_css">
+		<?php else: ?>
+		<h2>
+	<?php endif;
+		_e( 'Enter your manual critical css here:', $this->plugin->get_lang_domain() );
+	if ( 'term' === $type ):
+		?>
+		</label>
+	<?php else: ?>
+		</h2>
+	<?php endif;
+	if ( 'term' === $type ):
+		?>
+		</th>
+		<td>
+	<?php endif; ?>
+		<textarea name="<?php echo $slug ?>_<?php echo $type ?>_css" id="<?php echo $slug ?>_<?php echo $type ?>_css"
+				  class="widefat" rows="10"><?php echo $css ?></textarea>
+		<?php if ( 'term' === $type ):
+
+			?>
+			</td>
+			</tr>
+			</table>
+
+			<?php
+		endif;
+
 	}
 
-	public function save_meta_boxes( $post_id ) {
+	public function save_meta_boxes( $object_id ) {
 		$slug = $this->plugin->get_safe_slug();
-		if ( ! wp_verify_nonce( $_POST["{$slug}_post_css_nonce"], "{$slug}_save_post_css" ) ) {
+		switch ( $this->current_screen->base ) {
+			case "term":
+				$type = 'term';
+				break;
+			case "post":
+				$type = 'post';
+				break;
+		}
+		if ( ! wp_verify_nonce( $_POST["{$slug}_{$type}_css_nonce"], "{$slug}_save_{$type}_css" ) ) {
 			return;
 		}
-		$css = sanitize_textarea_field( $_POST["{$slug}_post_css"] );
+		$css = sanitize_textarea_field( $_POST["{$slug}_{$type}_css"] );
 		$this->plugin->data_manager->set_item_data( [
-			'type'      => 'post',
-			'object_id' => $post_id,
+			'type'      => $type,
+			'object_id' => $object_id,
 		], 'manual_css', $css );
 	}
 }
