@@ -23,6 +23,7 @@ class Process extends ProcessAbstract {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
+		$this->set_processing();
 		$url = wp_criticalcss()->get_permalink( $item );
 		if ( isset( $this->_processed_urls[ $url ] ) ) {
 			return false;
@@ -49,7 +50,7 @@ class Process extends ProcessAbstract {
 			if ( $item['error'] <= apply_filters( 'wp_criticalcss_web_check_retries', 3 ) ) {
 				$item['error'] ++;
 				sleep( 1 );
-
+				$this->set_pending();
 				return $item;
 			}
 
@@ -117,6 +118,7 @@ class Process extends ProcessAbstract {
 				if ( $item['error'] <= apply_filters( 'wp_criticalcss_web_check_retries', 3 ) ) {
 					$item['error'] ++;
 					sleep( 1 );
+					$this->set_pending();
 
 					return $item;
 				}
