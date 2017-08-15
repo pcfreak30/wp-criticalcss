@@ -108,7 +108,7 @@ class UI extends ComponentAbstract {
 	}
 
 	public function wp_loaded_action() {
-		if ( apply_filters( 'wp_criticalcss_manual_post_css', true ) ) {
+		if ( apply_filters( 'wp_criticalcss_manual_term_css', true ) ) {
 			foreach ( get_taxonomies() as $tax ) {
 				add_action( "{$tax}_edit_form", [
 					$this,
