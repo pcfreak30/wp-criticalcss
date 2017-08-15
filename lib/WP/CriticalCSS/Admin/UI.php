@@ -140,7 +140,7 @@ class UI extends ComponentAbstract {
 			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
 		] );
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
-			'name'  => 'manual_css',
+			'name'  => 'prioritize_manual_css',
 			'label' => 'Enable Manual CSS Override',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Allow per post CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
