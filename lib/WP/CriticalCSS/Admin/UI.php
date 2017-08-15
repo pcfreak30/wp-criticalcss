@@ -302,6 +302,10 @@ class UI extends ComponentAbstract {
 			$old_value = [];
 		}
 
+		if ( is_multisite() ) {
+			$old_value = $this->plugin->settings_manager->get_settings();
+		}
+
 		$value = array_merge( $old_value, $value );
 
 		if ( isset( $value['force_web_check'] ) && 'on' === $value['force_web_check'] ) {
