@@ -82,6 +82,20 @@ class UI extends ComponentAbstract {
 				$this,
 				'delete_dummy_option',
 			], 10, 2 );
+			add_action( 'init', [
+				$this,
+				'init_action',
+			], 10, 2 );
+		}
+	}
+
+	public function init_action() {
+		if ( apply_filters( 'wp_criticalcss_manual_post_css', true ) ) {
+			add_action( 'add_meta_boxes', [ $this, 'add_post_metabox' ] );
+			add_action( 'save_post', [
+				$this,
+				'save_meta_boxes',
+			], 10, 2 );
 		}
 	}
 
@@ -124,6 +138,12 @@ class UI extends ComponentAbstract {
 			'label' => 'Force Web Check',
 			'type'  => 'checkbox',
 			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
+		] );
+		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+			'name'  => 'manual_css',
+			'label' => 'Enable Manual CSS Override',
+			'type'  => 'checkbox',
+			'desc'  => __( 'Allow per post CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
 		] );
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'template_cache',
@@ -342,5 +362,43 @@ class UI extends ComponentAbstract {
 	 */
 	public function delete_dummy_option( $old_value, $value, $option ) {
 		delete_option( $option );
+	}
+
+	public function add_post_metabox() {
+		foreach ( get_post_types() as $post_type ) {
+			add_meta_box( "{$this->plugin->get_safe_slug()}_post_css", 'Manual Critical CSS', [
+				$this,
+				'render_post_css_metabox',
+			], $post_type );
+		}
+
+	}
+
+	public function render_post_css_metabox() {
+		$slug = $this->plugin->get_safe_slug();
+		?>
+		<input type="hidden" name="<?php echo $slug ?>_post_css_nonce" id="<?php echo $slug ?>_post_css_nonce"
+			   value="<?php echo wp_create_nonce( "{$slug}_save_post_css" ) ?>"/>
+		<?php
+		$css = $this->plugin->data_manager->get_item_data( [
+			'type'      => 'post',
+			'object_id' => $this->post->ID,
+		], 'manual_css' );
+		$css = wp_unslash( $css );
+		?>
+		<h2><?php _e( 'Enter your manual critical css here:', $this->plugin->get_lang_domain() ); ?></h2>
+		<textarea name="<?php echo $slug ?>_post_css" class="widefat" rows="10"><?php echo $css ?></textarea> <?php
+	}
+
+	public function save_meta_boxes( $post_id ) {
+		$slug = $this->plugin->get_safe_slug();
+		if ( ! wp_verify_nonce( $_POST["{$slug}_post_css_nonce"], "{$slug}_save_post_css" ) ) {
+			return;
+		}
+		$css = sanitize_textarea_field( $_POST["{$slug}_post_css"] );
+		$this->plugin->data_manager->set_item_data( [
+			'type'      => 'post',
+			'object_id' => $post_id,
+		], 'manual_css', $css );
 	}
 }
