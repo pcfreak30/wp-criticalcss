@@ -5,6 +5,7 @@ namespace WP;
 
 use pcfreak30\WordPress\Plugin\Framework\PluginAbstract;
 use WP\CriticalCSS\Admin\UI;
+use WP\CriticalCSS\API\Background\Process as BackgroundProcess;
 use WP\CriticalCSS\Cache\Manager as CacheManager;
 use WP\CriticalCSS\Data\Manager as DataManager;
 use WP\CriticalCSS\Frontend;
@@ -13,7 +14,6 @@ use WP\CriticalCSS\Integration\Manager as IntegrationManager;
 use WP\CriticalCSS\Log;
 use WP\CriticalCSS\Request;
 use WP\CriticalCSS\Settings\Manager as SettingsManager;
-use WP\CriticalCSS\Web\Check\Background\Process as BackgroundProcess;
 use WP\CriticalCSS\Web\Check\Background\Process as WebCheckProcess;
 
 /**
