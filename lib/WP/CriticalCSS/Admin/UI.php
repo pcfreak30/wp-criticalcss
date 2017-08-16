@@ -335,10 +335,14 @@ class UI extends ComponentAbstract {
 			$lines = explode( "\n", $options['force_include_styles'] );
 			$lines = array_map( 'trim', $lines );
 			foreach ( $lines as $index => $line ) {
-				if ( '/' === $line[0] && '/' === $line[ strlen( $line ) - 1 ] && ! preg_match( '/^\/.*?\/[gimy]*$/', $line ) ) {
-					add_settings_error( 'force_include_styles', 'invalid_force_include_styles_regex', sprintf( 'Line %d is an invalid regex for a force included style', $index + 1 ) );
-					$valid = false;
-					break;
+				if ( preg_match( '/^\/.*?\/[gimy]*$/', $line ) ) {
+					preg_match( $line, null );
+					if ( PREG_NO_ERROR !== preg_last_error() ) {
+						add_settings_error( 'force_include_styles', 'invalid_force_include_styles_regex', sprintf( 'Line %d is an invalid regex for a force included style', $index + 1 ) );
+						$valid = false;
+						break;
+					}
+
 				}
 			}
 			if ( $valid ) {
