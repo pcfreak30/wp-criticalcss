@@ -244,6 +244,9 @@ class CriticalCSS extends PluginAbstract {
 	function get_permalink(
 		array $object
 	) {
+		if ( ! empty( $object['blog_id'] ) ) {
+			switch_to_blog( $object['blog_id'] );
+		}
 		$enable_integration = false;
 		if ( $this->integration_manager->is_enabled() ) {
 			$this->integration_manager->disable_integrations();
@@ -289,7 +292,7 @@ class CriticalCSS extends PluginAbstract {
 		} else {
 			$url = http_build_url( $url_parts );
 		}
-
+		restore_current_blog();
 		return $url;
 	}
 
