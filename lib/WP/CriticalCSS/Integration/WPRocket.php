@@ -27,6 +27,10 @@ class WPRocket extends IntegrationAbstract {
 			$this->plugin->cache_manager,
 			'reset_web_check_transients',
 		] );
+		add_action( 'after_rocket_clean_domain', [
+			$this->plugin->log,
+			'purge',
+		] );
 		add_action( 'after_rocket_clean_post', [
 			$this->plugin->cache_manager,
 			'reset_web_check_post_transient',
@@ -71,6 +75,10 @@ class WPRocket extends IntegrationAbstract {
 		remove_action( 'after_rocket_clean_domain', [
 			$this->plugin->cache_manager,
 			'reset_web_check_transients',
+		] );
+		remove_action( 'after_rocket_clean_domain', [
+			$this->plugin->log,
+			'purge',
 		] );
 		remove_action( 'after_rocket_clean_post', [
 			$this->plugin->cache_manager,
