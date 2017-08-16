@@ -80,7 +80,6 @@ class Manager extends ComponentAbstract {
 	 * @return bool
 	 */
 	public function update_settings( array $settings ) {
-		wp_criticalcss()->set_settings( $settings );
 		if ( is_multisite() ) {
 			return update_site_option( $this->plugin->get_option_name(), $settings );
 		}
