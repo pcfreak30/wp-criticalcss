@@ -26,11 +26,17 @@ class UI extends ComponentAbstract {
 	 */
 	private $api_table;
 
+	/**
+	 * @var \WP\CriticalCSS\API
+	 */
 	private $api;
 	/**
 	 * @var \WP\CriticalCSS\Queue\Web\Check\Table
 	 */
 	private $web_check_table;
+	/**
+	 * @var \WP\CriticalCSS\Queue\Log\Table
+	 */
 	private $log_table;
 
 	/**
@@ -93,6 +99,9 @@ class UI extends ComponentAbstract {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function init_action() {
 		if ( apply_filters( 'wp_criticalcss_manual_post_css', true ) ) {
 			add_action( 'add_meta_boxes', [ $this, 'add_post_metabox' ] );
@@ -107,6 +116,9 @@ class UI extends ComponentAbstract {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function wp_loaded_action() {
 		if ( apply_filters( 'wp_criticalcss_manual_term_css', true ) ) {
 			foreach ( get_taxonomies() as $tax ) {
@@ -330,6 +342,11 @@ class UI extends ComponentAbstract {
 		return ! $valid ? $valid : $options['apikey'];
 	}
 
+	/**
+	 * @param $options
+	 *
+	 * @return bool|string
+	 */
 	public function validate_force_include_styles( $options ) {
 		$valid = true;
 		if ( ! empty( $options['force_include_styles'] ) ) {
@@ -418,6 +435,9 @@ class UI extends ComponentAbstract {
 		delete_option( $option );
 	}
 
+	/**
+	 *
+	 */
 	public function add_post_metabox() {
 		foreach ( get_post_types() as $post_type ) {
 			add_meta_box( "{$this->plugin->get_safe_slug()}_post_css", 'Manual Critical CSS', [
@@ -428,6 +448,9 @@ class UI extends ComponentAbstract {
 
 	}
 
+	/**
+	 *
+	 */
 	public function render_post_css_metabox() {
 		$slug = $this->plugin->get_safe_slug();
 		$type = '';
@@ -489,6 +512,9 @@ class UI extends ComponentAbstract {
 
 	}
 
+	/**
+	 * @param $object_id
+	 */
 	public function save_meta_boxes( $object_id ) {
 		$slug = $this->plugin->get_safe_slug();
 		switch ( $this->current_screen->base ) {
