@@ -42,6 +42,11 @@ abstract class ListTableAbstract extends \WP_List_Table {
 		$this->args = $args;
 	}
 
+	public function display() {
+		$this->_column_headers = [ $this->get_columns() ];
+		parent::display();
+	}
+
 	public function init() {
 		add_screen_option( 'per_page', [
 			'label'   => ucfirst( static::TABLE_NAME ) . ' Queue Items',
