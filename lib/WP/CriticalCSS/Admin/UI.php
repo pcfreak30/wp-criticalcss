@@ -56,6 +56,34 @@ class UI extends ComponentAbstract {
 		$this->log_table       = $log_table;
 	}
 
+	/**
+	 * @return \WP\CriticalCSS\Queue\ListTableAbstract
+	 */
+	public function get_api_table() {
+		return $this->api_table;
+	}
+
+	/**
+	 * @return \WP\CriticalCSS\API
+	 */
+	public function get_api() {
+		return $this->api;
+	}
+
+	/**
+	 * @return \WP\CriticalCSS\Queue\Web\Check\Table
+	 */
+	public function get_web_check_table() {
+		return $this->web_check_table;
+	}
+
+	/**
+	 * @return \WP\CriticalCSS\Queue\Log\Table
+	 */
+	public function get_log_table() {
+		return $this->log_table;
+	}
+
 
 	/**
 	 *
