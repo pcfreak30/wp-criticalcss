@@ -208,7 +208,7 @@ class UI extends ComponentAbstract {
 			'name'  => 'template_cache',
 			'label' => 'Template Cache',
 			'type'  => 'checkbox',
-			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url.', $this->plugin->get_lang_domain() ),
+			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url. <p style="font-weight: bold;">This option may be useful if your website contains lots of content, pages, posts, etc. </p>', $this->plugin->get_lang_domain() ),
 		] );
 		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
 			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
