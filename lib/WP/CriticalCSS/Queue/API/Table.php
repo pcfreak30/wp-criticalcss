@@ -8,6 +8,7 @@ use WP\CriticalCSS;
 use WP\CriticalCSS\Queue\ListTableAbstract;
 
 class Table extends ListTableAbstract {
+	const TABLE_NAME = 'api';
 	/**
 	 * @return array
 	 */
