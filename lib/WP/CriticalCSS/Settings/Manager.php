@@ -21,6 +21,9 @@ class Manager extends ComponentAbstract {
 		'force_web_check',
 		'template_cache',
 		'web_check_interval',
+		'prioritize_manual_css',
+		'force_include_styles',
+		'fallback_css',
 	];
 
 	public function get_setting( $name ) {
