@@ -316,16 +316,6 @@ class CriticalCSS extends PluginAbstract {
 	}
 
 	/**
-	 * @param array $settings
-	 */
-	public
-	function set_settings(
-		$settings
-	) {
-		$this->settings = $settings;
-	}
-
-	/**
 	 * @return void
 	 */
 	public function uninstall() {
