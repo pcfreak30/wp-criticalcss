@@ -9,6 +9,7 @@ use WP\CriticalCSS\Queue\ListTableAbstract;
 
 class Table extends ListTableAbstract {
 	const TABLE_NAME = 'api';
+
 	/**
 	 * @return array
 	 */
@@ -47,6 +48,7 @@ class Table extends ListTableAbstract {
 		parent::process_purge_action();
 		wp_criticalcss()->get_cache_manager()->reset_web_check_transients();
 	}
+
 	/**
 	 * @param array $item
 	 *
@@ -133,9 +135,9 @@ class Table extends ListTableAbstract {
 						return __( 'Pending', wp_criticalcss()->get_lang_domain() );
 				}
 			}
-		} else {
-			return __( 'Pending', wp_criticalcss()->get_lang_domain() );
 		}
+
+		return __( 'Pending', wp_criticalcss()->get_lang_domain() );
 	}
 
 	/**
