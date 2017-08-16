@@ -49,6 +49,8 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			return false;
 		}
 
+		$this->api->api_key = $settings['apikey'];
+
 		if ( ! empty( $item['timestamp'] ) && $item['timestamp'] + 8 >= time() ) {
 			return $item;
 		}
