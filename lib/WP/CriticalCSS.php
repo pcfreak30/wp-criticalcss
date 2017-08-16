@@ -29,7 +29,6 @@ use WP\CriticalCSS\Web\Check\Background\Process as WebCheckProcess;
  * @property WebCheckProcess    $web_check_queue
  * @property Frontend           $frontend
  * @property UI                 $admin_ui
- * @property array              $settings
  * @property Installer          $installer
  * @property Log                $log
  */
@@ -80,10 +79,6 @@ class CriticalCSS extends PluginAbstract {
 	 */
 	protected $integration_manager;
 
-	/**
-	 * @var array
-	 */
-	protected $settings = [];
 	/**
 	 * @var string
 	 */
@@ -368,7 +363,6 @@ class CriticalCSS extends PluginAbstract {
 	protected function setup_components() {
 		$components = $this->get_components();
 		$this->set_component_parents( $components );
-		$this->settings = $this->settings_manager->get_settings();
 		foreach ( $components as $component ) {
 			$component->init();
 		}
