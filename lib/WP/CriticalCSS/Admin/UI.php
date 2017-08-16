@@ -251,13 +251,14 @@ class UI extends ComponentAbstract {
 				$this->web_check_table->display();
 				?>
 			</form>
-		<?php endif;
-		$this->settings_ui->add_field( 'wp_criticalcss_web_check_queue', [
-			'name'  => 'web_check_queue',
-			'label' => null,
-			'type'  => 'html',
-			'desc'  => ob_get_clean(),
-		] );
+			<?php
+			$this->settings_ui->add_field( 'wp_criticalcss_web_check_queue', [
+				'name'  => 'web_check_queue',
+				'label' => null,
+				'type'  => 'html',
+				'desc'  => ob_get_clean(),
+			] );
+		endif;
 		ob_start(); ?>
 		<p>
 			<?php _e( 'What is this? This queue actually processes requests by sending them to CriticalCSS.com and waiting on them to process. When done it will purge any supported cache and make that page just a bit faster :)', $this->plugin->get_lang_domain() ); ?>
