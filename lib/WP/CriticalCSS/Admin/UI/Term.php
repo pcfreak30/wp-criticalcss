@@ -44,7 +44,7 @@ class Term extends ComponentAbstract {
 	 */
 	public function render_manual_css_form() {
 		$slug      = $this->plugin->get_safe_slug();
-		$object_id = $this->term->term_id;
+		$object_id = $this->tag->term_id;
 		?>
 		<?php
 		$css = $this->plugin->data_manager->get_item_data( [
