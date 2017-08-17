@@ -51,13 +51,6 @@ class Manager extends ManagerAbstract {
 	}
 
 	/**
-	 * @return array
-	 */
-	public function get_integrations() {
-		return $this->integrations;
-	}
-
-	/**
 	 *
 	 */
 	public function disable_integrations() {
