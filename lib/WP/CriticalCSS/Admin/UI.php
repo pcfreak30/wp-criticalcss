@@ -4,6 +4,8 @@ namespace WP\CriticalCSS\Admin;
 
 use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
 use WP\CriticalCSS;
+use WP\CriticalCSS\Admin\UI\Post;
+use WP\CriticalCSS\Admin\UI\Term;
 use WP\CriticalCSS\API;
 use WP\CriticalCSS\Queue\API\Table as APITable;
 use WP\CriticalCSS\Queue\Log\Table as LogTable;
@@ -40,6 +42,16 @@ class UI extends ComponentAbstract {
 	private $log_table;
 
 	/**
+	 * @var \WP\CriticalCSS\Admin\UI\Post
+	 */
+	private $post_ui;
+
+	/**
+	 * @var \WP\CriticalCSS\Admin\UI\Term
+	 */
+	private $term_ui;
+
+	/**
 	 * UI constructor.
 	 *
 	 * @param \WP\CriticalCSS\API|\WP\CriticalCSS\Settings\API $settings_ui
@@ -47,13 +59,17 @@ class UI extends ComponentAbstract {
 	 * @param APITable                                         $api_table
 	 * @param WebCheckTable                                    $web_check_table
 	 * @param \WP\CriticalCSS\Queue\Log\Table                  $log_table
+	 * @param \WP\CriticalCSS\Admin\UI\Post                    $post_ui
+	 * @param \WP\CriticalCSS\Admin\UI\Term                    $term_ui
 	 */
-	public function __construct( SettingsAPI $settings_ui, API $api, APITable $api_table, WebCheckTable $web_check_table, LogTable $log_table ) {
+	public function __construct( SettingsAPI $settings_ui, API $api, APITable $api_table, WebCheckTable $web_check_table, LogTable $log_table, Post $post_ui, Term $term_ui ) {
 		$this->settings_ui     = $settings_ui;
 		$this->api             = $api;
 		$this->api_table       = $api_table;
 		$this->web_check_table = $web_check_table;
 		$this->log_table       = $log_table;
+		$this->post_ui         = $post_ui;
+		$this->term_ui         = $term_ui;
 	}
 
 	/**
@@ -116,45 +132,6 @@ class UI extends ComponentAbstract {
 				$this,
 				'delete_dummy_option',
 			] );
-			add_action( 'init', [
-				$this,
-				'init_action',
-			] );
-			add_action( 'wp_loaded', [
-				$this,
-				'wp_loaded_action',
-			] );
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function init_action() {
-		if ( apply_filters( 'wp_criticalcss_manual_post_css', true ) ) {
-			add_action( 'add_meta_boxes', [ $this, 'add_post_metabox' ] );
-			add_action( 'save_post', [
-				$this,
-				'save_meta_boxes',
-			] );
-			add_action( 'edit_term', [
-				$this,
-				'save_meta_boxes',
-			] );
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function wp_loaded_action() {
-		if ( apply_filters( 'wp_criticalcss_manual_term_css', true ) ) {
-			foreach ( get_taxonomies() as $tax ) {
-				add_action( "{$tax}_edit_form", [
-					$this,
-					'render_post_css_metabox',
-				] );
-			}
 		}
 	}
 
@@ -464,102 +441,18 @@ class UI extends ComponentAbstract {
 	}
 
 	/**
-	 *
+	 * @return \WP\CriticalCSS\Admin\UI\Post
 	 */
-	public function add_post_metabox() {
-		foreach ( get_post_types() as $post_type ) {
-			add_meta_box( "{$this->plugin->get_safe_slug()}_post_css", 'Manual Critical CSS', [
-				$this,
-				'render_post_css_metabox',
-			], $post_type );
-		}
-
+	public function get_post_ui() {
+		return $this->post_ui;
 	}
 
 	/**
-	 *
+	 * @return \WP\CriticalCSS\Admin\UI\Term
 	 */
-	public function render_post_css_metabox() {
-		$slug = $this->plugin->get_safe_slug();
-		$type = '';
-		switch ( $this->current_screen->base ) {
-			case "term":
-				$type      = 'term';
-				$object_id = $this->tag->term_id;
-				break;
-			case "post":
-				$type      = 'post';
-				$object_id = $this->post->ID;
-				break;
-		}
-		if ( 'term' === $type ):
-			?>
-			<table class="form-table">
-			<tr class="form-field">
-			<th>
-		<?php endif; ?>
-		<input type="hidden" name="<?php echo $slug ?>_<?php echo $type ?>_css_nonce"
-			   id="<?php echo $slug ?>_<?php echo $type ?>_css_nonce"
-			   value="<?php echo wp_create_nonce( "{$slug}_save_{$type}_css" ) ?>"/>
-		<?php
-		$css = $this->plugin->data_manager->get_item_data( [
-			'type'      => $type,
-			'object_id' => $object_id,
-		], 'manual_css' );
-		$css = wp_unslash( $css );
-
-	if ( 'term' === $type ):
-		?>
-		<label for="<?php echo $slug ?>_<?php echo $type ?>_css">
-		<?php else: ?>
-		<h2>
-	<?php endif;
-		_e( 'Enter your manual critical css here:', $this->plugin->get_lang_domain() );
-	if ( 'term' === $type ):
-		?>
-		</label>
-	<?php else: ?>
-		</h2>
-	<?php endif;
-	if ( 'term' === $type ):
-		?>
-		</th>
-		<td>
-	<?php endif; ?>
-		<textarea name="<?php echo $slug ?>_<?php echo $type ?>_css" id="<?php echo $slug ?>_<?php echo $type ?>_css"
-				  class="widefat" rows="10"><?php echo $css ?></textarea>
-		<?php if ( 'term' === $type ):
-
-			?>
-			</td>
-			</tr>
-			</table>
-
-			<?php
-		endif;
-
+	public function get_term_ui() {
+		return $this->term_ui;
 	}
 
-	/**
-	 * @param $object_id
-	 */
-	public function save_meta_boxes( $object_id ) {
-		$slug = $this->plugin->get_safe_slug();
-		switch ( $this->current_screen->base ) {
-			case "term":
-				$type = 'term';
-				break;
-			case "post":
-				$type = 'post';
-				break;
-		}
-		if ( ! wp_verify_nonce( $_POST["{$slug}_{$type}_css_nonce"], "{$slug}_save_{$type}_css" ) ) {
-			return;
-		}
-		$css = sanitize_textarea_field( $_POST["{$slug}_{$type}_css"] );
-		$this->plugin->data_manager->set_item_data( [
-			'type'      => $type,
-			'object_id' => $object_id,
-		], 'manual_css', $css );
-	}
+
 }
