@@ -13,37 +13,90 @@ License: GPL3
 /**
  * Activation hooks
  */
-register_activation_hook( __FILE__, array( 'WP_CriticalCSS', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'WP_CriticalCSS', 'deactivate' ) );
+
+use Dice\Dice;
+
 
 /**
- * Autoloader function
- *
- * Will search both plugin root and lib folder for class
- *
- * @param $class_name
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ * @return \WP\CriticalCSS
+ * @alias WPCCSS()
  */
-if ( ! function_exists( 'wp_criticalcss_autoloader' ) ):
-	function wp_criticalcss_autoloader( $class_name ) {
-		$file      = 'class-' . str_replace( '_', '-', strtolower( $class_name ) ) . '.php';
-		$base_path = plugin_dir_path( __FILE__ );
+function wp_criticalcss() {
+	return wp_criticalcss_container()->create( 'WP\CriticalCSS' );
+}
 
-		$paths = array(
-			$base_path . $file,
-			$base_path . 'lib/' . $file,
-		);
-		foreach ( $paths as $path ) {
-
-			if ( is_readable( $path ) ) {
-				include_once( $path );
-
-				return;
-			}
-		}
+function wp_criticalcss_container( $env = 'prod' ) {
+	static $container;
+	if ( empty( $container ) ) {
+		$container = new Dice();
+		include __DIR__ . "/config_{$env}.php";
 	}
 
-	spl_autoload_register( 'wp_criticalcss_autoloader' );
-endif;
+	return $container;
+}
 
+/**
+ * Init function shortcut
+ */
+function wp_criticalcss_init() {
+	wp_criticalcss()->init();
+}
 
-add_action( 'plugins_loaded', array( 'WP_CriticalCSS', 'init' ) );
+/**
+ * Activate function shortcut
+ */
+function wp_criticalcss_activate() {
+	wp_criticalcss()->init();
+	wp_criticalcss()->activate();
+}
+
+/**
+ * Deactivate function shortcut
+ */
+function wp_criticalcss_deactivate() {
+	wp_criticalcss()->deactivate();
+}
+
+/**
+ * Error for older php
+ */
+function wp_criticalcss_php_upgrade_notice() {
+	$info = get_plugin_data( __FILE__ );
+	_e(
+		sprintf(
+			'
+	<div class="error notice">
+		<p>Opps! %s requires a minimum PHP version of 5.4.0. Your current version is: %s. Please contact your host to upgrade.</p>
+	</div>', $info['Name'], PHP_VERSION
+		)
+	);
+}
+
+/**
+ * Error if vendors autoload is missing
+ */
+function wp_criticalcss_php_vendor_missing() {
+	$info = get_plugin_data( __FILE__ );
+	_e(
+		sprintf(
+			'
+	<div class="error notice">
+		<p>Opps! %s is corrupted it seems, please re-install the plugin.</p>
+	</div>', $info['Name']
+		)
+	);
+}
+
+if ( version_compare( PHP_VERSION, '5.4.0' ) < 0 ) {
+	add_action( 'admin_notices', 'wp_criticalcss_php_upgrade_notice' );
+} else {
+	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+		include_once __DIR__ . '/vendor/autoload.php';
+		add_action( 'plugins_loaded', 'wp_criticalcss_init', 11 );
+		register_activation_hook( __FILE__, 'wp_criticalcss_activate' );
+		register_deactivation_hook( __FILE__, 'wp_criticalcss_deactivate' );
+	} else {
+		add_action( 'admin_notices', 'wp_criticalcss_php_vendor_missing' );
+	}
+}

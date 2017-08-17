@@ -1,0 +1,20 @@
+<phpunit
+        bootstrap="tests/bootstrap_unit.php"
+        backupGlobals="false"
+        colors="true"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+>
+    <testsuites>
+        <testsuite>
+            <directory suffix="Test.php">./tests/WP/CriticalCSS/Testing/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./lib/</directory>
+            <file>./wp-criticalcss.php</file>
+        </whitelist>
+    </filter>
+</phpunit>
