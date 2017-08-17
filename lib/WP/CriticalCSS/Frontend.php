@@ -67,7 +67,7 @@ class Frontend extends ComponentAbstract {
 			$fallback_css = trim( $this->plugin->settings_manager->get_setting( 'fallback_css' ) );
 
 			if ( $manual ) {
-				$manual_cache = trim( $this->plugin->data_manager->get_item_data( null, 'manual_css' ) );
+				$manual_cache = trim( $this->plugin->data_manager->get_manual_css() );
 			}
 
 			$cache = trim( $this->plugin->data_manager->get_cache() );
