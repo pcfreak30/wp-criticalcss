@@ -197,40 +197,50 @@ class Manager extends ComponentAbstract {
 		return md5( serialize( $type ) );
 	}
 
-	protected function get_item_has_css_override( $item ) {
-		$override = (bool) $this->get_item_data( $item, 'override_css' );
-		if ( $override ) {
+	protected function get_item_parent_tree( $item ) {
+		$tree         = [];
+		$object_id    = 0;
+		$hierarchical = false;
+		switch ( $item['type'] ) {
+			case 'post':
+				$hierarchical = get_post_type_object( get_post_type( $item['object_id'] ) )->hierarchical;
+				break;
+			case 'term':
+				$hierarchical = get_taxonomy( get_term( $item['object_id'] )->taxonomy )->hierarchical;
+				break;
+		}
+		if ( ! $hierarchical ) {
+			return $tree;
+		}
+		do {
 			switch ( $item['type'] ) {
 				case 'post':
-					$hierarchical = get_post_type_object( get_post_type( $item['object_id'] ) )->hierarchical;
-					if ( $hierarchical && $post_id = wp_get_post_parent_id( $item['object_id'] ) ) {
-						$item['object_id'] = $post_id;
-
-						return $item;
-					}
+					$object_id = wp_get_post_parent_id( $item['object_id'] );
 					break;
 				case 'term':
-					$hierarchical = get_taxonomy( get_term( $item['object_id'] )->taxonomy )->hierarchical;
-					if ( $hierarchical && $term_id = get_term( $item['object_id'] )->parent ) {
-						$item['object_id'] = $term_id;
-
-						return $item;
-					}
+					$object_id = get_term( $item['object_id'] )->parent;
 					break;
 			}
-		}
+			$tree[] = $object_id;
+		} while ( ! empty( $object_id ) );
 
-		return false;
+
+		return array_filter( $tree );
 	}
 
 	protected function get_item_css_override( $item ) {
 		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
 			return $item;
 		}
+		$tree        = array_reverse( $this->get_item_parent_tree( $item ) );
 		$parent_item = $item;
-		do {
-			$parent_item = $this->get_item_has_css_override( $parent_item );
-		} while ( ! empty( $parent_item ) );
+		foreach ( $tree as $leaf ) {
+			$parent_item['object_id'] = $leaf;
+			$override                 = (bool) $this->get_item_data( $parent_item, 'override_css' );
+			if ( $override ) {
+				return $parent_item;
+			}
+		}
 
 		return $item;
 	}
