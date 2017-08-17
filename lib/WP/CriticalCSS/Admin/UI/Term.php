@@ -57,11 +57,9 @@ class Term extends ComponentAbstract {
 		<table class="form-table">
 			<tr>
 				<th>
-					<h2>
-						<?php
-						_e( 'Enter your manual critical css here:', $this->plugin->get_lang_domain() );
-						?>
-					</h2>
+					<?php
+					_e( 'Enter your manual critical css here:', $this->plugin->get_lang_domain() );
+					?>
 				</th>
 				<td>
 						<textarea name="<?php echo $slug ?>_manual_css" id="<?php echo $slug ?>_manual_css"
