@@ -4,7 +4,7 @@ namespace WP\Testing\Unit\CriticalCSS;
 
 class RequestTest extends \PHPUnit_Framework_TestCase {
 	public function test_get_current_page_type_home_page_for_posts_set() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -26,7 +26,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_home_page_for_posts_not_set() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -55,7 +55,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_is_front_page_page_on_front_set() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -81,7 +81,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_is_front_page_page_on_front_not_set() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -114,7 +114,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_is_singular() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -143,7 +143,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_is_tax() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -176,7 +176,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_is_category() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -213,7 +213,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_is_tag() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -254,7 +254,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_is_author() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -302,7 +302,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_url() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -350,7 +350,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_posts_template_cache() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'on' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'on' ] );
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
 			'return' => true,
@@ -376,7 +376,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test_get_current_page_type_posts_multisite() {
-		wp_criticalcss()->set_settings( [ 'template_cache' => 'off' ] );
+		wp_criticalcss()->settings_manager->update_settings( [ 'template_cache' => 'off' ] );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction( 'is_home', [
 			'times'  => 1,
@@ -407,7 +407,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 	protected function setUp() {
 		\WP_Mock::setUp();
 		parent::setUp();
-		wp_criticalcss()->set_settings( [] );
+		wp_criticalcss()->settings_manager->update_settings( [] );
 		wp_criticalcss()->get_request()->set_template( null );
 		wp_criticalcss()->get_request()->init();
 		\WP_Mock::userFunction(

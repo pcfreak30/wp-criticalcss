@@ -5,19 +5,15 @@ namespace WP\CriticalCSS\Testing\Unit\CriticalCSS\Settings;
 use WP\CriticalCSS\Settings\Manager;
 
 class ManagerMock extends Manager {
+	protected $settings = [];
+
 	public function get_settings() {
-		$defaults = [];
-		foreach ( $this->settings as $setting ) {
-			$defaults[ $setting ] = null;
-		}
 
-		$settings = array_merge( $this->get_defaults(), wp_criticalcss()->get_settings() );
-
-		return $settings;
+		return $this->settings;
 	}
 
 	public function update_settings( array $settings ) {
-		wp_criticalcss()->set_settings( $settings );
+		$this->settings = $settings;
 
 		return true;
 	}

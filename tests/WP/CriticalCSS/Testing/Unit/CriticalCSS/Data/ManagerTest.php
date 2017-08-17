@@ -159,9 +159,18 @@ class ManagerTest extends TestCase {
 			'return' => 'http://example.org',
 		] );
 		\WP_Mock::userFunction(
+			'get_transient', [
+				'args'   => [
+					wp_criticalcss()->get_safe_slug() . '_cache_1',
+				],
+				'times'  => 1,
+				'return' => null,
+			]
+		);
+		\WP_Mock::userFunction(
 			'set_transient', [
 				'args'   => [
-					'criticalcss_url_test_' . md5( 'http://example.org' ),
+					wp_criticalcss()->get_safe_slug() . '_cache_test_' . md5( 'http://example.org' ),
 					true,
 					0,
 				],
@@ -212,6 +221,7 @@ class ManagerTest extends TestCase {
 		parent::setUp();
 		\WP_Mock::userFunction( 'is_multisite', [ 'return' => false ] );
 		\WP_Mock::userFunction( 'is_admin', [ 'return' => false ] );
-		wp_criticalcss()->set_settings( [] );
+		wp_criticalcss()->get_settings_manager()->update_settings( [] );
+		wp_criticalcss()->init();
 	}
 }
