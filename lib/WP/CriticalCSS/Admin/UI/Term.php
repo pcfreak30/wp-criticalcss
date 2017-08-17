@@ -28,11 +28,19 @@ class Term extends ComponentAbstract {
 					$this,
 					'render_manual_css_form',
 				] );
+				add_action( "edit_{$tax}", [
+					$this,
+					'save_manual_css',
+				] );
 			}
 			if ( get_taxonomy( $tax )->hierarchical && 'on' !== $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
 				add_action( "{$tax}_edit_form", [
 					$this,
 					'render_term_css_override_form',
+				] );
+				add_action( "edit_{$tax}", [
+					$this,
+					'save_css_override',
 				] );
 			}
 
@@ -96,7 +104,7 @@ class Term extends ComponentAbstract {
 	/**
 	 * @param $post_id
 	 */
-	public function save_manual_css_meta_box( $term_id ) {
+	public function save_manual_css( $term_id ) {
 		$slug = $this->plugin->get_safe_slug();
 		$css  = sanitize_textarea_field( $_POST["{$slug}_manual_css"] );
 		$this->plugin->data_manager->set_item_data( [
