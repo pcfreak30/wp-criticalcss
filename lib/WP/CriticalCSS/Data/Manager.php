@@ -152,7 +152,26 @@ class Manager extends ComponentAbstract {
 	 * @return string
 	 */
 	public function get_cache( $item = [] ) {
+		if ( empty( $item ) ) {
+			$item = $this->plugin->request->get_current_page_type();
+		}
+		$item = $this->get_item_css_override( $item );
+
 		return $this->get_item_data( $item, 'cache' );
+	}
+
+	/**
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	public function get_manual_css( $item = [] ) {
+		if ( empty( $item ) ) {
+			$item = $this->plugin->request->get_current_page_type();
+		}
+		$item = $this->get_item_css_override( $item );
+
+		return $this->get_item_data( $item, 'manual_css' );
 	}
 
 	/**
@@ -177,6 +196,45 @@ class Manager extends ComponentAbstract {
 
 		return md5( serialize( $type ) );
 	}
+
+	protected function get_item_has_css_override( $item ) {
+		$override = (bool) $this->get_item_data( $item, 'override_css' );
+		if ( $override ) {
+			switch ( $item['type'] ) {
+				case 'post':
+					$hierarchical = get_post_type_object( get_post_type( $item['object_id'] ) )->hierarchical;
+					if ( $hierarchical && $post_id = wp_get_post_parent_id( $item['object_id'] ) ) {
+						$item['object_id'] = $post_id;
+
+						return $item;
+					}
+					break;
+				case 'term':
+					$hierarchical = get_taxonomy( get_term( $item['object_id'] )->taxonomy )->hierarchical;
+					if ( $hierarchical && $term_id = get_term( $item['object_id'] )->parent ) {
+						$item['object_id'] = $term_id;
+
+						return $item;
+					}
+					break;
+			}
+		}
+
+		return false;
+	}
+
+	protected function get_item_css_override( $item ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
+			return $item;
+		}
+		$parent_item = $item;
+		do {
+			$parent_item = $this->get_item_has_css_override( $parent_item );
+		} while ( ! empty( $parent_item ) );
+
+		return $item;
+	}
+
 
 	/**
 	 *
