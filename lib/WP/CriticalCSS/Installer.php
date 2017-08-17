@@ -30,11 +30,13 @@ class Installer extends ComponentAbstract {
 		$version_0_3 = false;
 		$version_0_4 = false;
 		$version_0_5 = false;
+		$version_0_7 = false;
 		if ( ! $no_version ) {
 			$version     = $settings['version'];
 			$version_0_3 = version_compare( '0.3.0', $version ) === 1;
 			$version_0_4 = version_compare( '0.4.0', $version ) === 1;
 			$version_0_5 = version_compare( '0.5.0', $version ) === 1;
+			$version_0_7 = version_compare( '0.7.0', $version ) === 1;
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 ) {
 			remove_action(
@@ -54,6 +56,19 @@ class Installer extends ComponentAbstract {
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 || $version_0_5 ) {
 			$wpdb->get_results( $wpdb->prepare( "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s", '_transient_criticalcss_%', '_transient_timeout_criticalcss_%' ) );
+		}
+
+		if ( $version_0_7 ) {
+			$items = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT meta_key FROM {$wpdb->postmeta} WHERE meta_key like %s ", "{$wpdb->esc_like( 'criticalcss' ) }%" ) );
+			foreach ( $items as $item ) {
+				$new_item = "wp_{$item}";
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->postmeta} SET meta_key = %s WHERE meta_key = %s ", $new_item, $item ) );
+			}
+			$items = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT meta_key FROM {$wpdb->termmeta} WHERE meta_key like %s ", "{$wpdb->esc_like( 'criticalcss' ) }%" ) );
+			foreach ( $items as $item ) {
+				$new_item = "wp_{$item}";
+				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->termmeta} SET meta_key = %s WHERE meta_key = %s ", $new_item, $item ) );
+			}
 		}
 
 		if ( is_multisite() ) {
