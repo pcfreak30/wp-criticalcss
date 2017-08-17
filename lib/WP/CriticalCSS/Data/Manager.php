@@ -221,7 +221,8 @@ class Manager extends ComponentAbstract {
 					$object_id = get_term( $item['object_id'] )->parent;
 					break;
 			}
-			$tree[] = $object_id;
+			$tree[]            = $object_id;
+			$item['object_id'] = $object_id;
 		} while ( ! empty( $object_id ) );
 
 
