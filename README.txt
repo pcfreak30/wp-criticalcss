@@ -1,9 +1,9 @@
-=== Plugin Name ===
+=== WP Critical CSS ===
 Contributors: pcfreak30
 Donate link: https://www.paypal.me/pcfreak30
 Tags: optimize, above the fold, critical css
 Requires at least: 4.5
-Tested up to: 4.8
+Tested up to: 4.8.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -66,6 +66,22 @@ Generally any host. Some hosts like WPEngine has special support to purge the se
 This is used as a special version of the web page that forcibly disables supported caching and minify plugins to ensure that critical css is created without complications. SEO wise these URL's are safe as they have no references anywhere and google will not be aware to crawl them.
 
 == Changelog ==
+
+### 0.7.0 ###
+
+### Big Warning ###
+
+This is a ***MAJOR*** release and over 50% of the code is rewritten. While it has been extensively tested, there may still be bugs! Please test in a development site before deploying! Due to the amount of work, only a summary of this version will be detailed below.
+
+* ***Major*** rewrite using new composer based framework.
+* Feature: Added queue table for web check queue.
+* Feature: Added log table which gets purged via custom cron event if there is no cache integration.
+* Feature: Added ability to force styles to be included in critical css with simple names or regex.
+* Feature: Added ability to give a manual CSS input for any term or post
+* Feature: Added ability to have a parent hierarchical term or hierarchical custom post type override its children and force them to use its CSS. The very top parent with the override will be used. This is exposed with the manual input on editing a term or post.
+* Feature: Added ability to force manual css to always be used in-place of generated css.
+* Feature: Added a setting for a global CSS fallback. This is manual input only.
+* Bugs: Too many to review that are fixed
 
 ### 0.6.4 ###
 

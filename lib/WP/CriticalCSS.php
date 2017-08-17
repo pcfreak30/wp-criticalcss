@@ -36,7 +36,7 @@ class CriticalCSS extends PluginAbstract {
 	/**
 	 *
 	 */
-	const VERSION = '0.6.3';
+	const VERSION = '0.7.0';
 
 	/**
 	 *
