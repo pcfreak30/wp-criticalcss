@@ -46,7 +46,7 @@ class Manager extends ComponentAbstract {
 				$name  = [ $name, md5( $item['url'] ) ];
 				$value = $this->plugin->get_cache_manager()->get_store()->get_cache_fragment( $name );
 			} else {
-				$name = "criticalcss_{$name}";
+				$name = "{$this->plugin->get_safe_slug()}_{$name}";
 				switch ( $item['type'] ) {
 					case 'post':
 						$value = get_post_meta( $item['object_id'], $name, true );
@@ -97,7 +97,7 @@ class Manager extends ComponentAbstract {
 				$name = [ $name, md5( $item['url'] ) ];
 				$this->plugin->cache_manager->get_store()->update_cache_fragment( $name, $value );
 			} else {
-				$name  = "criticalcss_{$name}";
+				$name  = "{$this->plugin->get_safe_slug()}_{$name}";
 				$value = wp_slash( $value );
 				switch ( $item['type'] ) {
 					case 'post':
