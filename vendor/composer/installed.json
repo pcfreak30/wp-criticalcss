@@ -1,0 +1,190 @@
+[
+    {
+        "name": "a5hleyrich/wp-background-processing",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/A5hleyRich/wp-background-processing.git",
+            "reference": "fbbc56f2480910d7959972ec9ec0819a13c6150a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/A5hleyRich/wp-background-processing/zipball/fbbc56f2480910d7959972ec9ec0819a13c6150a",
+            "reference": "fbbc56f2480910d7959972ec9ec0819a13c6150a",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2"
+        },
+        "time": "2016-09-13T12:24:02+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "classes/"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPLv2+"
+        ],
+        "authors": [
+            {
+                "name": "Ashley Rich",
+                "email": "hello@ashleyrich.com"
+            }
+        ],
+        "description": "WP Background Processing can be used to fire off non-blocking asynchronous requests or as a background processing tool, allowing you to queue tasks."
+    },
+    {
+        "name": "level-2/dice",
+        "version": "dev-v2.0-PHP5.4-5.5",
+        "version_normalized": "dev-v2.0-PHP5.4-5.5",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Level-2/Dice.git",
+            "reference": "33e5401c4a577b7d8dc7dc04db295fe5084343c4"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Level-2/Dice/zipball/33e5401c4a577b7d8dc7dc04db295fe5084343c4",
+            "reference": "33e5401c4a577b7d8dc7dc04db295fe5084343c4",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0"
+        },
+        "time": "2015-11-30T17:19:11+00:00",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "Dice\\": "./"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Tom Butler",
+                "email": "tom@r.je"
+            }
+        ],
+        "description": "A minimalist Dependency injection container (DIC) for PHP. Please note: This branch is only compatible with PHP5.6. 5.5, 5.4 and 5.3 compatible version is available as a separate branch on github. ",
+        "homepage": "http://r.je/dice.html",
+        "keywords": [
+            "dependency injection",
+            "dependency injection container",
+            "di",
+            "ioc"
+        ]
+    },
+    {
+        "name": "pcfreak30/wordpress-cache-store",
+        "version": "0.1.1",
+        "version_normalized": "0.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pcfreak30/wordpress-cache-store.git",
+            "reference": "dd8eede8cf150476551166c3032273d3a417d0fe"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pcfreak30/wordpress-cache-store/zipball/dd8eede8cf150476551166c3032273d3a417d0fe",
+            "reference": "dd8eede8cf150476551166c3032273d3a417d0fe",
+            "shasum": ""
+        },
+        "time": "2017-07-22T21:43:49+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "pcfreak30\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "Derrick Hammer",
+                "email": "derrick@derrickhammer.com"
+            }
+        ],
+        "description": "WordPress cache library to enable a data tree inspired storage structure to offset the limitation of the WordPress cache API for querying available keys"
+    },
+    {
+        "name": "jakeasmith/http_build_url",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/jakeasmith/http_build_url.git",
+            "reference": "93c273e77cb1edead0cf8bcf8cd2003428e74e37"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/jakeasmith/http_build_url/zipball/93c273e77cb1edead0cf8bcf8cd2003428e74e37",
+            "reference": "93c273e77cb1edead0cf8bcf8cd2003428e74e37",
+            "shasum": ""
+        },
+        "time": "2017-05-01T15:36:40+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "files": [
+                "src/http_build_url.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jake A. Smith",
+                "email": "theman@jakeasmith.com"
+            }
+        ],
+        "description": "Provides functionality for http_build_url() to environments without pecl_http."
+    },
+    {
+        "name": "pcfreak30/wordpress-plugin-framework",
+        "version": "0.1.1",
+        "version_normalized": "0.1.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/pcfreak30/wordpress-plugin-framework.git",
+            "reference": "4cd64268f2d25503fd96ce0f2064428002a8813b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/pcfreak30/wordpress-plugin-framework/zipball/4cd64268f2d25503fd96ce0f2064428002a8813b",
+            "reference": "4cd64268f2d25503fd96ce0f2064428002a8813b",
+            "shasum": ""
+        },
+        "time": "2017-08-16T08:20:28+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "pcfreak30\\WordPress\\Plugin\\Framework\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "LGPL3"
+        ],
+        "authors": [
+            {
+                "name": "Derrick Hammer",
+                "email": "derrick@derrickhammer.com"
+            }
+        ],
+        "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age"
+    }
+]

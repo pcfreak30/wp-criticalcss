@@ -1,0 +1,17 @@
+{
+  "name": "pcfreak30/wordpress-cache-store",
+  "description": "WordPress cache library to enable a data tree inspired storage structure to offset the limitation of the WordPress cache API for querying available keys",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Derrick Hammer",
+      "email": "derrick@derrickhammer.com"
+    }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "pcfreak30\\": "src/"
+    }
+  }
+}

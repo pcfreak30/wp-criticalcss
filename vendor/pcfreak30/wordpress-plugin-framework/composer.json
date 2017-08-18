@@ -1,0 +1,18 @@
+{
+  "name": "pcfreak30/wordpress-plugin-framework",
+  "type": "library",
+  "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
+  "license": "LGPL3",
+  "authors": [
+    {
+      "name": "Derrick Hammer",
+      "email": "derrick@derrickhammer.com"
+    }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "pcfreak30\\WordPress\\Plugin\\Framework\\": "src/"
+    }
+  }
+}
