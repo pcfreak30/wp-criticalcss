@@ -1,6 +1,0 @@
-bin
-tests
-config_unit_test.php
-config_integration_test.php
-*.xml
-*.yml
