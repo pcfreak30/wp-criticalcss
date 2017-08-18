@@ -153,16 +153,16 @@
       },
       {
         "name": "pcfreak30/wordpress-plugin-framework",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "source": {
           "type": "git",
           "url": "https://github.com/pcfreak30/wordpress-plugin-framework.git",
-          "reference": "7a927dd5d6ef15a006d84056c1ca78918327caf3"
+          "reference": "4cd64268f2d25503fd96ce0f2064428002a8813b"
         },
         "dist": {
           "type": "zip",
-          "url": "https://api.github.com/repos/pcfreak30/wordpress-plugin-framework/zipball/7a927dd5d6ef15a006d84056c1ca78918327caf3",
-          "reference": "7a927dd5d6ef15a006d84056c1ca78918327caf3",
+          "url": "https://api.github.com/repos/pcfreak30/wordpress-plugin-framework/zipball/4cd64268f2d25503fd96ce0f2064428002a8813b",
+          "reference": "4cd64268f2d25503fd96ce0f2064428002a8813b",
           "shasum": ""
         },
         "type": "library",
@@ -182,7 +182,7 @@
           }
         ],
         "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
-        "time": "2017-08-16T05:56:27+00:00"
+        "time": "2017-08-16T08:20:28+00:00"
         }
     ],
     "packages-dev": [
