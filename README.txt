@@ -67,6 +67,10 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.7.0.1 ###
+
+* Bug: Fix usage of restore_current_blog being undefined
+
 ### 0.7.0 ###
 
 ### Big Warning ###

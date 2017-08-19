@@ -4,7 +4,7 @@
 Plugin Name: WP Critical CSS
 Plugin URI: https://github.com/pcfreak30/wp-criticalcss
 Description: Use CriticalCSS.com web service to automatically create the required CSS for above the fold
-Version: 0.7.0
+Version: 0.7.0.1
 Author: Derrick Hammer
 Author URI: https://www.derrickhammer.com
 License: GPL3
