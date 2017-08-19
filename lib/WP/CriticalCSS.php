@@ -287,7 +287,9 @@ class CriticalCSS extends PluginAbstract {
 		} else {
 			$url = http_build_url( $url_parts );
 		}
-		restore_current_blog();
+		if ( ! empty( $object['blog_id'] ) ) {
+			restore_current_blog( $object['blog_id'] );
+		}
 		return $url;
 	}
 
