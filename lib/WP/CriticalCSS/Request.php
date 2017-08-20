@@ -236,7 +236,7 @@ class Request extends ComponentAbstract {
 			unset( $object_id );
 		}
 
-		if ( 'on' === $this->settings['template_cache'] ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
 			$template = $this->template;
 		}
 
