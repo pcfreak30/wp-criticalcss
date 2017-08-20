@@ -60,7 +60,7 @@ class WPEngine extends IntegrationAbstract {
 				}
 				$paths = [ $object_uri ];
 				/** @noinspection PhpUndefinedClassInspection */
-				$purge_domains = array_unique( array_merge( $purge_domains, WpeCommon::get_blog_domains() ) );
+				$purge_domains = array_unique( array_merge( $purge_domains, \WpeCommon::get_blog_domains() ) );
 				if ( defined( 'WPE_CLUSTER_TYPE' ) && WPE_CLUSTER_TYPE === 'pod' ) {
 					$wpe_varnish_servers = [ 'localhost' ];
 				} // End if().
