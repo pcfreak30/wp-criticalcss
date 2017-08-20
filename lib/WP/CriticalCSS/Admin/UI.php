@@ -106,7 +106,9 @@ class UI extends ComponentAbstract {
 	 */
 	public function init() {
 		$this->setup_components();
-
+		$this->api_table->set_queue( $this->plugin->api_queue );
+		$this->log_table->set_queue( $this->plugin->log );
+		$this->web_check_table->set_queue( $this->plugin->web_check_queue );
 		if ( is_admin() ) {
 			add_action( 'network_admin_menu', [
 				$this,
