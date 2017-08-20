@@ -32,11 +32,12 @@ class Installer extends ComponentAbstract {
 		$version_0_5 = false;
 		$version_0_7 = false;
 		if ( ! $no_version ) {
-			$version     = $settings['version'];
-			$version_0_3 = version_compare( '0.3.0', $version ) === 1;
-			$version_0_4 = version_compare( '0.4.0', $version ) === 1;
-			$version_0_5 = version_compare( '0.5.0', $version ) === 1;
-			$version_0_7 = version_compare( '0.7.0', $version ) === 1;
+			$version       = $settings['version'];
+			$version_0_3   = version_compare( '0.3.0', $version ) === 1;
+			$version_0_4   = version_compare( '0.4.0', $version ) === 1;
+			$version_0_5   = version_compare( '0.5.0', $version ) === 1;
+			$version_0_7   = version_compare( '0.7.0', $version ) === 1;
+			$version_0_7_1 = version_compare( '0.7.1', $version ) === 1;
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 ) {
 			remove_action(
@@ -68,6 +69,15 @@ class Installer extends ComponentAbstract {
 			foreach ( $items as $item ) {
 				$new_item = "wp_{$item}";
 				$wpdb->query( $wpdb->prepare( "UPDATE {$wpdb->termmeta} SET meta_key = %s WHERE meta_key = %s ", $new_item, $item ) );
+			}
+		}
+
+		if ( $version_0_7_1 ) {
+			if ( is_multisite() ) {
+				$wpdb->query( "DROP TABLE {$wpdb->base_prefix}{$this->plugin->get_safe_slug()}_processed_items IF EXISTS" );
+			} else {
+				$wpdb->query( "DROP TABLE {$wpdb->prefix}{$this->plugin->get_safe_slug()} IF EXISTS" );
+
 			}
 		}
 
