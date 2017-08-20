@@ -74,9 +74,9 @@ class Installer extends ComponentAbstract {
 
 		if ( $version_0_7_1 ) {
 			if ( is_multisite() ) {
-				$wpdb->query( "DROP TABLE {$wpdb->base_prefix}{$this->plugin->get_safe_slug()}_processed_items IF EXISTS" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->base_prefix}{$this->plugin->get_safe_slug()}_processed_items" );
 			} else {
-				$wpdb->query( "DROP TABLE {$wpdb->prefix}{$this->plugin->get_safe_slug()} IF EXISTS" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$this->plugin->get_safe_slug()}" );
 
 			}
 		}
@@ -91,8 +91,8 @@ class Installer extends ComponentAbstract {
 				) as $blog_id
 			) {
 				switch_to_blog( $blog_id );
-				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_web_check_queue IF EXISTS" );
-				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_api_queue IF EXISTS" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}_wp_criticalcss_web_check_queue" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}_wp_criticalcss_api_queue" );
 				restore_current_blog();
 			}
 		}
