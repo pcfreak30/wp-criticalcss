@@ -54,12 +54,11 @@ class Log extends ComponentAbstract {
 	public function get_table_name() {
 		$wpdb = $this->wpdb;
 		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->plugin->get_safe_slug()}processed_items";
-		} else {
-			$table = "{$wpdb->prefix}{$this->plugin->get_safe_slug()}processed_items";
+			return "{$wpdb->base_prefix}{$this->plugin->get_safe_slug()}processed_items";
 		}
 
-		return $table;
+		return $table = "{$wpdb->prefix}{$this->plugin->get_safe_slug()}processed_items";
+
 	}
 
 	public function purge() {
