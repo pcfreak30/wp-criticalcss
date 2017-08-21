@@ -32,7 +32,7 @@ class Manager extends ComponentAbstract {
 		if ( empty( $item ) ) {
 			$item = $this->plugin->request->get_current_page_type();
 		}
-		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) && ! empty( $item['template'] ) ) {
 			if ( 'cache' === $name ) {
 				$name = 'ccss';
 			}
@@ -83,7 +83,7 @@ class Manager extends ComponentAbstract {
 	 * @param int $expires
 	 */
 	public function set_item_data( $item, $name, $value, $expires = 0 ) {
-		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) && ! empty( $item['template'] ) ) {
 			if ( 'cache' === $name ) {
 				$name = 'ccss';
 			}
@@ -187,7 +187,7 @@ class Manager extends ComponentAbstract {
 			'type',
 			'url',
 		];
-		if ( 'on' === $this->settings['template_cache'] ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
 
 			$template = $this->plugin->request->template;
 			$parts    = [ 'template' ];
