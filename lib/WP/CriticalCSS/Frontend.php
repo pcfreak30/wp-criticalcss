@@ -55,8 +55,9 @@ class Frontend extends ComponentAbstract {
 			do_action( 'wp_criticalcss_nocache' );
 		}
 		if ( ! get_query_var( 'nocache' ) && ! is_404() ) {
-			$request = $this->plugin->request->get_current_page_type();
-			$manual  = true;
+			$request  = $this->plugin->request->get_current_page_type();
+			$manual   = true;
+			$fallback = false;
 			if ( 'post' === $request['type'] ) {
 				$manual = apply_filters( 'wp_criticalcss_manual_post_css', true );
 			}
@@ -74,15 +75,21 @@ class Frontend extends ComponentAbstract {
 			if ( 'on' === $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) ) {
 				$cache = $manual_cache;
 				if ( empty( $cache ) ) {
-					$cache = $fallback_css;
+					$manual   = false;
+					$fallback = true;
+					$cache    = $fallback_css;
 				}
 			}
 
 			if ( empty( $cache ) ) {
-				$cache = $manual_cache;
+				$manual   = true;
+				$fallback = false;
+				$cache    = $manual_cache;
 			}
 			if ( empty( $cache ) ) {
-				$cache = $fallback_css;
+				$manual   = false;
+				$fallback = true;
+				$cache    = $fallback_css;
 			}
 
 			$cache = apply_filters( 'wp_criticalcss_print_styles_cache', $cache );
@@ -102,7 +109,7 @@ class Frontend extends ComponentAbstract {
 					$this->plugin->api_queue->push_to_queue( $type )->save();
 				}
 			} else {
-				if ( empty( $check ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
+				if ( ! ( $manual || $fallback ) && empty( $check ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
 					$this->plugin->web_check_queue->push_to_queue( $type )->save();
 					$this->plugin->cache_manager->update_cache_fragment( [ 'webcheck', $hash ], true );
 				}
