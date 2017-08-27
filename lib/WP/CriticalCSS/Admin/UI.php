@@ -171,12 +171,14 @@ class UI extends ComponentAbstract {
 			],
 			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', CriticalCSS::LANG_DOMAIN ),
 		] );
-		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
-			'name'  => 'force_web_check',
-			'label' => 'Force Web Check',
-			'type'  => 'checkbox',
-			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
-		] );
+		if ( 'on' !== $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
+			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+				'name'  => 'force_web_check',
+				'label' => 'Force Web Check',
+				'type'  => 'checkbox',
+				'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
+			] );
+		}
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'prioritize_manual_css',
 			'label' => 'Enable Manual CSS Override',
