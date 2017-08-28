@@ -91,6 +91,9 @@ class Frontend extends ComponentAbstract {
 				$fallback = true;
 				$cache    = $fallback_css;
 			}
+			if ( empty( $cache ) ) {
+				$fallback = false;
+			}
 
 			$cache = apply_filters( 'wp_criticalcss_print_styles_cache', $cache );
 
