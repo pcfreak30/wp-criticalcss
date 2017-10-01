@@ -75,6 +75,19 @@ class Frontend extends ComponentAbstract {
 			if ( 'on' === $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) ) {
 				$cache = $manual_cache;
 				if ( empty( $cache ) ) {
+					if ( false !== get_post_type() && 'on' === $this->plugin->settings_manager->get_setting( 'single_post_type_css_' . get_post_type() ) ) {
+						if ( is_post_type_archive() ) {
+							$cache = $this->plugin->settings_manager->get_setting( 'single_post_type_css_' . get_post_type() . '_archive_css' );
+						}
+						if ( empty( $cache ) ) {
+							$cache = $this->plugin->settings_manager->get_setting( 'single_post_type_css_' . get_post_type() . '_css' );
+						}
+					}
+					if ( 'term' === $request['type'] && 'on' === $this->plugin->settings_manager->get_setting( 'single_taxonomy_css_' . get_post_type() ) ) {
+						$cache = $this->plugin->settings_manager->get_setting( 'single_taxonomy_css_' . get_queried_object()->taxonomy . '_css' );
+					}
+				}
+				if ( empty( $cache ) ) {
 					$manual   = false;
 					$fallback = true;
 					$cache    = $fallback_css;
