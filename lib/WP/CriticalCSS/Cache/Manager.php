@@ -116,9 +116,10 @@ class Manager extends ComponentAbstract {
 	 * @param $url
 	 */
 	public function purge_page_cache( $type = null, $object_id = null, $url = null ) {
-		$url = preg_replace( '#nocache/$#', '', $url );
-
-		do_action( 'wp_criticalcss_purge_cache', $type, $object_id, $url );
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) && '' !== $this->plugin->settings_manager->get_setting( 'apikey' ) ) {
+			$url = preg_replace( '#nocache/$#', '', $url );
+			do_action( 'wp_criticalcss_purge_cache', $type, $object_id, $url );
+		}
 	}
 
 	/**
