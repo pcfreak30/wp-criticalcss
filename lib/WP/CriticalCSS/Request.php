@@ -76,10 +76,18 @@ class Request extends ComponentAbstract {
 			'public'   => true,
 			'_builtin' => false,
 		], 'objects' );
-
+		$post_types = get_post_types( [
+			'public'   => true,
+			'_builtin' => false,
+		], 'objects' );
 		foreach ( $taxonomies as $tax_id => $tax ) {
 			if ( ! empty( $tax->rewrite ) ) {
 				add_rewrite_rule( $tax->rewrite['slug'] . '/(.+?)/nocache/?$', 'index.php?' . $tax_id . '=$matches[1]&nocache', 'top' );
+			}
+		}
+		foreach ( $post_types as $post_type_id => $post_type ) {
+			if ( ! empty( $post_type->rewrite ) ) {
+				add_rewrite_rule( $post_type->rewrite['slug'] . '/nocache/?$', 'index.php?post_type=' . $post_type_id . '&nocache', 'top' );
 			}
 		}
 	}
@@ -137,7 +145,7 @@ class Request extends ComponentAbstract {
 	 * @SuppressWarnings(PHPMD.ShortVariable)
 	 * @param \WP $wp
 	 */
-	public function parse_request( \WP &$wp ) {
+	public function parse_request( \WP $wp ) {
 		if ( isset( $wp->query_vars['nocache'] ) ) {
 			$this->nocache = $wp->query_vars['nocache'];
 			unset( $wp->query_vars['nocache'] );
