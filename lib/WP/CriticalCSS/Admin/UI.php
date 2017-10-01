@@ -179,18 +179,21 @@ class UI extends ComponentAbstract {
 				'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
 			] );
 		}
+		if ( 'on' !== $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) ) {
+			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+				'name'  => 'template_cache',
+				'label' => 'Template Cache',
+				'type'  => 'checkbox',
+				'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url. <p style="font-weight: bold;">This option may be useful if your website contains lots of content, pages, posts, etc. </p>', $this->plugin->get_lang_domain() ),
+			] );
+		}
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'prioritize_manual_css',
 			'label' => 'Enable Manual CSS Override',
 			'type'  => 'checkbox',
-			'desc'  => __( 'Allow per post CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
+			'desc'  => __( 'Allow per post CSS, per term CSS, post type CSS or taxonomy CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
 		] );
-		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
-			'name'  => 'template_cache',
-			'label' => 'Template Cache',
-			'type'  => 'checkbox',
-			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url. <p style="font-weight: bold;">This option may be useful if your website contains lots of content, pages, posts, etc. </p>', $this->plugin->get_lang_domain() ),
-		] );
+
 		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
 			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 				'name'  => 'web_check_interval',
@@ -215,6 +218,50 @@ class UI extends ComponentAbstract {
 			'type'  => 'textarea',
 			'desc'  => __( 'Global CSS to use as a fallback if generated and manual post css don\'t exist.', $this->plugin->get_lang_domain() ),
 		] );
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) ) {
+			foreach ( get_post_types() as $post_type ) {
+				$label = get_post_type_object( $post_type )->labels->singular_name;
+
+				$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+					'name'  => "single_post_type_css_{$post_type}",
+					'label' => 'Use Single CSS for ' . $label,
+					'type'  => 'checkbox',
+					'desc'  => sprintf( __( 'Use a single CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+				] );
+				if ( 'on' === $this->plugin->settings_manager->get_setting( "single_post_type_css_{$post_type}" ) ) {
+					$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+						'name'  => "single_post_type_css_{$post_type}_css",
+						'label' => $label . ' post type CSS input',
+						'type'  => 'textarea',
+						'desc'  => sprintf( __( 'Enter CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+					] );
+					$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+						'name'  => "single_post_type_css_{$post_type}_archive_css",
+						'label' => $label . ' post type archive CSS input',
+						'type'  => 'textarea',
+						'desc'  => sprintf( __( 'Enter CSS for %s archive listings', $this->plugin->get_lang_domain() ), $label ),
+					] );
+				}
+			}
+			foreach ( get_taxonomies() as $taxonomy ) {
+				$label = get_taxonomy( $taxonomy )->labels->singular_name;
+				$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+					'name'  => "single_taxonomy_css_{$taxonomy}",
+					'label' => 'Use Single CSS for ' . $label,
+					'type'  => 'checkbox',
+					'desc'  => sprintf( __( 'Use a single CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+				] );
+				if ( 'on' === $this->plugin->settings_manager->get_setting( "single_taxonomy_css_{$taxonomy}_css" ) ) {
+					$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+						'name'  => "single_taxonomy_css_{$taxonomy}_css",
+						'label' => $label . ' taxonomy CSS input',
+						'type'  => 'textarea',
+						'desc'  => sprintf( __( 'Enter CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+					] );
+				}
+			}
+
+		}
 		$this->settings_ui->admin_init();
 	}
 
