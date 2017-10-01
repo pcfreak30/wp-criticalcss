@@ -278,91 +278,92 @@ class UI extends ComponentAbstract {
 				'form'  => false,
 			] );
 		}
-		$this->settings_ui->add_section( [
-			'id'    => 'wp_criticalcss_api_queue',
-			'title' => 'API Queue',
-			'form'  => false,
-		] );
-		$this->settings_ui->add_section( [
-			'id'    => 'wp_criticalcss_log',
-			'title' => 'Processed Log',
-			'form'  => false,
-		] );
-		?>
-		<style type="text/css">
-			.form-table .api_queue > th, .form-table .web_check_queue > th {
-				display: none;
-			}
+		if ( '' !== $this->plugin->settings_manager->get_setting( 'apikey' ) ) {
+			$this->settings_ui->add_section( [
+				'id'    => 'wp_criticalcss_api_queue',
+				'title' => 'API Queue',
+				'form'  => false,
+			] );
+			$this->settings_ui->add_section( [
+				'id'    => 'wp_criticalcss_log',
+				'title' => 'Processed Log',
+				'form'  => false,
+			] );
+			?>
+			<style type="text/css">
+				.form-table .api_queue > th, .form-table .web_check_queue > th {
+					display: none;
+				}
 
-			.no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
-				text-align: center !important;
-			}
+				.no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
+					text-align: center !important;
+				}
 
-			.form-table th {
-				width: auto;
-			}
+				.form-table th {
+					width: auto;
+				}
 
-			.group h2 {
-				display: none;
-			}
-		</style>
+				.group h2 {
+					display: none;
+				}
+			</style>
 
-		<?php
-		if ( ! $template_cache ): ?>
-			<?php ob_start(); ?>
+			<?php
+			if ( ! $template_cache ): ?>
+				<?php ob_start(); ?>
+				<p>
+					<?php _e( 'What is this? This queue is designed to process your content only if "template" mode is off. It detects changes to the content and sends to the "API Queue" if any are found.', $this->plugin->get_lang_domain() ); ?>
+				</p>
+				<form method="post">
+					<?php
+					$this->web_check_table->prepare_items();
+					$this->web_check_table->display();
+					?>
+				</form>
+				<?php
+				$this->settings_ui->add_field( 'wp_criticalcss_web_check_queue', [
+					'name'  => 'web_check_queue',
+					'label' => null,
+					'type'  => 'html',
+					'desc'  => ob_get_clean(),
+				] );
+			endif;
+			ob_start(); ?>
 			<p>
-				<?php _e( 'What is this? This queue is designed to process your content only if "template" mode is off. It detects changes to the content and sends to the "API Queue" if any are found.', $this->plugin->get_lang_domain() ); ?>
+				<?php _e( 'What is this? This queue actually processes requests by sending them to CriticalCSS.com and waiting on them to process. When done it will purge any supported cache and make that page just a bit faster :)', $this->plugin->get_lang_domain() ); ?>
 			</p>
 			<form method="post">
 				<?php
-				$this->web_check_table->prepare_items();
-				$this->web_check_table->display();
+				$this->api_table->prepare_items();
+				$this->api_table->display();
 				?>
 			</form>
 			<?php
-			$this->settings_ui->add_field( 'wp_criticalcss_web_check_queue', [
-				'name'  => 'web_check_queue',
+			$this->settings_ui->add_field( 'wp_criticalcss_api_queue', [
+				'name'  => 'api_queue',
 				'label' => null,
 				'type'  => 'html',
 				'desc'  => ob_get_clean(),
 			] );
-		endif;
-		ob_start(); ?>
-		<p>
-			<?php _e( 'What is this? This queue actually processes requests by sending them to CriticalCSS.com and waiting on them to process. When done it will purge any supported cache and make that page just a bit faster :)', $this->plugin->get_lang_domain() ); ?>
-		</p>
-		<form method="post">
-			<?php
-			$this->api_table->prepare_items();
-			$this->api_table->display();
-			?>
-		</form>
-		<?php
-		$this->settings_ui->add_field( 'wp_criticalcss_api_queue', [
-			'name'  => 'api_queue',
-			'label' => null,
-			'type'  => 'html',
-			'desc'  => ob_get_clean(),
-		] );
 
-		ob_start(); ?>
-		<p>
-			<?php _e( 'What is this? This is a list of all processed pages and/or templates. This log will clear when critical css expires.', $this->plugin->get_lang_domain() ); ?>
-		</p>
-		<form method="post">
+			ob_start(); ?>
+			<p>
+				<?php _e( 'What is this? This is a list of all processed pages and/or templates. This log will clear when critical css expires.', $this->plugin->get_lang_domain() ); ?>
+			</p>
+			<form method="post">
+				<?php
+				$this->log_table->prepare_items();
+				$this->log_table->display();
+				?>
+			</form>
 			<?php
-			$this->log_table->prepare_items();
-			$this->log_table->display();
-			?>
-		</form>
-		<?php
-		$this->settings_ui->add_field( 'wp_criticalcss_log', [
-			'name'  => 'log',
-			'label' => null,
-			'type'  => 'html',
-			'desc'  => ob_get_clean(),
-		] );
-
+			$this->settings_ui->add_field( 'wp_criticalcss_log', [
+				'name'  => 'log',
+				'label' => null,
+				'type'  => 'html',
+				'desc'  => ob_get_clean(),
+			] );
+		}
 
 		$this->settings_ui->admin_init();
 		$this->settings_ui->show_navigation();
