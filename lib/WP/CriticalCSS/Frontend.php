@@ -35,7 +35,7 @@ class Frontend extends ComponentAbstract {
 		if ( get_query_var( 'nocache' ) ) :
 			?>
 			<meta name="robots" content="noindex, nofollow"/>
-			<?php
+		<?php
 		endif;
 	}
 
@@ -125,7 +125,7 @@ class Frontend extends ComponentAbstract {
 					$this->plugin->api_queue->push_to_queue( $type )->save();
 				}
 			} else {
-				if ( ! ( $manual || $fallback ) && empty( $check ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
+				if ( ! ( $manual || $fallback ) && ( empty( $check ) || ( ! empty( $check ) && empty( $cache ) && null !== $cache ) ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
 					$this->plugin->web_check_queue->push_to_queue( $type )->save();
 					$this->plugin->cache_manager->update_cache_fragment( [ 'webcheck', $hash ], true );
 				}
