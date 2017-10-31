@@ -238,7 +238,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	protected function get_table_name() {
 		global $wpdb;
 		if ( is_multisite() ) {
-			return "{$this->wpdb->base_prefix}{$this->action}_queue";
+			return "{$wpdb->base_prefix}{$this->action}_queue";
 		}
 
 		return "{$wpdb->prefix}{$this->action}_queue";
