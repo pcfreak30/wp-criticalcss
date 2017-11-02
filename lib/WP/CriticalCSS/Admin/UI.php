@@ -291,21 +291,21 @@ class UI extends ComponentAbstract {
 			] );
 			?>
 			<style type="text/css">
-				.form-table .api_queue > th, .form-table .web_check_queue > th {
-					display: none;
-				}
+                .form-table .api_queue > th, .form-table .web_check_queue > th {
+                    display: none;
+                }
 
-				.no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
-					text-align: center !important;
-				}
+                .no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
+                    text-align: center !important;
+                }
 
-				.form-table th {
-					width: auto;
-				}
+                .form-table th {
+                    width: auto;
+                }
 
-				.group h2 {
-					display: none;
-				}
+                .group h2 {
+                    display: none;
+                }
 			</style>
 
 			<?php
@@ -384,11 +384,7 @@ class UI extends ComponentAbstract {
 	public function validate_criticalcss_apikey( $options ) {
 		$valid = true;
 		if ( empty( $options['apikey'] ) ) {
-			$valid = false;
-			add_settings_error( 'apikey', 'invalid_apikey', __( 'API Key is empty', $this->plugin->get_option_name() ) );
-		}
-		if ( ! $valid ) {
-			return $valid;
+			return '';
 		}
 		$this->api->set_api_key( $options['apikey'] );
 		if ( ! $this->api->ping() ) {
