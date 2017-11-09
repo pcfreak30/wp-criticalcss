@@ -100,6 +100,9 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 
 				return $item;
 			}
+			if ( 'JOB_ONGOING' === $result->status ) {
+				return $item;
+			}
 			if ( 'JOB_DONE' === $result->status ) {
 				// @codingStandardsIgnoreLine
 				if ( 'GOOD' === $result->resultStatus && ! empty( $result->css ) ) {
