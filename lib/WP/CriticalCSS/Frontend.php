@@ -92,6 +92,8 @@ class Frontend extends ComponentAbstract {
 					$fallback = true;
 					$cache    = $fallback_css;
 				}
+			} else {
+				$manual = false;
 			}
 
 			if ( empty( $cache ) ) {
