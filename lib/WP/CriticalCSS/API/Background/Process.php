@@ -108,7 +108,15 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 				if ( 'GOOD' === $result->resultStatus && ! empty( $result->css ) ) {
 					wp_criticalcss()->integration_manager->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
-						wp_criticalcss()->cache_manager->purge_page_cache();
+						$logs = wp_criticalcss()->template_log->get( $item['template'] );
+						foreach ( $logs as $log ) {
+							$url = wp_criticalcss()->get_permalink( $log );
+							if ( ! parse_url( $url, PHP_URL_QUERY ) ) {
+								wp_criticalcss()->cache_manager->purge_page_cache( $log['type'], $log['object_id'], $url );
+							}
+							wp_criticalcss()->template_log->delete( $log['object_id'], $log['type'], $log['url'] );
+						}
+						wp_criticalcss()->cache_manager->purge_page_cache( $item['type'], $item['object_id'], wp_criticalcss()->get_permalink( $item ) );
 					} else {
 						wp_criticalcss()->cache_manager->purge_page_cache( $item['type'], $item['object_id'], wp_criticalcss()->get_permalink( $item ) );
 					}
