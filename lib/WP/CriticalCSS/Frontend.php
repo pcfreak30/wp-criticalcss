@@ -121,12 +121,15 @@ class Frontend extends ComponentAbstract {
 			}
 			$type  = $this->plugin->request->get_current_page_type();
 			$hash  = $this->plugin->data_manager->get_item_hash( $type );
-			$check = $this->plugin->cache_manager->get_cache_fragment( [ 'webcheck', $hash ] );
 			if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) && ! empty( $type['template'] ) ) {
-				if ( empty( $cache ) && ! $this->plugin->api_queue->get_item_exists( $type ) ) {
-					$this->plugin->api_queue->push_to_queue( $type )->save();
+				if ( empty( $cache ) ) {
+					if ( ! $this->plugin->api_queue->get_item_exists( $type ) ) {
+						$this->plugin->api_queue->push_to_queue( $type )->save();
+					}
+					$this->plugin->template_log->insert( $type );
 				}
 			} else {
+				$check = $this->plugin->cache_manager->get_cache_fragment( [ 'webcheck', $hash ] );
 				if ( ! ( $manual || $fallback ) && ( empty( $check ) || ( ! empty( $check ) && empty( $cache ) && null !== $cache ) ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
 					$this->plugin->web_check_queue->push_to_queue( $type )->save();
 					$this->plugin->cache_manager->update_cache_fragment( [ 'webcheck', $hash ], true );
