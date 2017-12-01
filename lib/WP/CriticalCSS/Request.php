@@ -237,9 +237,16 @@ class Request extends ComponentAbstract {
 		$object_id = absint( $object_id );
 
 		if ( ! isset( $type ) ) {
-			wp_criticalcss()->get_integration_manager()->disable_integrations();
-			$url = site_url( $wp->request );
-			wp_criticalcss()->get_integration_manager()->enable_integrations();
+			$this->plugin->integration_manager->disable_integrations();
+			$url  = site_url( $wp->request );
+			$vars = [];
+			foreach ( $this->wp->public_query_vars as $var ) {
+				if ( isset( $_GET[ $var ] ) ) {
+					$vars[ $var ] = $_GET[ $var ];
+				}
+			}
+			$url = add_query_arg( $vars, $url );
+			$this->plugin->integration_manager->enable_integrations();
 			$type = 'url';
 			unset( $object_id );
 		}
