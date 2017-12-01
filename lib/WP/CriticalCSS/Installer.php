@@ -113,6 +113,7 @@ class Installer extends ComponentAbstract {
 		$this->plugin->web_check_queue->create_table();
 		$this->plugin->api_queue->create_table();
 		$this->plugin->log->create_table();
+		$this->plugin->template_log->create_table();
 
 		flush_rewrite_rules();
 	}
