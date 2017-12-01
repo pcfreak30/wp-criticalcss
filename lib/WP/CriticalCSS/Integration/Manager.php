@@ -24,6 +24,7 @@ class Manager extends ManagerAbstract {
 		'RootRelativeURLS',
 		'WPRocket',
 		'WPEngine',
+		'A3LazyLoad',
 	];
 
 	/**
