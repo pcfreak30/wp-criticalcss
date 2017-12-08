@@ -54,7 +54,7 @@ class Manager extends ComponentAbstract {
 				]
 			);
 		}
-		if ( ! ( ! empty( $this->settings['template_cache'] ) && 'on' === $this->settings['template_cache'] ) ) {
+		if ( ! ( $this->plugin->settings_manager->get_setting( 'template_cache' ) && 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) ) {
 			add_action(
 				'post_updated', [
 					$this,
