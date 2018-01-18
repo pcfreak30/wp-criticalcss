@@ -113,18 +113,7 @@ class Process extends ProcessAbstract {
 							304,
 						] ) ) )
 			) {
-				if ( empty( $item['error'] ) ) {
-					$item['error'] = 0;
-				}
-				if ( $item['error'] <= apply_filters( 'wp_criticalcss_web_check_retries', 3 ) ) {
-					$item['error'] ++;
-					sleep( 1 );
-					$this->set_pending();
-
-					return $item;
-				}
-
-				return false;
+				continue;
 			}
 			$css .= $file['body'];
 		}
