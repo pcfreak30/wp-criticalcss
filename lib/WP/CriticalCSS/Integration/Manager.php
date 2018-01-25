@@ -3,15 +3,12 @@
 
 namespace WP\CriticalCSS\Integration;
 
-
-use pcfreak30\WordPress\Plugin\Framework\ManagerAbstract;
-
 /**
  * Class Manager
  *
  * @package WP\CriticalCSS\Integration
  */
-class Manager extends ManagerAbstract {
+class Manager extends \ComposePress\Core\Abstracts\Manager {
 	/**
 	 * @var bool
 	 */

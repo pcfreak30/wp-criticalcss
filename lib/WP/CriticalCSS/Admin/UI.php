@@ -2,7 +2,7 @@
 
 namespace WP\CriticalCSS\Admin;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 use WP\CriticalCSS;
 use WP\CriticalCSS\Admin\UI\Post;
 use WP\CriticalCSS\Admin\UI\Term;
@@ -18,7 +18,7 @@ use WP\CriticalCSS\Settings\API as SettingsAPI;
  * @package WP\CriticalCSS\Admin
  * @property \WP\CriticalCSS $plugin
  */
-class UI extends ComponentAbstract {
+class UI extends Component {
 	/**
 	 * @var \WP\CriticalCSS\Settings\API
 	 */

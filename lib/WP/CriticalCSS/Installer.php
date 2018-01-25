@@ -3,7 +3,7 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Installer
@@ -11,7 +11,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @package WP\CriticalCSS
  * @property \WP\CriticalCSS $plugin
  */
-class Installer extends ComponentAbstract {
+class Installer extends Component {
 
 	/**
 	 *

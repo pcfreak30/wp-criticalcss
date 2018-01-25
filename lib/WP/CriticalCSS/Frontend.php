@@ -3,9 +3,9 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
-class Frontend extends ComponentAbstract {
+class Frontend extends Component {
 	public function init() {
 		if ( ! is_admin() ) {
 			add_action(

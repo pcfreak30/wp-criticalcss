@@ -4,7 +4,7 @@
 namespace WP\CriticalCSS\Admin\UI;
 
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Post
@@ -12,7 +12,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @package WP\CriticalCSS\Admin\UI
  * @property \WP\CriticalCSS $plugin
  */
-class Post extends ComponentAbstract {
+class Post extends Component {
 
 	/**
 	 *

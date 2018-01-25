@@ -3,9 +3,9 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
-class Log extends ComponentAbstract {
+class Log extends Component {
 
 	/**
 	 *

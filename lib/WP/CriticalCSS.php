@@ -3,7 +3,7 @@
 namespace WP;
 
 
-use pcfreak30\WordPress\Plugin\Framework\PluginAbstract;
+use ComposePress\Core\Abstracts\Plugin;
 use WP\CriticalCSS\Admin\UI;
 use WP\CriticalCSS\API\Background\Process as BackgroundProcess;
 use WP\CriticalCSS\Cache\Manager as CacheManager;
@@ -34,7 +34,7 @@ use WP\CriticalCSS\Web\Check\Background\Process as WebCheckProcess;
  * @property Log                          $log
  * @property \WP\CriticalCSS\Template\Log $template_log
  */
-class CriticalCSS extends PluginAbstract {
+class CriticalCSS extends Plugin {
 	/**
 	 *
 	 */

@@ -2,14 +2,14 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Request
  *
  * @property string $template
  */
-class Request extends ComponentAbstract {
+class Request extends Component {
 	/**
 	 * @var
 	 */

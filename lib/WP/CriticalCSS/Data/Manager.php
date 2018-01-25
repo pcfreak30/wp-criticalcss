@@ -2,7 +2,7 @@
 
 namespace WP\CriticalCSS\Data;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Manager
@@ -10,7 +10,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @package WP\CriticalCSS\Data
  * @property \WP\CriticalCSS $plugin
  */
-class Manager extends ComponentAbstract {
+class Manager extends Component {
 
 	/**
 	 * @param array $item

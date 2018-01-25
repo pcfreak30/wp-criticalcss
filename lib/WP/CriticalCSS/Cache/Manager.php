@@ -3,7 +3,7 @@
 namespace WP\CriticalCSS\Cache;
 
 use pcfreak30\WordPress\Cache\Store;
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Manager
@@ -12,7 +12,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @property \WP\CriticalCSS $plugin
  */
-class Manager extends ComponentAbstract {
+class Manager extends Component {
 
 	/**
 	 * @var \pcfreak30\WordPress\Cache\Store

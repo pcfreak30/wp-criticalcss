@@ -2,7 +2,7 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 use WP\CriticalCSS;
 
 /**
@@ -10,7 +10,7 @@ use WP\CriticalCSS;
  *
  * @property CriticalCSS $plugin
  */
-class API extends ComponentAbstract {
+class API extends Component {
 	const STATUS_UNKNOWN = 'JOB_UNKNOWN';
 	const STATUS_QUEUED = 'JOB_QUEUED';
 	const STATUS_ONGOING = 'JOB_ONGOING';
