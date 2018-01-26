@@ -44,16 +44,16 @@
         },
       {
         "name": "composepress/core",
-        "version": "0.3.0",
+        "version": "0.3.1",
         "source": {
           "type": "git",
           "url": "https://github.com/ComposePress/core.git",
-          "reference": "c305df98a63aa2f68eebcf46a1043ffb8dc75eb3"
+          "reference": "6fa83dcced4b22a83c1cc9085e131d11c8a8eb6c"
         },
         "dist": {
           "type": "zip",
-          "url": "https://api.github.com/repos/ComposePress/core/zipball/c305df98a63aa2f68eebcf46a1043ffb8dc75eb3",
-          "reference": "c305df98a63aa2f68eebcf46a1043ffb8dc75eb3",
+          "url": "https://api.github.com/repos/ComposePress/core/zipball/6fa83dcced4b22a83c1cc9085e131d11c8a8eb6c",
+          "reference": "6fa83dcced4b22a83c1cc9085e131d11c8a8eb6c",
           "shasum": ""
         },
         "require": {
@@ -76,7 +76,7 @@
           }
         ],
         "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
-        "time": "2018-01-23T11:30:05+00:00"
+        "time": "2018-01-26T10:27:10+00:00"
         },
         {
             "name": "jakeasmith/http_build_url",
