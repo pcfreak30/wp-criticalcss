@@ -4,7 +4,7 @@
 namespace WP\CriticalCSS\Settings;
 
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 use WP\CriticalCSS;
 
 /**
@@ -13,7 +13,7 @@ use WP\CriticalCSS;
  * @package WP\CriticalCSS\Settings
  * @property CriticalCSS $plugin
  */
-class Manager extends ComponentAbstract {
+class Manager extends Component {
 	protected $settings = [
 		'version',
 		'web_check_interval',

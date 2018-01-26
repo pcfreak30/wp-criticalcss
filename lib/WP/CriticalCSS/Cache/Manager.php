@@ -3,7 +3,7 @@
 namespace WP\CriticalCSS\Cache;
 
 use pcfreak30\WordPress\Cache\Store;
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Manager
@@ -12,7 +12,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
  * @property \WP\CriticalCSS $plugin
  */
-class Manager extends ComponentAbstract {
+class Manager extends Component {
 
 	/**
 	 * @var \pcfreak30\WordPress\Cache\Store
@@ -46,13 +46,15 @@ class Manager extends ComponentAbstract {
 				'reset_web_check_transients',
 			]
 		);
-		add_action(
-			'wp_criticalcss_purge_cache', [
-				$this,
-				'reset_web_check_transients',
-			]
-		);
-		if ( ! ( ! empty( $this->settings['template_cache'] ) && 'on' === $this->settings['template_cache'] ) ) {
+		if ( ! ( defined( 'DOING_CRON' ) && DOING_CRON ) ) {
+			add_action(
+				'wp_criticalcss_purge_cache', [
+					$this,
+					'reset_web_check_transients',
+				]
+			);
+		}
+		if ( ! ( $this->plugin->settings_manager->get_setting( 'template_cache' ) && 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) ) {
 			add_action(
 				'post_updated', [
 					$this,
@@ -116,9 +118,10 @@ class Manager extends ComponentAbstract {
 	 * @param $url
 	 */
 	public function purge_page_cache( $type = null, $object_id = null, $url = null ) {
-		$url = preg_replace( '#nocache/$#', '', $url );
-
-		do_action( 'wp_criticalcss_purge_cache', $type, $object_id, $url );
+		if ( '' !== $this->plugin->settings_manager->get_setting( 'apikey' ) ) {
+			$url = preg_replace( '#nocache/$#', '', $url );
+			do_action( 'wp_criticalcss_purge_cache', $type, $object_id, $url );
+		}
 	}
 
 	/**

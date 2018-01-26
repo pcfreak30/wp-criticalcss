@@ -15,6 +15,7 @@ class WPRocket extends IntegrationAbstract {
 	 */
 	public function init() {
 		if ( function_exists( 'get_rocket_option' ) ) {
+			add_filter( 'pre_get_rocket_option_async_css', '__return_zero' );
 			parent::init();
 		}
 	}

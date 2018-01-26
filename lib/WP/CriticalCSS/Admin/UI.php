@@ -2,7 +2,7 @@
 
 namespace WP\CriticalCSS\Admin;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 use WP\CriticalCSS;
 use WP\CriticalCSS\Admin\UI\Post;
 use WP\CriticalCSS\Admin\UI\Term;
@@ -18,7 +18,7 @@ use WP\CriticalCSS\Settings\API as SettingsAPI;
  * @package WP\CriticalCSS\Admin
  * @property \WP\CriticalCSS $plugin
  */
-class UI extends ComponentAbstract {
+class UI extends Component {
 	/**
 	 * @var \WP\CriticalCSS\Settings\API
 	 */
@@ -106,7 +106,9 @@ class UI extends ComponentAbstract {
 	 */
 	public function init() {
 		$this->setup_components();
-
+		$this->api_table->set_queue( $this->plugin->api_queue );
+		$this->log_table->set_queue( $this->plugin->log );
+		$this->web_check_table->set_queue( $this->plugin->web_check_queue );
 		if ( is_admin() ) {
 			add_action( 'network_admin_menu', [
 				$this,
@@ -169,24 +171,29 @@ class UI extends ComponentAbstract {
 			],
 			'desc'              => __( 'API Key for CriticalCSS.com. Please view yours at <a href="https://www.criticalcss.com/account/api-keys?aff=3">CriticalCSS.com</a>', CriticalCSS::LANG_DOMAIN ),
 		] );
-		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
-			'name'  => 'force_web_check',
-			'label' => 'Force Web Check',
-			'type'  => 'checkbox',
-			'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
-		] );
+		if ( 'on' !== $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
+			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+				'name'  => 'force_web_check',
+				'label' => 'Force Web Check',
+				'type'  => 'checkbox',
+				'desc'  => __( 'Force a web check on all pages for css changes. This will run for new web requests.', $this->plugin->get_lang_domain() ),
+			] );
+		}
+		if ( 'on' !== $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) ) {
+			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+				'name'  => 'template_cache',
+				'label' => 'Template Cache',
+				'type'  => 'checkbox',
+				'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url. <p style="font-weight: bold;">This option may be useful if your website contains lots of content, pages, posts, etc. </p>', $this->plugin->get_lang_domain() ),
+			] );
+		}
 		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 			'name'  => 'prioritize_manual_css',
 			'label' => 'Enable Manual CSS Override',
 			'type'  => 'checkbox',
-			'desc'  => __( 'Allow per post CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
+			'desc'  => __( 'Allow per post CSS, per term CSS, post type CSS or taxonomy CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
 		] );
-		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
-			'name'  => 'template_cache',
-			'label' => 'Template Cache',
-			'type'  => 'checkbox',
-			'desc'  => __( 'Cache Critical CSS based on WordPress templates and not the post, page, term, author page, or arbitrary url. <p style="font-weight: bold;">This option may be useful if your website contains lots of content, pages, posts, etc. </p>', $this->plugin->get_lang_domain() ),
-		] );
+
 		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
 			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 				'name'  => 'web_check_interval',
@@ -211,6 +218,50 @@ class UI extends ComponentAbstract {
 			'type'  => 'textarea',
 			'desc'  => __( 'Global CSS to use as a fallback if generated and manual post css don\'t exist.', $this->plugin->get_lang_domain() ),
 		] );
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'prioritize_manual_css' ) ) {
+			foreach ( get_post_types() as $post_type ) {
+				$label = get_post_type_object( $post_type )->labels->singular_name;
+
+				$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+					'name'  => "single_post_type_css_{$post_type}",
+					'label' => 'Use Single CSS for ' . $label,
+					'type'  => 'checkbox',
+					'desc'  => sprintf( __( 'Use a single CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+				] );
+				if ( 'on' === $this->plugin->settings_manager->get_setting( "single_post_type_css_{$post_type}" ) ) {
+					$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+						'name'  => "single_post_type_css_{$post_type}_css",
+						'label' => $label . ' post type CSS input',
+						'type'  => 'textarea',
+						'desc'  => sprintf( __( 'Enter CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+					] );
+					$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+						'name'  => "single_post_type_css_{$post_type}_archive_css",
+						'label' => $label . ' post type archive CSS input',
+						'type'  => 'textarea',
+						'desc'  => sprintf( __( 'Enter CSS for %s archive listings', $this->plugin->get_lang_domain() ), $label ),
+					] );
+				}
+			}
+			foreach ( get_taxonomies() as $taxonomy ) {
+				$label = get_taxonomy( $taxonomy )->labels->singular_name;
+				$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+					'name'  => "single_taxonomy_css_{$taxonomy}",
+					'label' => 'Use Single CSS for ' . $label,
+					'type'  => 'checkbox',
+					'desc'  => sprintf( __( 'Use a single CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+				] );
+				if ( 'on' === $this->plugin->settings_manager->get_setting( "single_taxonomy_css_{$taxonomy}_css" ) ) {
+					$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+						'name'  => "single_taxonomy_css_{$taxonomy}_css",
+						'label' => $label . ' taxonomy CSS input',
+						'type'  => 'textarea',
+						'desc'  => sprintf( __( 'Enter CSS for all %s items', $this->plugin->get_lang_domain() ), $label ),
+					] );
+				}
+			}
+
+		}
 		$this->settings_ui->admin_init();
 	}
 
@@ -227,91 +278,92 @@ class UI extends ComponentAbstract {
 				'form'  => false,
 			] );
 		}
-		$this->settings_ui->add_section( [
-			'id'    => 'wp_criticalcss_api_queue',
-			'title' => 'API Queue',
-			'form'  => false,
-		] );
-		$this->settings_ui->add_section( [
-			'id'    => 'wp_criticalcss_log',
-			'title' => 'Processed Log',
-			'form'  => false,
-		] );
-		?>
-		<style type="text/css">
-			.form-table .api_queue > th, .form-table .web_check_queue > th {
-				display: none;
-			}
+		if ( '' !== $this->plugin->settings_manager->get_setting( 'apikey' ) ) {
+			$this->settings_ui->add_section( [
+				'id'    => 'wp_criticalcss_api_queue',
+				'title' => 'API Queue',
+				'form'  => false,
+			] );
+			$this->settings_ui->add_section( [
+				'id'    => 'wp_criticalcss_log',
+				'title' => 'Processed Log',
+				'form'  => false,
+			] );
+			?>
+			<style type="text/css">
+                .form-table .api_queue > th, .form-table .web_check_queue > th {
+                    display: none;
+                }
 
-			.no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
-				text-align: center !important;
-			}
+                .no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
+                    text-align: center !important;
+                }
 
-			.form-table th {
-				width: auto;
-			}
+                .form-table th {
+                    width: auto;
+                }
 
-			.group h2 {
-				display: none;
-			}
-		</style>
+                .group h2 {
+                    display: none;
+                }
+			</style>
 
-		<?php
-		if ( ! $template_cache ): ?>
-			<?php ob_start(); ?>
+			<?php
+			if ( ! $template_cache ): ?>
+				<?php ob_start(); ?>
+				<p>
+					<?php _e( 'What is this? This queue is designed to process your content only if "template" mode is off. It detects changes to the content and sends to the "API Queue" if any are found.', $this->plugin->get_lang_domain() ); ?>
+				</p>
+				<form method="post">
+					<?php
+					$this->web_check_table->prepare_items();
+					$this->web_check_table->display();
+					?>
+				</form>
+				<?php
+				$this->settings_ui->add_field( 'wp_criticalcss_web_check_queue', [
+					'name'  => 'web_check_queue',
+					'label' => null,
+					'type'  => 'html',
+					'desc'  => ob_get_clean(),
+				] );
+			endif;
+			ob_start(); ?>
 			<p>
-				<?php _e( 'What is this? This queue is designed to process your content only if "template" mode is off. It detects changes to the content and sends to the "API Queue" if any are found.', $this->plugin->get_lang_domain() ); ?>
+				<?php _e( 'What is this? This queue actually processes requests by sending them to CriticalCSS.com and waiting on them to process. When done it will purge any supported cache and make that page just a bit faster :)', $this->plugin->get_lang_domain() ); ?>
 			</p>
 			<form method="post">
 				<?php
-				$this->web_check_table->prepare_items();
-				$this->web_check_table->display();
+				$this->api_table->prepare_items();
+				$this->api_table->display();
 				?>
 			</form>
 			<?php
-			$this->settings_ui->add_field( 'wp_criticalcss_web_check_queue', [
-				'name'  => 'web_check_queue',
+			$this->settings_ui->add_field( 'wp_criticalcss_api_queue', [
+				'name'  => 'api_queue',
 				'label' => null,
 				'type'  => 'html',
 				'desc'  => ob_get_clean(),
 			] );
-		endif;
-		ob_start(); ?>
-		<p>
-			<?php _e( 'What is this? This queue actually processes requests by sending them to CriticalCSS.com and waiting on them to process. When done it will purge any supported cache and make that page just a bit faster :)', $this->plugin->get_lang_domain() ); ?>
-		</p>
-		<form method="post">
-			<?php
-			$this->api_table->prepare_items();
-			$this->api_table->display();
-			?>
-		</form>
-		<?php
-		$this->settings_ui->add_field( 'wp_criticalcss_api_queue', [
-			'name'  => 'api_queue',
-			'label' => null,
-			'type'  => 'html',
-			'desc'  => ob_get_clean(),
-		] );
 
-		ob_start(); ?>
-		<p>
-			<?php _e( 'What is this? This is a list of all processed pages and/or templates. This log will clear when critical css expires.', $this->plugin->get_lang_domain() ); ?>
-		</p>
-		<form method="post">
+			ob_start(); ?>
+			<p>
+				<?php _e( 'What is this? This is a list of all processed pages and/or templates. This log will clear when critical css expires.', $this->plugin->get_lang_domain() ); ?>
+			</p>
+			<form method="post">
+				<?php
+				$this->log_table->prepare_items();
+				$this->log_table->display();
+				?>
+			</form>
 			<?php
-			$this->log_table->prepare_items();
-			$this->log_table->display();
-			?>
-		</form>
-		<?php
-		$this->settings_ui->add_field( 'wp_criticalcss_log', [
-			'name'  => 'log',
-			'label' => null,
-			'type'  => 'html',
-			'desc'  => ob_get_clean(),
-		] );
-
+			$this->settings_ui->add_field( 'wp_criticalcss_log', [
+				'name'  => 'log',
+				'label' => null,
+				'type'  => 'html',
+				'desc'  => ob_get_clean(),
+			] );
+		}
 
 		$this->settings_ui->admin_init();
 		$this->settings_ui->show_navigation();
@@ -332,11 +384,7 @@ class UI extends ComponentAbstract {
 	public function validate_criticalcss_apikey( $options ) {
 		$valid = true;
 		if ( empty( $options['apikey'] ) ) {
-			$valid = false;
-			add_settings_error( 'apikey', 'invalid_apikey', __( 'API Key is empty', $this->plugin->get_option_name() ) );
-		}
-		if ( ! $valid ) {
-			return $valid;
+			return '';
 		}
 		$this->api->set_api_key( $options['apikey'] );
 		if ( ! $this->api->ping() ) {

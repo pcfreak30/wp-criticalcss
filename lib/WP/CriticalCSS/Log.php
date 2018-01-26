@@ -3,9 +3,9 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
-class Log extends ComponentAbstract {
+class Log extends Component {
 
 	/**
 	 *
@@ -21,12 +21,8 @@ class Log extends ComponentAbstract {
 		}
 
 		$charset_collate = $wpdb->get_charset_collate();
-		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->plugin->get_safe_slug()}_processed_items";
-		} else {
-			$table = "{$wpdb->prefix}{$this->plugin->get_safe_slug()}";
-		}
-		$sql = "CREATE TABLE $table (
+		$table           = $this->get_table_name();
+		$sql             = "CREATE TABLE $table (
   id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
   template  VARCHAR(255),
   object_id  BIGINT(10),
@@ -41,13 +37,16 @@ class Log extends ComponentAbstract {
 	public function insert( $item ) {
 		$wpdb = $this->wpdb;
 
-		$data = array_merge( [], $item );
-		unset( $data['object_id'] );
-		unset( $data['type'] );
-		unset( $data['url'] );
-		unset( $data['template'] );
+		$data = $item;
+
+		$item = [
+			'template'  => $data['template'],
+			'object_id' => $data['object_id'],
+			'type'      => $data['type'],
+			'url'       => $data['url'],
+		];
 		if ( is_multisite() ) {
-			unset( $data['blog_id'] );
+			$item['blog_id'] = $data['blog_id'];
 		}
 		$wpdb->insert( $this->get_table_name(), $item );
 	}
@@ -55,12 +54,11 @@ class Log extends ComponentAbstract {
 	public function get_table_name() {
 		$wpdb = $this->wpdb;
 		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->plugin->get_safe_slug()}_processed_items";
-		} else {
-			$table = "{$wpdb->prefix}{$this->plugin->get_safe_slug()}";
+			return "{$wpdb->base_prefix}{$this->plugin->get_safe_slug()}_processed_items";
 		}
 
-		return $table;
+		return $table = "{$wpdb->prefix}{$this->plugin->get_safe_slug()}_processed_items";
+
 	}
 
 	public function purge() {

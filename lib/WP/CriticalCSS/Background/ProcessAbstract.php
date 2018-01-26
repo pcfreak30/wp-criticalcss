@@ -70,8 +70,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 	public function get_length() {
 		global $wpdb;
-
-		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$wpdb->prefix}{$this->action}_queue`" );
+		$table = $this->get_table_name();
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}`" );
 
 		return $count;
 	}
@@ -97,12 +97,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		}
 
 		$charset_collate = $wpdb->get_charset_collate();
-		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->action}_queue";
-		} else {
-			$table = "{$wpdb->prefix}{$this->action}_queue";
-		}
-		$sql = "CREATE TABLE $table (
+		$table           = $this->get_table_name();
+		$sql             = "CREATE TABLE $table (
   id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
   template  VARCHAR(255),
   object_id  BIGINT(10),
@@ -118,13 +114,9 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	public function get_item_exists( $item ) {
 		global $wpdb;
 
-		$args = [];
-		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->action}_queue";
-		} else {
-			$table = "{$wpdb->prefix}{$this->action}_queue";
-		}
-		$sql = "SELECT *
+		$args  = [];
+		$table = $this->get_table_name();
+		$sql   = "SELECT *
 			FROM `{$table}`
 			WHERE ";
 
@@ -147,7 +139,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		}
 		$result = $wpdb->get_row( $wpdb->prepare( $sql, $args ) );
 
-		if ( is_null( $result ) ) {
+		if ( null === $result ) {
 			$result = false;
 		}
 
@@ -156,11 +148,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 	public function save() {
 		global $wpdb;
-		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->action}_queue";
-		} else {
-			$table = "{$wpdb->prefix}{$this->action}_queue";
-		}
+		$table = $this->get_table_name();
 		foreach ( $this->data as $item ) {
 			$data = array_merge( [], $item );
 			unset( $data['object_id'] );
@@ -192,6 +180,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 	public function update( $key, $items ) {
 		global $wpdb;
+		$table = $this->get_table_name();
 		foreach ( $items as $item ) {
 			$data = array_merge( [], $item );
 			unset( $data['object_id'] );
@@ -201,7 +190,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			$item['data'] = maybe_serialize( $data );
 			$item         = array_diff_key( $item, $data );
 			if ( ! empty( $data ) ) {
-				$wpdb->update( "{$wpdb->prefix}{$this->action}_queue", $item, [
+				$wpdb->update( $table, $item, [
 					'id' => $key,
 				] );
 			}
@@ -222,12 +211,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 	public function delete( $key ) {
 		global $wpdb;
-		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->action}_queue";
-		} else {
-			$table = "{$wpdb->prefix}{$this->action}_queue";
-		}
-		$wpdb->delete( $table, [
+
+		$wpdb->delete( $this->get_table_name(), [
 			'id' => (int) $key,
 		] );
 	}
@@ -248,5 +233,15 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		$this->handle();
 
 		exit;
+	}
+
+	protected function get_table_name() {
+		global $wpdb;
+		if ( is_multisite() ) {
+			return "{$wpdb->base_prefix}{$this->action}_queue";
+		}
+
+		return "{$wpdb->prefix}{$this->action}_queue";
+
 	}
 }

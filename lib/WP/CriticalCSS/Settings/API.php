@@ -2,7 +2,7 @@
 
 namespace WP\CriticalCSS\Settings;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * weDevs Settings API wrapper class
@@ -15,7 +15,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @SuppressWarnings(PHPMD)
  * @property \WP\CriticalCSS $plugin
  */
-class API extends ComponentAbstract {
+class API extends Component {
 
 	/**
 	 * settings sections array

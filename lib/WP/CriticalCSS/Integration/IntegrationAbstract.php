@@ -5,7 +5,7 @@ namespace WP\CriticalCSS\Integration;
  * Class IntegrationAbstract
  */
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class IntegrationAbstract
@@ -13,7 +13,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @package WP\CriticalCSS\Integration
  * @property \WP\CriticalCSS $plugin
  */
-abstract class IntegrationAbstract extends ComponentAbstract {
+abstract class IntegrationAbstract extends Component {
 
 	/**
 	 *

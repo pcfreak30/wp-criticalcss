@@ -100,19 +100,32 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 
 				return $item;
 			}
+			if ( 'JOB_ONGOING' === $result->status ) {
+				return $item;
+			}
 			if ( 'JOB_DONE' === $result->status ) {
 				// @codingStandardsIgnoreLine
 				if ( 'GOOD' === $result->resultStatus && ! empty( $result->css ) ) {
 					wp_criticalcss()->integration_manager->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
-						wp_criticalcss()->cache_manager->purge_page_cache();
+						$logs = wp_criticalcss()->template_log->get( $item['template'] );
+						foreach ( $logs as $log ) {
+							$url = wp_criticalcss()->get_permalink( $log );
+							if ( ! parse_url( $url, PHP_URL_QUERY ) ) {
+								wp_criticalcss()->cache_manager->purge_page_cache( $log['type'], $log['object_id'], $url );
+							}
+							wp_criticalcss()->template_log->delete( $log['object_id'], $log['type'], $log['url'] );
+						}
+						wp_criticalcss()->cache_manager->purge_page_cache( $item['type'], $item['object_id'], wp_criticalcss()->get_permalink( $item ) );
 					} else {
 						wp_criticalcss()->cache_manager->purge_page_cache( $item['type'], $item['object_id'], wp_criticalcss()->get_permalink( $item ) );
 					}
 					wp_criticalcss()->integration_manager->enable_integrations();
 					wp_criticalcss()->data_manager->set_cache( $item, $result->css );
-					wp_criticalcss()->data_manager->set_css_hash( $item, $item['css_hash'] );
-					wp_criticalcss()->data_manager->set_html_hash( $item, $item['html_hash'] );
+					if ( empty( $item['template'] ) ) {
+						wp_criticalcss()->data_manager->set_css_hash( $item, $item['css_hash'] );
+						wp_criticalcss()->data_manager->set_html_hash( $item, $item['html_hash'] );
+					}
 					wp_criticalcss()->log->insert( $item );
 				}
 			}

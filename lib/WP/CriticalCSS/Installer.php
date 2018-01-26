@@ -3,7 +3,7 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Installer
@@ -11,7 +11,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @package WP\CriticalCSS
  * @property \WP\CriticalCSS $plugin
  */
-class Installer extends ComponentAbstract {
+class Installer extends Component {
 
 	/**
 	 *
@@ -32,11 +32,12 @@ class Installer extends ComponentAbstract {
 		$version_0_5 = false;
 		$version_0_7 = false;
 		if ( ! $no_version ) {
-			$version     = $settings['version'];
-			$version_0_3 = version_compare( '0.3.0', $version ) === 1;
-			$version_0_4 = version_compare( '0.4.0', $version ) === 1;
-			$version_0_5 = version_compare( '0.5.0', $version ) === 1;
-			$version_0_7 = version_compare( '0.7.0', $version ) === 1;
+			$version       = $settings['version'];
+			$version_0_3   = version_compare( '0.3.0', $version ) === 1;
+			$version_0_4   = version_compare( '0.4.0', $version ) === 1;
+			$version_0_5   = version_compare( '0.5.0', $version ) === 1;
+			$version_0_7   = version_compare( '0.7.0', $version ) === 1;
+			$version_0_7_1 = version_compare( '0.7.1', $version ) === 1;
 		}
 		if ( $no_version || $version_0_3 || $version_0_4 ) {
 			remove_action(
@@ -71,6 +72,15 @@ class Installer extends ComponentAbstract {
 			}
 		}
 
+		if ( $version_0_7_1 ) {
+			if ( is_multisite() ) {
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->base_prefix}{$this->plugin->get_safe_slug()}_processed_items" );
+			} else {
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}{$this->plugin->get_safe_slug()}" );
+
+			}
+		}
+
 		if ( is_multisite() ) {
 			foreach (
 				get_sites(
@@ -81,8 +91,8 @@ class Installer extends ComponentAbstract {
 				) as $blog_id
 			) {
 				switch_to_blog( $blog_id );
-				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_web_check_queue IF EXISTS" );
-				$wpdb->query( "DROP TABLE {$wpdb->prefix}_wp_criticalcss_api_queue IF EXISTS" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}_wp_criticalcss_web_check_queue" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}_wp_criticalcss_api_queue" );
 				restore_current_blog();
 			}
 		}
@@ -103,6 +113,7 @@ class Installer extends ComponentAbstract {
 		$this->plugin->web_check_queue->create_table();
 		$this->plugin->api_queue->create_table();
 		$this->plugin->log->create_table();
+		$this->plugin->template_log->create_table();
 
 		flush_rewrite_rules();
 	}

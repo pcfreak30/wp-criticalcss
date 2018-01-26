@@ -2,7 +2,7 @@
 
 namespace WP\CriticalCSS\Data;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Manager
@@ -10,7 +10,7 @@ use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
  * @package WP\CriticalCSS\Data
  * @property \WP\CriticalCSS $plugin
  */
-class Manager extends ComponentAbstract {
+class Manager extends Component {
 
 	/**
 	 * @param array $item
@@ -32,7 +32,7 @@ class Manager extends ComponentAbstract {
 		if ( empty( $item ) ) {
 			$item = $this->plugin->request->get_current_page_type();
 		}
-		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) && ! empty( $item['template'] ) ) {
 			if ( 'cache' === $name ) {
 				$name = 'ccss';
 			}
@@ -46,6 +46,9 @@ class Manager extends ComponentAbstract {
 				$name  = [ $name, md5( $item['url'] ) ];
 				$value = $this->plugin->get_cache_manager()->get_store()->get_cache_fragment( $name );
 			} else {
+				if ( is_multisite() && ! empty( $item['blog_id'] ) ) {
+					switch_to_blog( $item['blog_id'] );
+				}
 				$name = "{$this->plugin->get_safe_slug()}_{$name}";
 				switch ( $item['type'] ) {
 					case 'post':
@@ -58,6 +61,9 @@ class Manager extends ComponentAbstract {
 						$value = get_user_meta( $item['object_id'], $name, true );
 						break;
 
+				}
+				if ( is_multisite() ) {
+					restore_current_blog();
 				}
 			}
 		}
@@ -83,7 +89,7 @@ class Manager extends ComponentAbstract {
 	 * @param int $expires
 	 */
 	public function set_item_data( $item, $name, $value, $expires = 0 ) {
-		if ( 'on' === $this->settings['template_cache'] && ! empty( $item['template'] ) ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) && ! empty( $item['template'] ) ) {
 			if ( 'cache' === $name ) {
 				$name = 'ccss';
 			}
@@ -97,6 +103,9 @@ class Manager extends ComponentAbstract {
 				$name = [ $name, md5( $item['url'] ) ];
 				$this->plugin->cache_manager->get_store()->update_cache_fragment( $name, $value );
 			} else {
+				if ( is_multisite() && ! empty( $item['blog_id'] ) ) {
+					switch_to_blog( $item['blog_id'] );
+				}
 				$name  = "{$this->plugin->get_safe_slug()}_{$name}";
 				$value = wp_slash( $value );
 				switch ( $item['type'] ) {
@@ -109,6 +118,9 @@ class Manager extends ComponentAbstract {
 					case 'author':
 						update_user_meta( $item['object_id'], $name, $value );
 						break;
+				}
+				if ( is_multisite() ) {
+					restore_current_blog();
 				}
 			}
 		}
@@ -187,7 +199,7 @@ class Manager extends ComponentAbstract {
 			'type',
 			'url',
 		];
-		if ( 'on' === $this->settings['template_cache'] ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
 
 			$template = $this->plugin->request->template;
 			$parts    = [ 'template' ];

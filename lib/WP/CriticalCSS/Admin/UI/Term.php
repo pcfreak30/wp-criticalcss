@@ -4,9 +4,9 @@
 namespace WP\CriticalCSS\Admin\UI;
 
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
-class Term extends ComponentAbstract {
+class Term extends Component {
 
 	/**
 	 *

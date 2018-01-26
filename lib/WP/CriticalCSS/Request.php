@@ -2,14 +2,14 @@
 
 namespace WP\CriticalCSS;
 
-use pcfreak30\WordPress\Plugin\Framework\ComponentAbstract;
+use ComposePress\Core\Abstracts\Component;
 
 /**
  * Class Request
  *
  * @property string $template
  */
-class Request extends ComponentAbstract {
+class Request extends Component {
 	/**
 	 * @var
 	 */
@@ -76,10 +76,18 @@ class Request extends ComponentAbstract {
 			'public'   => true,
 			'_builtin' => false,
 		], 'objects' );
-
+		$post_types = get_post_types( [
+			'public'   => true,
+			'_builtin' => false,
+		], 'objects' );
 		foreach ( $taxonomies as $tax_id => $tax ) {
 			if ( ! empty( $tax->rewrite ) ) {
 				add_rewrite_rule( $tax->rewrite['slug'] . '/(.+?)/nocache/?$', 'index.php?' . $tax_id . '=$matches[1]&nocache', 'top' );
+			}
+		}
+		foreach ( $post_types as $post_type_id => $post_type ) {
+			if ( ! empty( $post_type->rewrite ) ) {
+				add_rewrite_rule( $post_type->rewrite['slug'] . '/nocache/?$', 'index.php?post_type=' . $post_type_id . '&nocache', 'top' );
 			}
 		}
 	}
@@ -137,7 +145,7 @@ class Request extends ComponentAbstract {
 	 * @SuppressWarnings(PHPMD.ShortVariable)
 	 * @param \WP $wp
 	 */
-	public function parse_request( \WP &$wp ) {
+	public function parse_request( \WP $wp ) {
 		if ( isset( $wp->query_vars['nocache'] ) ) {
 			$this->nocache = $wp->query_vars['nocache'];
 			unset( $wp->query_vars['nocache'] );
@@ -229,14 +237,21 @@ class Request extends ComponentAbstract {
 		$object_id = absint( $object_id );
 
 		if ( ! isset( $type ) ) {
-			wp_criticalcss()->get_integration_manager()->disable_integrations();
-			$url = site_url( $wp->request );
-			wp_criticalcss()->get_integration_manager()->enable_integrations();
+			$this->plugin->integration_manager->disable_integrations();
+			$url  = site_url( $wp->request );
+			$vars = [];
+			foreach ( $this->wp->public_query_vars as $var ) {
+				if ( isset( $_GET[ $var ] ) ) {
+					$vars[ $var ] = $_GET[ $var ];
+				}
+			}
+			$url = add_query_arg( $vars, $url );
+			$this->plugin->integration_manager->enable_integrations();
 			$type = 'url';
 			unset( $object_id );
 		}
 
-		if ( 'on' === $this->settings['template_cache'] ) {
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
 			$template = $this->template;
 		}
 
