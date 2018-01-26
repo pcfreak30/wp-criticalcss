@@ -67,6 +67,31 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.7.1 ###
+
+* Bug: Fix small random bugs
+* Bug: Don't check queue in content mode if we have manual or fallback CSS
+* Bug: If global fallback cache is empty, ensure $fallback is false
+* Bug: Ensure item data is stored correctly for meta in multisite
+* Bug: Handle JOB_ONGOING status in processing
+* Bug: If prioritize_manual_css is not on then set manual to false to ensure its queued
+* Bug: Don't hook wp_criticalcss_purge_cache during cron
+* Bug: If remote CSS file could not be fetched, skip it instead of silently failing
+* Enhancement: Add upgrade logic to clean up tables
+* Enhancement: Only set CSS content hashes if no template is set in background processing
+* Enhancement: Don't show force_web_check option in template mode
+* Enhancement: Only show post type, archive and taxonomy css options if manual css is on
+* Enhancement: Don't show template cache if manual css is on
+* Enhancement: Don't purge cache if manual css is on and there is no API key
+* Enhancement: Only show queue and log tabs if an api key is entered
+* Enhancement: Don't purge cache if API key is empty
+* Enhancement: Allow API key to be emptyued
+* Enhancement: Support query vars in get_current_page_type
+* Feature: Allow manual css for post types, post type archives, and taxonomies
+* Feature: Add template log to track what pages have been enqueued for a template to improve purging
+* Feature: Add checking for post type, post type archive, and taxonomy CSS
+* Compatibility: Force wp-rocket's critical css off
+* Compatibility: Add integration with a3 lazy load to disable lazy load on nocache pages
 ### 0.7.0.1 ###
 
 * Bug: Fix usage of restore_current_blog being undefined
