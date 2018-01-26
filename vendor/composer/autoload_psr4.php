@@ -6,8 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'pcfreak30\\WordPress\\Plugin\\Framework\\' => array($vendorDir . '/pcfreak30/wordpress-plugin-framework/src'),
     'pcfreak30\\' => array($vendorDir . '/pcfreak30/wordpress-cache-store/src'),
     'Dice\\' => array($vendorDir . '/level-2/dice'),
+    'ComposePress\\Core\\' => array($vendorDir . '/composepress/core/src'),
     '' => array($baseDir . '/lib'),
 );

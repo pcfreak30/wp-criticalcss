@@ -1,20 +1,24 @@
 <?php
 
-namespace pcfreak30\WordPress\Plugin\Framework;
+namespace ComposePress\Core\Abstracts;
 
 use Dice\Dice;
-use pcfreak30\WordPress\Plugin\Framework\Exception\ComposerMissing;
-use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerInvalid;
-use pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists;
+use ComposePress\Core\Exception\ContainerInvalid;
+use ComposePress\Core\Exception\ContainerNotExists;
 
 /**
- * Class PluginAbstract
+ * Class Plugin
  *
- * @package pcfreak30\WordPress\Plugin\Framework
+ * @package ComposePress\Core\Abstracts
  *
- * @property Dice\Dice $container
+ * @property \Dice\Dice            $container
+ * @property string                $slug
+ * @property string                $safe_slug
+ * @property array                 $plugin_info
+ * @property string                $plugin_file
+ * @property \WP_Filesystem_Direct $wp_filesystem
  */
-abstract class PluginAbstract extends ComponentAbstract {
+abstract class Plugin extends Component {
 	/**
 	 * Default version constant
 	 */
@@ -38,6 +42,13 @@ abstract class PluginAbstract extends ComponentAbstract {
 	protected $container;
 
 	/**
+	 * Dependency Container
+	 *
+	 * @var \WP_Filesystem_Direct
+	 */
+	protected $wp_filesystem;
+
+	/**
 	 * PluginAbstract constructor.
 	 */
 	public function __construct() {
@@ -49,13 +60,13 @@ abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 *
 	 */
-	private function find_plugin_file() {
+	protected function find_plugin_file() {
 		$dir  = dirname( ( new \ReflectionClass( $this ) )->getFileName() );
 		$file = null;
 		do {
 			$last_dir = $dir;
 			$dir      = dirname( $dir );
-			$file     = $dir . DIRECTORY_SEPARATOR . static::PLUGIN_SLUG . '.php';
+			$file     = $dir . DIRECTORY_SEPARATOR . $this->plugin->get_slug() . '.php';
 		} while ( ! $this->get_wp_filesystem()->is_file( $file ) && $dir !== $last_dir );
 		$this->plugin_file = $file;
 	}
@@ -63,15 +74,20 @@ abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 * @return \WP_Filesystem_Direct
 	 */
-	protected function get_wp_filesystem() {
+	public function get_wp_filesystem( $args = [] ) {
 		/** @var \WP_Filesystem_Direct $wp_filesystem */
 		global $wp_filesystem;
-		if ( is_null( $wp_filesystem ) ) {
+		$original_wp_filesystem = $wp_filesystem;
+		if ( null === $this->wp_filesystem ) {
 			require_once ABSPATH . '/wp-admin/includes/file.php';
-			WP_Filesystem();
+			add_filter( 'filesystem_method', [ $this, 'filesystem_method_override' ] );
+			WP_Filesystem( $args );
+			remove_filter( 'filesystem_method', [ $this, 'filesystem_method_override' ] );
+			$this->wp_filesystem = $wp_filesystem;
+			$wp_filesystem       = $original_wp_filesystem;
 		}
 
-		return $wp_filesystem;
+		return $this->wp_filesystem;
 	}
 
 	/**
@@ -103,11 +119,10 @@ abstract class PluginAbstract extends ComponentAbstract {
 		return $this->container;
 	}
 
+
 	/**
-	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerInvalid
-	 * @throws \pcfreak30\WordPress\Plugin\Framework\Exception\ContainerNotExists
-	 *
-	 * @return void
+	 * @throws \ComposePress\Core\Exception\ContainerInvalid
+	 * @throws \ComposePress\Core\Exception\ContainerNotExists
 	 */
 	protected function set_container() {
 		$slug      = str_replace( '-', '_', static::PLUGIN_SLUG );
@@ -125,7 +140,7 @@ abstract class PluginAbstract extends ComponentAbstract {
 	 * Plugin initialization
 	 */
 	public function init() {
-		if ( ! $this->get_dependancies_exist() ) {
+		if ( ! $this->get_dependencies_exist() ) {
 			return;
 		}
 		$this->setup_components();
@@ -134,15 +149,8 @@ abstract class PluginAbstract extends ComponentAbstract {
 	/**
 	 * @return bool
 	 */
-	protected function get_dependancies_exist() {
+	protected function get_dependencies_exist() {
 		return true;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function get_slug() {
-		return static::PLUGIN_SLUG;
 	}
 
 	/**
@@ -152,12 +160,18 @@ abstract class PluginAbstract extends ComponentAbstract {
 		return static::VERSION;
 	}
 
-
 	/**
 	 * @return string
 	 */
 	public function get_safe_slug() {
 		return strtolower( str_replace( '-', '_', $this->get_slug() ) );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_slug() {
+		return static::PLUGIN_SLUG;
 	}
 
 	/**
@@ -172,5 +186,25 @@ abstract class PluginAbstract extends ComponentAbstract {
 		}
 
 		return $info;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function filesystem_method_override() {
+		return 'direct';
+	}
+
+	/**
+	 * @param $file
+	 *
+	 * @return string
+	 */
+	public function get_asset_url( $file ) {
+		if ( $this->get_wp_filesystem()->is_file( $file ) ) {
+			$file = str_replace( plugin_dir_path( $this->plugin_file ), '', $file );
+		}
+
+		return plugins_url( $file, __FILE__ );
 	}
 }

@@ -1,18 +1,25 @@
 {
-  "name": "pcfreak30/wordpress-plugin-framework",
+  "name": "composepress/core",
   "type": "library",
   "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
-  "license": "LGPL3",
+  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "Derrick Hammer",
       "email": "derrick@derrickhammer.com"
     }
   ],
-  "require": {},
+  "require": {
+    "level-2/dice": "dev-v2.0-PHP5.4-5.5"
+  },
   "autoload": {
     "psr-4": {
-      "pcfreak30\\WordPress\\Plugin\\Framework\\": "src/"
+      "ComposePress\\Core\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "ComposePress\\Core\\": "tests/"
     }
   }
 }

@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita258b365e207c0008382a65c86d2849a
+class ComposerStaticInit226e249f9bf55b3c1eadbfaa33fa611e
 {
     public static $files = array (
         'b45b351e6b6f7487d819961fef2fda77' => __DIR__ . '/..' . '/jakeasmith/http_build_url/src/http_build_url.php',
@@ -13,20 +13,19 @@ class ComposerStaticInita258b365e207c0008382a65c86d2849a
     public static $prefixLengthsPsr4 = array (
         'p' => 
         array (
-            'pcfreak30\\WordPress\\Plugin\\Framework\\' => 37,
             'pcfreak30\\' => 10,
         ),
         'D' => 
         array (
             'Dice\\' => 5,
         ),
+        'C' => 
+        array (
+            'ComposePress\\Core\\' => 18,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'pcfreak30\\WordPress\\Plugin\\Framework\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/pcfreak30/wordpress-plugin-framework/src',
-        ),
         'pcfreak30\\' => 
         array (
             0 => __DIR__ . '/..' . '/pcfreak30/wordpress-cache-store/src',
@@ -34,6 +33,10 @@ class ComposerStaticInita258b365e207c0008382a65c86d2849a
         'Dice\\' => 
         array (
             0 => __DIR__ . '/..' . '/level-2/dice',
+        ),
+        'ComposePress\\Core\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/composepress/core/src',
         ),
     );
 
@@ -49,10 +52,10 @@ class ComposerStaticInita258b365e207c0008382a65c86d2849a
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInita258b365e207c0008382a65c86d2849a::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInita258b365e207c0008382a65c86d2849a::$prefixDirsPsr4;
-            $loader->fallbackDirsPsr4 = ComposerStaticInita258b365e207c0008382a65c86d2849a::$fallbackDirsPsr4;
-            $loader->classMap = ComposerStaticInita258b365e207c0008382a65c86d2849a::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit226e249f9bf55b3c1eadbfaa33fa611e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit226e249f9bf55b3c1eadbfaa33fa611e::$prefixDirsPsr4;
+            $loader->fallbackDirsPsr4 = ComposerStaticInit226e249f9bf55b3c1eadbfaa33fa611e::$fallbackDirsPsr4;
+            $loader->classMap = ComposerStaticInit226e249f9bf55b3c1eadbfaa33fa611e::$classMap;
 
         }, null, ClassLoader::class);
     }

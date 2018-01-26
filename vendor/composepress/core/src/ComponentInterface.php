@@ -1,7 +1,7 @@
 <?php
 
 
-namespace pcfreak30\WordPress\Plugin\Framework;
+namespace ComposePress\Core;
 
 
 interface ComponentInterface {

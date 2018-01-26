@@ -1,12 +1,23 @@
 <?php
 
 
-namespace pcfreak30\WordPress\Plugin\Framework;
+namespace ComposePress\Core\Abstracts;
 
-class ManagerAbstract extends ComponentAbstract {
-	protected $modules = [
+/**
+ * Class Manager
+ *
+ * @package ComposePress\Core\Abstracts
+ */
+class Manager extends Component {
+	/**
+	 * @var array
+	 */
+	protected $modules = [];
 
-	];
+	/**
+	 *
+	 */
+	const MODULE_NAMESPACE = '';
 
 	/**
 	 *
@@ -19,10 +30,14 @@ class ManagerAbstract extends ComponentAbstract {
 
 		$reflect   = new \ReflectionClass( get_called_class() );
 		$class     = strtolower( $reflect->getShortName() );
-		$namespace = $reflect->getNamespaceName();
-		$component = strtolower( basename( $namespace ) );
+		$namespace = static::MODULE_NAMESPACE;
+		if ( empty( $namespace ) ) {
+			$namespace = $reflect->getNamespaceName();
+		}
 
-		$slug         = $this->plugin->get_safe_slug();
+		$component = strtolower( basename( str_replace( '\\', '/', $namespace ) ) );
+
+		$slug         = $this->plugin->safe_slug;
 		$filter       = "{$slug}_{$component}_{$class}_modules";
 		$modules_list = apply_filters( $filter, $this->modules );
 
