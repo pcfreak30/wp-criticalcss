@@ -67,6 +67,10 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.7.2 ###
+
+*Update framework
+
 ### 0.7.1 ###
 
 * Bug: Fix small random bugs
