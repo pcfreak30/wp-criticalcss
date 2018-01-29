@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-  "content-hash": "3731f796470598fc6ab95b19b8c2e47d",
+    "content-hash": "3731f796470598fc6ab95b19b8c2e47d",
     "packages": [
         {
             "name": "a5hleyrich/wp-background-processing",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/A5hleyRich/wp-background-processing.git",
-              "reference": "a3f3a1f66a1dfa529f5712d410d09317cc86a2de"
+                "reference": "a3f3a1f66a1dfa529f5712d410d09317cc86a2de"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/A5hleyRich/wp-background-processing/zipball/a3f3a1f66a1dfa529f5712d410d09317cc86a2de",
-              "reference": "a3f3a1f66a1dfa529f5712d410d09317cc86a2de",
+                "url": "https://api.github.com/repos/A5hleyRich/wp-background-processing/zipball/a3f3a1f66a1dfa529f5712d410d09317cc86a2de",
+                "reference": "a3f3a1f66a1dfa529f5712d410d09317cc86a2de",
                 "shasum": ""
             },
             "require": {
@@ -40,43 +40,43 @@
                 }
             ],
             "description": "WP Background Processing can be used to fire off non-blocking asynchronous requests or as a background processing tool, allowing you to queue tasks.",
-          "time": "2017-10-03T14:33:09+00:00"
+            "time": "2017-10-03T14:33:09+00:00"
         },
-      {
-        "name": "composepress/core",
-        "version": "0.3.1",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/ComposePress/core.git",
-          "reference": "6fa83dcced4b22a83c1cc9085e131d11c8a8eb6c"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/ComposePress/core/zipball/6fa83dcced4b22a83c1cc9085e131d11c8a8eb6c",
-          "reference": "6fa83dcced4b22a83c1cc9085e131d11c8a8eb6c",
-          "shasum": ""
-        },
-        "require": {
-          "level-2/dice": "dev-v2.0-PHP5.4-5.5"
-        },
-        "type": "library",
-        "autoload": {
-          "psr-4": {
-            "ComposePress\\Core\\": "src/"
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "LGPL-3.0-or-later"
-        ],
-        "authors": [
-          {
-            "name": "Derrick Hammer",
-            "email": "derrick@derrickhammer.com"
-          }
-        ],
-        "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
-        "time": "2018-01-26T10:27:10+00:00"
+        {
+            "name": "composepress/core",
+            "version": "0.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ComposePress/core.git",
+                "reference": "080287b81fd811edfe13afe7831c8115e0fce281"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ComposePress/core/zipball/080287b81fd811edfe13afe7831c8115e0fce281",
+                "reference": "080287b81fd811edfe13afe7831c8115e0fce281",
+                "shasum": ""
+            },
+            "require": {
+                "level-2/dice": "dev-v2.0-PHP5.4-5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ComposePress\\Core\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Derrick Hammer",
+                    "email": "derrick@derrickhammer.com"
+                }
+            ],
+            "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
+            "time": "2018-01-29T06:17:21+00:00"
         },
         {
             "name": "jakeasmith/http_build_url",
@@ -152,48 +152,48 @@
                 "di",
                 "ioc"
             ],
-          "time": "2015-11-30T17:19:11+00:00"
+            "time": "2015-11-30T17:19:11+00:00"
         },
-      {
-        "name": "pcfreak30/wordpress-cache-store",
-        "version": "0.1.1",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/pcfreak30/wordpress-cache-store.git",
-          "reference": "dd8eede8cf150476551166c3032273d3a417d0fe"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/pcfreak30/wordpress-cache-store/zipball/dd8eede8cf150476551166c3032273d3a417d0fe",
-          "reference": "dd8eede8cf150476551166c3032273d3a417d0fe",
-          "shasum": ""
-        },
-        "type": "library",
-        "autoload": {
-          "psr-4": {
-            "pcfreak30\\": "src/"
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "GPL-3.0"
-        ],
-        "authors": [
-          {
-            "name": "Derrick Hammer",
-            "email": "derrick@derrickhammer.com"
-          }
-        ],
-        "description": "WordPress cache library to enable a data tree inspired storage structure to offset the limitation of the WordPress cache API for querying available keys",
-        "time": "2017-07-22T21:43:49+00:00"
-      }
+        {
+            "name": "pcfreak30/wordpress-cache-store",
+            "version": "0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pcfreak30/wordpress-cache-store.git",
+                "reference": "dd8eede8cf150476551166c3032273d3a417d0fe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pcfreak30/wordpress-cache-store/zipball/dd8eede8cf150476551166c3032273d3a417d0fe",
+                "reference": "dd8eede8cf150476551166c3032273d3a417d0fe",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pcfreak30\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Derrick Hammer",
+                    "email": "derrick@derrickhammer.com"
+                }
+            ],
+            "description": "WordPress cache library to enable a data tree inspired storage structure to offset the limitation of the WordPress cache API for querying available keys",
+            "time": "2017-07-22T21:43:49+00:00"
+        }
     ],
-  "packages-dev": [],
+    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
         "a5hleyrich/wp-background-processing": 20,
-      "level-2/dice": 20
+        "level-2/dice": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
