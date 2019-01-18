@@ -23,13 +23,16 @@ class WPEngine extends IntegrationAbstract {
 			$this,
 			'purge_cache',
 		], 10, 3 );
+		add_action( 'wp_criticalcss_nocache', [
+			$this,
+			'disable_cache',
+		] );
 	}
 
 	/**
 	 * @return void
 	 */
 	public function disable() {
-
 	}
 
 	/**
@@ -93,5 +96,10 @@ class WPEngine extends IntegrationAbstract {
 			}// End if().
 			sleep( 1 );
 		}// End if().
+	}
+
+	public function disable_cache() {
+		$permalink = $this->plugin->get_permalink( $this->plugin->request->get_current_page_type() );
+		$this->purge_cache( $permalink['type'], $permalink['object_id'], $permalink['url'] );
 	}
 }
