@@ -67,9 +67,15 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.7.3 ###
+
+* Bug: Prevent override of DONOTCACHEPAGE with WP Rocket
+* Enhancement: Ensure that nocache pages are purged on wpengine to prevent caching
+* Compatibility: Add compatibility support for Kinsta hosting
+
 ### 0.7.2 ###
 
-*Update framework
+* Enhancement: Update framework
 
 ### 0.7.1 ###
 
@@ -96,6 +102,7 @@ This is used as a special version of the web page that forcibly disables support
 * Feature: Add checking for post type, post type archive, and taxonomy CSS
 * Compatibility: Force wp-rocket's critical css off
 * Compatibility: Add integration with a3 lazy load to disable lazy load on nocache pages
+
 ### 0.7.0.1 ###
 
 * Bug: Fix usage of restore_current_blog being undefined
