@@ -67,6 +67,11 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+
+### 0.7.4 ###
+
+* Compatibility: Add compatibility support for Elementor to prevent critical css from showing up on editor preview
+
 ### 0.7.3 ###
 
 * Bug: Prevent override of DONOTCACHEPAGE with WP Rocket
