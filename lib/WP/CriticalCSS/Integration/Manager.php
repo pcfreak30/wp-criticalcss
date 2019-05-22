@@ -23,6 +23,7 @@ class Manager extends \ComposePress\Core\Abstracts\Manager {
 		'WPEngine',
 		'A3LazyLoad',
 		'Kinsta',
+		'Elementor',
 	];
 
 	/**
