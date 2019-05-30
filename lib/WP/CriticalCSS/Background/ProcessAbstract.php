@@ -18,65 +18,6 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	}
 
 	/**
-	 * @inheritDoc
-	 */
-	public function get_batch() {
-
-		global $wpdb;
-
-		$batch       = new \stdClass();
-		$batch->data = [];
-		$batch->key  = '';
-		if ( ! $this->is_queue_empty() ) {
-			if ( is_multisite() ) {
-				$table = "{$wpdb->base_prefix}{$this->action}_queue";
-			} else {
-				$table = "{$wpdb->prefix}{$this->action}_queue";
-			}
-			$result     = $wpdb->get_row( "
-			SELECT *
-			FROM `{$table}`
-			LIMIT 1
-		" );
-			$batch      = new \stdClass();
-			$batch->key = $result->id;
-			unset( $result->id );
-			$data = maybe_unserialize( $result->data );
-			if ( ! is_null( $data ) ) {
-				$result = (object) array_merge( (array) $result, $data );
-			}
-			unset( $result->data );
-
-			$batch->data = [ (array) $result ];
-		}
-
-		return $batch;
-	}
-
-	public function dispatch() {
-		$this->schedule_event();
-	}
-
-	/**
-	 * Is queue empty
-	 *
-	 * @return bool
-	 */
-	protected function is_queue_empty() {
-		$count = $this->get_length();
-
-		return 0 == $count;
-	}
-
-	public function get_length() {
-		global $wpdb;
-		$table = $this->get_table_name();
-		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}`" );
-
-		return $count;
-	}
-
-	/**
 	 * @return int
 	 */
 	public function cron_interval() {
@@ -111,6 +52,16 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		dbDelta( "$sql\nPRIMARY KEY  (id)\n) {$charset_collate};" );
 	}
 
+	protected function get_table_name() {
+		global $wpdb;
+		if ( is_multisite() ) {
+			return "{$wpdb->base_prefix}{$this->action}_queue";
+		}
+
+		return "{$wpdb->prefix}{$this->action}_queue";
+
+	}
+
 	public function get_item_exists( $item ) {
 		global $wpdb;
 
@@ -124,7 +75,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			$sql    .= '`template` = %s';
 			$args[] = $item['template'];
 		} else {
-			if ( 'url' == $item['type'] ) {
+			if ( 'url' === $item['type'] ) {
 				$sql    .= '`url` = %s';
 				$args[] = $item['url'];
 			} else {
@@ -178,6 +129,125 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		return $this;
 	}
 
+	public function purge() {
+		global $wpdb;
+		if ( is_multisite() ) {
+			$table = "{$wpdb->base_prefix}{$this->action}_queue";
+		} else {
+			$table = "{$wpdb->prefix}{$this->action}_queue";
+		}
+		$wpdb->query( "TRUNCATE `{$table}`" );
+	}
+
+	public function handle_cron_healthcheck() {
+		if ( $this->is_process_running() ) {
+			// Background process already running.
+			return;
+		}
+
+		if ( $this->is_queue_empty() ) {
+			// No data to process.
+			$this->clear_scheduled_event();
+
+			return;
+		}
+
+		$this->handle();
+
+		exit;
+	}
+
+	/**
+	 * Is queue empty
+	 *
+	 * @return bool
+	 */
+	protected function is_queue_empty() {
+		$count = $this->get_length();
+
+		return 0 == $count;
+	}
+
+	public function get_length() {
+		global $wpdb;
+		$table = $this->get_table_name();
+		$count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}`" );
+
+		return $count;
+	}
+
+	protected function handle() {
+		$this->lock_process();
+		$batch = $this->get_batch();
+
+		foreach ( $batch->data as $key => $value ) {
+			$task = $this->task( $value );
+
+			if ( false !== $task ) {
+				$batch->data[ $key ] = $task;
+			} else {
+				unset( $batch->data[ $key ] );
+			}
+
+			if ( $this->time_exceeded() || $this->memory_exceeded() ) {
+				// Batch limits reached.
+				break;
+			}
+		}
+
+		// Update or delete current batch.
+		if ( ! empty( $batch->data ) ) {
+			$this->update( $batch->key, $batch->data );
+		} else {
+			$this->delete( $batch->key );
+		}
+
+		$this->unlock_process();
+
+		// Start next batch or complete process.
+		if ( ! $this->is_queue_empty() ) {
+			$this->dispatch();
+		} else {
+			$this->complete();
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function get_batch() {
+
+		global $wpdb;
+
+		$batch       = new \stdClass();
+		$batch->data = [];
+		$batch->key  = '';
+		if ( ! $this->is_queue_empty() ) {
+			if ( is_multisite() ) {
+				$table = "{$wpdb->base_prefix}{$this->action}_queue";
+			} else {
+				$table = "{$wpdb->prefix}{$this->action}_queue";
+			}
+			$result     = $wpdb->get_row( "
+			SELECT *
+			FROM `{$table}`
+			LIMIT 1
+		" );
+			$batch      = new \stdClass();
+			$batch->key = $result->id;
+			unset( $result->id );
+			$data = maybe_unserialize( $result->data );
+			if ( null !== $data ) {
+				$result = (object) array_merge( (array) $result, $data );
+			}
+			unset( $result->data );
+
+			$batch->data = [ (array) $result ];
+		}
+
+		return $batch;
+	}
+
 	public function update( $key, $items ) {
 		global $wpdb;
 		$table = $this->get_table_name();
@@ -199,16 +269,6 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		return $this;
 	}
 
-	public function purge() {
-		global $wpdb;
-		if ( is_multisite() ) {
-			$table = "{$wpdb->base_prefix}{$this->action}_queue";
-		} else {
-			$table = "{$wpdb->prefix}{$this->action}_queue";
-		}
-		$wpdb->query( "TRUNCATE `{$table}`" );
-	}
-
 	public function delete( $key ) {
 		global $wpdb;
 
@@ -217,31 +277,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		] );
 	}
 
-	public function handle_cron_healthcheck() {
-		if ( $this->is_process_running() ) {
-			// Background process already running.
-			return;
-		}
-
-		if ( $this->is_queue_empty() ) {
-			// No data to process.
-			$this->clear_scheduled_event();
-
-			return;
-		}
-
-		$this->handle();
-
-		exit;
-	}
-
-	protected function get_table_name() {
-		global $wpdb;
-		if ( is_multisite() ) {
-			return "{$wpdb->base_prefix}{$this->action}_queue";
-		}
-
-		return "{$wpdb->prefix}{$this->action}_queue";
-
+	public function dispatch() {
+		$this->schedule_event();
 	}
 }
