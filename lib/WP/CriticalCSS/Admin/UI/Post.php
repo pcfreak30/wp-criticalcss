@@ -109,7 +109,8 @@ class Post extends Component {
 	 */
 	public function save_manual_css_meta_box( $post_id ) {
 		$slug = $this->plugin->get_safe_slug();
-		if ( apply_filters( 'wp_criticalcss_manual_post_css', true ) ) {
+		$field = "{$slug}_manual_css";
+		if ( apply_filters( 'wp_criticalcss_manual_post_css', true ) && isset($_POST[$field]) ) {
 			$css = sanitize_textarea_field( $_POST["{$slug}_manual_css"] );
 			$this->plugin->data_manager->set_item_data( [
 				'type'      => 'post',
@@ -121,6 +122,7 @@ class Post extends Component {
 	public function save_override_css_meta_box( $object_id ) {
 		$slug      = $this->plugin->get_safe_slug();
 		$post_type = get_post_type_object( get_post_type( $object_id ) );
+
 		if ( $post_type->hierarchical ) {
 			$value = ! empty( $_POST["{$slug}_override_css"] ) && 1 == $_POST["{$slug}_override_css"];
 			$this->plugin->data_manager->set_item_data( [

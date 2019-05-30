@@ -105,8 +105,12 @@ class Term extends Component {
 	 * @param $post_id
 	 */
 	public function save_manual_css( $term_id ) {
-		$slug = $this->plugin->get_safe_slug();
-		$css  = sanitize_textarea_field( $_POST["{$slug}_manual_css"] );
+		$slug  = $this->plugin->get_safe_slug();
+		$field = "{$slug}_manual_css";
+		if ( ! isset( $_POST[ $field ] ) ) {
+			return;
+		}
+		$css = sanitize_textarea_field( $_POST[ $field ] );
 		$this->plugin->data_manager->set_item_data( [
 			'type'      => 'term',
 			'object_id' => $term_id,
