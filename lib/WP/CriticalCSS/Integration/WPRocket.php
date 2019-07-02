@@ -10,6 +10,8 @@ namespace WP\CriticalCSS\Integration;
  */
 class WPRocket extends IntegrationAbstract {
 
+	private $doing_purge = false;
+
 	/**
 	 *
 	 */
@@ -67,6 +69,10 @@ class WPRocket extends IntegrationAbstract {
 			$this,
 			'get_cache_expire_period',
 		] );
+		add_filter( 'shutdown', [
+			$this,
+			'maybe_fix_preload',
+		], - 1 );
 	}
 
 	/**
@@ -111,15 +117,19 @@ class WPRocket extends IntegrationAbstract {
 	public function purge_cache( $type = null, $object_id = null, $url = null ) {
 		if ( 'post' === $type ) {
 			rocket_clean_post( $object_id );
+			$this->doing_purge = true;
 		}
 		if ( 'term' === $type ) {
 			rocket_clean_term( $object_id, get_term( $object_id )->taxonomy );
+			$this->doing_purge = true;
 		}
 		if ( 'url' === $type ) {
 			rocket_clean_files( $url );
+			$this->doing_purge = true;
 		}
 		if ( empty( $type ) ) {
 			rocket_clean_domain();
+			$this->doing_purge = true;
 		}
 	}
 
@@ -151,5 +161,14 @@ class WPRocket extends IntegrationAbstract {
 			define( 'DONOTCACHEPAGE', true );
 		}
 		add_filter( 'rocket_override_donotcachepage', '__return_false', 9999 );
+	}
+
+	public function maybe_fix_preload() {
+		if ( $this->doing_purge ) {
+			if ( ! defined( 'WP_ADMIN' ) ) {
+				define( 'WP_ADMIN', true );
+			}
+			add_filter( 'wp_doing_ajax', '__return_false' );
+		}
 	}
 }
