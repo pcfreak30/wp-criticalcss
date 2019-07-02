@@ -19,6 +19,10 @@ class Request extends Component {
 	 */
 	protected $template;
 
+	protected $original_is_single;
+
+	protected $original_is_page;
+
 	/**
 	 * WP_CriticalCSS_Request constructor.
 	 */
@@ -62,7 +66,11 @@ class Request extends Component {
 		add_filter( 'redirect_canonical', [
 			$this,
 			'redirect_canonical',
-		] );
+		], 0 );
+		add_filter( 'redirect_canonical', [
+			$this,
+			'redirect_canonical_fix_vars',
+		], PHP_INT_MAX );
 
 	}
 
@@ -135,7 +143,24 @@ class Request extends Component {
 	public function redirect_canonical( $redirect_url ) {
 		global $wp_query;
 		if ( ! array_diff( array_keys( $wp_query->query ), [ 'nocache' ] ) || get_query_var( 'nocache' ) ) {
-			$redirect_url = false;
+			$redirect_url             = false;
+			$wp_query->is_404         = false;
+			$this->original_is_single = $wp_query->is_single;
+			$this->original_is_page   = $wp_query->is_page;
+			$wp_query->is_single      = false;
+			$wp_query->is_page        = false;
+		}
+
+		return $redirect_url;
+	}
+
+	public function redirect_canonical_fix_vars( $redirect_url ) {
+		global $wp_query;
+		if ( null !== $this->original_is_single ) {
+			$wp_query->is_single = $this->original_is_single;
+		}
+		if ( null !== $this->original_is_page ) {
+			$wp_query->is_page = $this->original_is_page;
 		}
 
 		return $redirect_url;
