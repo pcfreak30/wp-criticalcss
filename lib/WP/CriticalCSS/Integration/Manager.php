@@ -24,6 +24,7 @@ class Manager extends \ComposePress\Core\Abstracts\Manager {
 		'A3LazyLoad',
 		'Kinsta',
 		'Elementor',
+		'WebP',
 	];
 
 	/**
