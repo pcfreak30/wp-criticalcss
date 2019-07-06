@@ -284,7 +284,15 @@ class Request extends Component {
 			$blog_id = get_current_blog_id();
 		}
 
-		return compact( 'object_id', 'type', 'url', 'template', 'blog_id' );
+		$compact = [];
+
+		foreach ( [ 'object_id', 'type', 'url', 'template', 'blog_id' ] as $var ) {
+			if ( isset( $$var ) ) {
+				$compact[ $var ] = $$var;
+			}
+		}
+
+		return $compact;
 	}
 
 }

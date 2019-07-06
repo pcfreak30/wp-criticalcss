@@ -172,41 +172,21 @@ class Manager extends Component {
 		return $this->get_item_data( $item, 'cache' );
 	}
 
-	/**
-	 * @param array $item
-	 *
-	 * @return string
-	 */
-	public function get_manual_css( $item = [] ) {
-		if ( empty( $item ) ) {
-			$item = $this->plugin->request->get_current_page_type();
-		}
-		$item = $this->get_item_css_override( $item );
-
-		return $this->get_item_data( $item, 'manual_css' );
-	}
-
-	/**
-	 * @param $item
-	 *
-	 * @return string
-	 * @SuppressWarnings("unused")
-	 */
-	public function get_item_hash( $item ) {
-		extract( $item, EXTR_OVERWRITE );
-		$parts = [
-			'object_id',
-			'type',
-			'url',
-		];
+	protected function get_item_css_override( $item ) {
 		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
-
-			$template = $this->plugin->request->template;
-			$parts    = [ 'template' ];
+			return $item;
 		}
-		$type = compact( $parts );
+		$tree        = array_reverse( $this->get_item_parent_tree( $item ) );
+		$parent_item = $item;
+		foreach ( $tree as $leaf ) {
+			$parent_item['object_id'] = $leaf;
+			$override                 = (bool) $this->get_item_data( $parent_item, 'override_css' );
+			if ( $override ) {
+				return $parent_item;
+			}
+		}
 
-		return md5( serialize( $type ) );
+		return $item;
 	}
 
 	protected function get_item_parent_tree( $item ) {
@@ -241,23 +221,49 @@ class Manager extends Component {
 		return array_filter( $tree );
 	}
 
-	protected function get_item_css_override( $item ) {
-		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
-			return $item;
+	/**
+	 * @param array $item
+	 *
+	 * @return string
+	 */
+	public function get_manual_css( $item = [] ) {
+		if ( empty( $item ) ) {
+			$item = $this->plugin->request->get_current_page_type();
 		}
-		$tree        = array_reverse( $this->get_item_parent_tree( $item ) );
-		$parent_item = $item;
-		foreach ( $tree as $leaf ) {
-			$parent_item['object_id'] = $leaf;
-			$override                 = (bool) $this->get_item_data( $parent_item, 'override_css' );
-			if ( $override ) {
-				return $parent_item;
+		$item = $this->get_item_css_override( $item );
+
+		return $this->get_item_data( $item, 'manual_css' );
+	}
+
+	/**
+	 * @param $item
+	 *
+	 * @return string
+	 * @SuppressWarnings("unused")
+	 */
+	public function get_item_hash( $item ) {
+		extract( $item, EXTR_OVERWRITE );
+		$parts = [
+			'object_id',
+			'type',
+			'url',
+		];
+		if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) ) {
+
+			$template = $this->plugin->request->template;
+			$parts    = [ 'template' ];
+		}
+
+		$type = [];
+
+		foreach ( [ 'object_id', 'type', 'url', 'template', 'blog_id' ] as $var ) {
+			if ( isset( $$var ) ) {
+				$type[ $var ] = $$var;
 			}
 		}
 
-		return $item;
+		return md5( serialize( $type ) );
 	}
-
 
 	/**
 	 *
