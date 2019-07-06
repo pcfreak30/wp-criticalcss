@@ -160,6 +160,9 @@ class WPRocket extends IntegrationAbstract {
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true );
 		}
+		if ( ! defined( 'DONOTCDN' ) ) {
+			define( 'DONOTCDN', true );
+		}
 		add_filter( 'rocket_override_donotcachepage', '__return_false', 9999 );
 	}
 
