@@ -2,8 +2,8 @@
 
 namespace WP\CriticalCSS\Cache;
 
-use pcfreak30\WordPress\Cache\Store;
 use ComposePress\Core\Abstracts\Component;
+use pcfreak30\WordPress\Cache\Store;
 
 /**
  * Class Manager
@@ -146,7 +146,7 @@ class Manager extends Component {
 				'type'      => 'post',
 			]
 		);
-		$this->store->delete_cache_branch( [ $hash ] );
+		$this->store->delete_cache_branch( [ 'webcheck', $hash ] );
 	}
 
 	/**
@@ -162,7 +162,7 @@ class Manager extends Component {
 				'type'      => 'term',
 			]
 		);
-		$this->store->delete_cache_branch( [ $hash ] );
+		$this->store->delete_cache_branch( [ 'webcheck', $hash ] );
 	}
 
 	/**
@@ -200,7 +200,7 @@ class Manager extends Component {
 				]
 			);
 		}
-		$this->store->delete_cache_branch( [ $hash ] );
+		$this->store->delete_cache_branch( [ 'webcheck', $hash ] );
 	}
 
 	/**
