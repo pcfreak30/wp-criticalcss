@@ -78,26 +78,8 @@ class Request extends Component {
 	 *
 	 */
 	public function add_rewrite_rules() {
-		add_rewrite_endpoint( 'nocache', E_ALL );
+		//add_rewrite_endpoint( 'nocache', E_ALL );
 		add_rewrite_rule( 'nocache/?$', 'index.php?nocache=1', 'top' );
-		$taxonomies = get_taxonomies( [
-			'public'   => true,
-			'_builtin' => false,
-		], 'objects' );
-		$post_types = get_post_types( [
-			'public'   => true,
-			'_builtin' => false,
-		], 'objects' );
-		foreach ( $taxonomies as $tax_id => $tax ) {
-			if ( ! empty( $tax->rewrite ) ) {
-				add_rewrite_rule( $tax->rewrite['slug'] . '/(.+?)/nocache/?$', 'index.php?' . $tax_id . '=$matches[1]&nocache', 'top' );
-			}
-		}
-		foreach ( $post_types as $post_type_id => $post_type ) {
-			if ( ! empty( $post_type->rewrite ) ) {
-				add_rewrite_rule( $post_type->rewrite['slug'] . '/nocache/?$', 'index.php?post_type=' . $post_type_id . '&nocache', 'top' );
-			}
-		}
 	}
 
 	public function check_log_cron() {
@@ -115,24 +97,164 @@ class Request extends Component {
 	 *
 	 */
 	public function fix_rewrites( $rules ) {
-		$nocache_rules = [
-			// Fix page archives
-			'(.?.+?)/page(?:/([0-9]+))?/nocache/?' => 'index.php?pagename=$matches[1]&paged=$matches[2]&nocache',
-		];
-		// Fix all custom taxonomies
-		$tokens = get_taxonomies( [
-			'public'   => true,
-			'_builtin' => false,
-		] );
-		foreach ( $rules as $match => $query ) {
-			if ( false !== strpos( $match, 'nocache' ) && preg_match( '/' . implode( '|', $tokens ) . '/', $query ) ) {
-				$nocache_rules[ $match ] = $query;
-				unset( $rules[ $match ] );
+		$post_rewrite   = $this->generate_rewrite_rules( $this->wp_rewrite->permalink_structure, EP_PERMALINK );
+		$root_rewrite   = $this->generate_rewrite_rules( $this->wp_rewrite->root . '/', EP_ROOT );
+		$search_rewrite = $this->generate_rewrite_rules( $this->wp_rewrite->get_search_permastruct(), EP_SEARCH );
+		$page_rewrite   = $this->generate_rewrite_rules( $this->wp_rewrite->get_page_permastruct(), EP_PAGES, true, true, false, false );
+
+		$cpt_rules = [];
+
+		foreach ( $this->wp_rewrite->extra_permastructs as $permastructname => $struct ) {
+			if ( is_array( $struct ) ) {
+				if ( count( $struct ) == 2 ) {
+					$cpt_rules[ $permastructname ] = $this->generate_rewrite_rules( $struct[0], $struct[1] );
+				} else {
+					$cpt_rules[ $permastructname ] = $this->generate_rewrite_rules( $struct['struct'], $struct['ep_mask'], $struct['paged'], $struct['feed'], $struct['forcomments'], $struct['walk_dirs'], $struct['endpoints'] );
+				}
+			} else {
+				$cpt_rules[ $permastructname ] = $this->generate_rewrite_rules( $struct );
 			}
 		}
-		$rules = array_merge( $nocache_rules, $rules );
+		if ( $this->wp_rewrite->use_verbose_page_rules ) {
+			$rules = array_merge( $root_rewrite, $search_rewrite, $page_rewrite, $post_rewrite, call_user_func_array( 'array_merge', $cpt_rules ), $rules );
+		} else {
+			$rules = array_merge( $root_rewrite, $search_rewrite, $post_rewrite, $page_rewrite, call_user_func_array( 'array_merge', $cpt_rules ), $rules );
+		}
+		$rules = array_unique( $rules );
 
 		return $rules;
+	}
+
+	/**
+	 * Generate rewrite rules based off of WP-Write but specific to nocache endpoints
+	 *
+	 * @param      $permalink_structure
+	 * @param int  $ep_mask
+	 * @param bool $paged
+	 * @param bool $feed
+	 * @param bool $forcomments
+	 * @param bool $walk_dirs
+	 * @param bool $endpoints
+	 *
+	 * @return array
+	 */
+	private function generate_rewrite_rules( $permalink_structure, $ep_mask = EP_NONE, $paged = true, $feed = true, $forcomments = false, $walk_dirs = true, $endpoints = true ) {
+		preg_match_all( '/%.+?%/', $permalink_structure, $tokens );
+
+		$num_tokens = count( $tokens[0] );
+
+		$index   = $this->wp_rewrite->index; //probably 'index.php'
+		$queries = array();
+		for ( $i = 0; $i < $num_tokens; ++ $i ) {
+			if ( 0 < $i ) {
+				$queries[ $i ] = $queries[ $i - 1 ] . '&';
+			} else {
+				$queries[ $i ] = '';
+			}
+
+			$query_token   = str_replace( $this->wp_rewrite->rewritecode, $this->wp_rewrite->queryreplace, $tokens[0][ $i ] ) . $this->wp_rewrite->preg_index( $i + 1 );
+			$queries[ $i ] .= $query_token;
+		}
+		$structure = $permalink_structure;
+		$front     = substr( $permalink_structure, 0, strpos( $permalink_structure, '%' ) );
+
+		if ( '/' !== $front ) {
+			$structure = str_replace( $front, '', $structure );
+		}
+		$structure = trim( $structure, '/' );
+		$dirs      = $walk_dirs ? explode( '/', $structure ) : array( $structure );
+		$num_dirs  = count( $dirs );
+
+		// Strip slashes from the front of $front.
+		$front = preg_replace( '|^/+|', '', $front );
+
+		$post_rewrite = array();
+		$struct       = $front;
+		for ( $j = 0; $j < $num_dirs; ++ $j ) {
+			// Get the struct for this dir, and trim slashes off the front.
+			$struct .= $dirs[ $j ] . '/'; // Accumulate. see comment near explode('/', $structure) above.
+			$struct = ltrim( $struct, '/' );
+
+			// Replace tags with regexes.
+			$match = str_replace( $this->wp_rewrite->rewritecode, $this->wp_rewrite->rewritereplace, $struct );
+
+			// Make a list of tags, and store how many there are in $num_toks.
+			$num_toks = preg_match_all( '/%.+?%/', $struct, $toks );
+
+			// Get the 'tagname=$matches[i]'.
+			$query = ( ! empty( $num_toks ) && isset( $queries[ $num_toks - 1 ] ) ) ? $queries[ $num_toks - 1 ] : '';
+
+			if ( ! empty( $query ) ) {
+				if ( '&' !== $query[ strlen( $query ) - 1 ] ) {
+					$query .= '&';
+				}
+			}
+			$query .= 'nocache=1';
+
+			// Start creating the array of rewrites for this dir.
+			$rewrite = array();
+
+			// If we've got some tags in this dir.
+			if ( $num_toks ) {
+				$post = false;
+
+				/*
+				 * Check to see if this dir is permalink-level: i.e. the structure specifies an
+				 * individual post. Do this by checking it contains at least one of 1) post name,
+				 * 2) post ID, 3) page name, 4) timestamp (year, month, day, hour, second and
+				 * minute all present). Set these flags now as we need them for the endpoints.
+				 */
+				if ( strpos( $struct, '%postname%' ) !== false
+				     || strpos( $struct, '%post_id%' ) !== false
+				     || ( strpos( $struct, '%year%' ) !== false && strpos( $struct, '%monthnum%' ) !== false && strpos( $struct, '%day%' ) !== false && strpos( $struct, '%hour%' ) !== false && strpos( $struct, '%minute%' ) !== false && strpos( $struct, '%second%' ) !== false )
+				) {
+					$post = true;
+				}
+
+				if ( ! $post ) {
+					// For custom post types, we need to add on endpoints as well.
+					foreach ( get_post_types( array( '_builtin' => false ) ) as $ptype ) {
+						if ( strpos( $struct, "%$ptype%" ) !== false ) {
+							$post = true;
+							break;
+						}
+					}
+				}
+
+				// If creating rules for a permalink, do all the endpoints like attachments etc.
+				if ( $post ) {
+
+					// Trim slashes from the end of the regex for this dir.
+					$match = rtrim( $match, '/' );
+					/*
+					 * Post pagination, e.g. <permalink>/2/
+					 * Previously: '(/[0-9]+)?/?$', which produced '/2' for page.
+					 * When cast to int, returned 0.
+					 */
+					$match = $match . '(?:/([0-9]+))?/nocache/?$';
+					$query = $index . '?' . $query . '&page=' . $this->wp_rewrite->preg_index( $num_toks + 1 );
+
+					// Not matching a permalink so this is a lot simpler.
+				} else {
+					// Close the match and finalise the query.
+					$match .= 'nocache/?$';
+					$query = $index . '?' . $query;
+				}
+
+				/*
+				 * Create the final array for this dir by joining the $rewrite array (which currently
+				 * only contains rules/queries for trackback, pages etc) to the main regex/query for
+				 * this dir
+				 */
+				/** @noinspection SlowArrayOperationsInLoopInspection */
+				$rewrite = array_merge( $rewrite, array( $match => $query ) );
+			}
+			// Add the rules for this dir to the accumulating $post_rewrite.
+			/** @noinspection SlowArrayOperationsInLoopInspection */
+			$post_rewrite = array_merge( $rewrite, $post_rewrite );
+		}
+
+		return $post_rewrite;
 	}
 
 	/**
@@ -226,7 +348,6 @@ class Request extends Component {
 		return $this->template;
 	}
 
-
 	/**
 	 * @SuppressWarnings(PHPMD.ShortVariable)
 	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
@@ -294,5 +415,4 @@ class Request extends Component {
 
 		return $compact;
 	}
-
 }
