@@ -15,6 +15,14 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		remove_action( 'wp_ajax_' . $this->identifier, array( $this, 'maybe_handle' ) );
 		remove_action( 'wp_ajax_nopriv_' . $this->identifier, array( $this, 'maybe_handle' ) );
 		$this->schedule_event();
+		if ( function_exists( 'pcntl_signal' ) ) {
+			pcntl_signal( SIGINT, [ $this, 'handle_interrupt' ] );
+		}
+		add_action( 'shutdown', [ $this, 'unlock_process' ] );
+	}
+
+	public function handle_interrupt() {
+		do_action( 'shutdown' );
 	}
 
 	/**
@@ -283,6 +291,10 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		$wpdb->delete( $this->get_table_name(), [
 			'id' => (int) $key,
 		] );
+	}
+
+	public function unlock_process() {
+		return parent::unlock_process();
 	}
 
 	public function dispatch() {
