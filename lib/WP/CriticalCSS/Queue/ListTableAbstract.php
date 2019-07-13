@@ -88,7 +88,10 @@ abstract class ListTableAbstract extends \WP_List_Table {
 		$table             = $this->get_table_name();
 		$this->total_items = wp_criticalcss()->wpdb->get_var( "SELECT COUNT(id) FROM {$table}" );
 		$this->per_page    = $this->total_items;
-		$this->start       = 1;
+		if ( ! $this->per_page ) {
+			$this->per_page = 1;
+		}
+		$this->start = 0;
 	}
 
 	/**
