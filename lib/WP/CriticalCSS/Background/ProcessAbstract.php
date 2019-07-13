@@ -180,27 +180,33 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		$this->lock_process();
 		$batch = $this->get_batch();
 
-		foreach ( $batch->data as $key => $value ) {
-			$task = $this->task( $value );
+		$cli = 'cli' === php_sapi_name();
 
-			if ( false !== $task ) {
-				$batch->data[ $key ] = $task;
+		do {
+			foreach ( $batch->data as $key => $value ) {
+				$task = $this->task( $value );
+
+				if ( false !== $task ) {
+					$batch->data[ $key ] = $task;
+				} else {
+					unset( $batch->data[ $key ] );
+				}
+
+				if ( $this->time_exceeded() || $this->memory_exceeded() ) {
+					// Batch limits reached.
+					break;
+				}
+			}
+
+			// Update or delete current batch.
+			if ( ! empty( $batch->data ) ) {
+				$this->update( $batch->key, $batch->data );
 			} else {
-				unset( $batch->data[ $key ] );
+				$this->delete( $batch->key );
 			}
 
-			if ( $this->time_exceeded() || $this->memory_exceeded() ) {
-				// Batch limits reached.
-				break;
-			}
-		}
-
-		// Update or delete current batch.
-		if ( ! empty( $batch->data ) ) {
-			$this->update( $batch->key, $batch->data );
-		} else {
-			$this->delete( $batch->key );
-		}
+			sleep( 0.5 );
+		} while ( ! $this->is_queue_empty() && $cli );
 
 		$this->unlock_process();
 
