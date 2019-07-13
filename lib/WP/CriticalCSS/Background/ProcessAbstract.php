@@ -218,7 +218,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 			// Update or delete current batch.
 			if ( ! empty( $batch->data ) ) {
-				if ( $original_batch != $batch ) {
+				if ( serialize( $original_batch ) !== serialize( $batch ) ) {
 					$this->update( $batch->key, $batch->data );
 					$original_batch = $batch;
 				}
