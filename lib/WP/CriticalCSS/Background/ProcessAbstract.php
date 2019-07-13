@@ -1,4 +1,5 @@
 <?php
+declare( ticks=1 );
 
 namespace WP\CriticalCSS\Background;
 
@@ -188,7 +189,6 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 	protected function handle() {
 		$this->lock_process();
 		$batch = $this->get_batch();
-
 		$cli = 'cli' === php_sapi_name();
 
 		do {
@@ -210,7 +210,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			}
 
 			// Update or delete current batch.
-			if ( ! empty( $batch->data ) ) {
+			if ( ! empty( $batch->data ) && ! $cli ) {
 				$this->update( $batch->key, $batch->data );
 			} else {
 				$this->delete( $batch->key );
