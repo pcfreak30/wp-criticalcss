@@ -188,10 +188,14 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 	protected function handle() {
 		$this->lock_process();
-		$batch = $this->get_batch();
-		$cli = 'cli' === php_sapi_name();
-
+		$batch          = $this->get_batch();
+		$original_batch = clone $batch;
+		$cli            = 'cli' === php_sapi_name();
 		do {
+			if ( ! $batch ) {
+				$batch          = $this->get_batch();
+				$original_batch = clone $batch;
+			}
 			foreach ( $batch->data as $key => $value ) {
 				$task = $this->task( $value );
 
@@ -210,8 +214,12 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 			}
 
 			// Update or delete current batch.
-			if ( ! empty( $batch->data ) && ! $cli ) {
-				$this->update( $batch->key, $batch->data );
+			if ( ! empty( $batch->data ) ) {
+				if ( $original_batch !== $batch ) {
+					$this->update( $batch->key, $batch->data );
+					$original_batch = $batch;
+				}
+
 			} else {
 				$this->delete( $batch->key );
 			}
