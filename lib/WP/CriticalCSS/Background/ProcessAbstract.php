@@ -164,7 +164,10 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 		$this->handle();
 
-		exit;
+		if ( 'cli' !== php_sapi_name() ) {
+			exit;
+		}
+
 	}
 
 	/**
@@ -222,6 +225,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 			} else {
 				$this->delete( $batch->key );
+				$original_batch = null;
+				$batch          = null;
 			}
 
 			sleep( 0.5 );
