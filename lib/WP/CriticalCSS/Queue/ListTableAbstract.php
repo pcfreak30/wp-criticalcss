@@ -80,21 +80,15 @@ abstract class ListTableAbstract extends \WP_List_Table {
 	}
 
 	/**
-	 * @return mixed
-	 */
-	abstract protected function do_prepare_items();
-
-	/**
 	 *
 	 */
 	protected function pre_prepare_items() {
 		$this->_column_headers = $this->get_column_info();
 		$this->process_bulk_action();
-		$this->per_page    = $this->get_items_per_page( 'queue_items_per_page', 20 );
 		$table             = $this->get_table_name();
 		$this->total_items = wp_criticalcss()->wpdb->get_var( "SELECT COUNT(id) FROM {$table}" );
-		$paged             = $this->get_pagenum();
-		$this->start       = ( $paged - 1 ) * $this->per_page;
+		$this->per_page    = $this->total_items;
+		$this->start       = 1;
 	}
 
 	/**
@@ -122,6 +116,11 @@ abstract class ListTableAbstract extends \WP_List_Table {
 
 		return "{$wpdb->prefix}wp_criticalcss_{$table_name}_queue";
 	}
+
+	/**
+	 * @return mixed
+	 */
+	abstract protected function do_prepare_items();
 
 	/**
 	 *
