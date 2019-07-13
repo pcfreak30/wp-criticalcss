@@ -23,6 +23,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 
 	public function handle_interrupt() {
 		do_action( 'shutdown' );
+		exit;
 	}
 
 	/**
