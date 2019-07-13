@@ -192,10 +192,12 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 					unset( $batch->data[ $key ] );
 				}
 
-				if ( $this->time_exceeded() || $this->memory_exceeded() ) {
+				if ( ( $this->time_exceeded() || $this->memory_exceeded() ) && ! $cli ) {
 					// Batch limits reached.
 					break;
 				}
+
+				sleep( 0.5 );
 			}
 
 			// Update or delete current batch.
