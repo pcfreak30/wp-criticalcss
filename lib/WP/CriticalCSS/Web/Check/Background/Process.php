@@ -23,8 +23,8 @@ class Process extends ProcessAbstract {
 	 * @return mixed
 	 */
 	protected function task( $item ) {
-		$this->set_processing();
-		$url = wp_criticalcss()->get_permalink( $item );
+		$item = $this->set_processing();
+		$url  = wp_criticalcss()->get_permalink( $item );
 		if ( isset( $this->_processed_urls[ $url ] ) ) {
 			return false;
 		}
@@ -50,7 +50,7 @@ class Process extends ProcessAbstract {
 			if ( $item['error'] <= apply_filters( 'wp_criticalcss_web_check_retries', 3 ) ) {
 				$item['error'] ++;
 				sleep( 1 );
-				$this->set_pending();
+				$item = $this->set_pending();
 
 				return $item;
 			}
@@ -150,12 +150,8 @@ class Process extends ProcessAbstract {
 		return false;
 	}
 
-	private function set_pending() {
-		$this->set_status( Table::STATUS_PENDING );
-	}
-
 	private function set_processing() {
-		$this->set_status( Table::STATUS_PROCESSING );
+		return $this->set_status( Table::STATUS_PROCESSING );
 	}
 
 	private function set_status( $status ) {
@@ -164,5 +160,11 @@ class Process extends ProcessAbstract {
 		$data['status'] = $status;
 		$batch->data    = [ $data ];
 		$this->update( $batch->key, $batch->data );
+
+		return $data;
+	}
+
+	private function set_pending() {
+		return $this->set_status( Table::STATUS_PENDING );
 	}
 }
