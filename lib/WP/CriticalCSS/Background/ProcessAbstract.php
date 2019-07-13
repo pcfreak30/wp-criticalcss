@@ -136,6 +136,8 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 		}
 		$this->schedule_event();
 
+		$this->data = [];
+
 		return $this;
 	}
 
