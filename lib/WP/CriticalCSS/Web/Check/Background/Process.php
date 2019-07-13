@@ -135,7 +135,7 @@ class Process extends ProcessAbstract {
 			}
 		}
 
-		if ( $changed ) {
+		if ( $changed && ! $api_queue->get_item_exists( $item ) ) {
 			$item['css_hash']  = $css_hash;
 			$item['html_hash'] = $html_hash;
 			wp_criticalcss()->get_integration_manager()->disable_integrations();
@@ -143,7 +143,6 @@ class Process extends ProcessAbstract {
 			wp_criticalcss()->get_integration_manager()->enable_integrations();
 			wp_criticalcss()->get_data_manager()->set_cache( $item, '' );
 			$api_queue->push_to_queue( $item )->save();
-
 		}
 		$this->_processed_urls[ $url ] = true;
 
