@@ -12,7 +12,7 @@ class Kinsta extends IntegrationAbstract {
 	 * Kinsta constructor.
 	 */
 	public function init() {
-		if ( isset( $_SERVER['KINSTA_CACHE_ZONE'] ) && class_exists( '\Kinsta\Cache' ) ) {
+		if ( class_exists( '\Kinsta\Cache' ) ) {
 			add_action( 'kinsta_cache_init', [ $this, 'set_kinsta_cache' ] );
 			parent::init();
 		}
