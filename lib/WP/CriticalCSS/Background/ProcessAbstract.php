@@ -215,7 +215,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 					break;
 				}
 
-				sleep( 0.5 );
+				sleep( apply_filters( 'wp_criticalcss_process_delay', $task ? 5.0 : 0.5 ) );
 			}
 
 			// Update or delete current batch.
@@ -231,7 +231,7 @@ abstract class ProcessAbstract extends \WP_Background_Process {
 				$batch          = null;
 			}
 
-			sleep( 0.5 );
+			sleep( apply_filters( 'wp_criticalcss_process_delay', 0.5 ) );
 		} while ( ! $this->is_queue_empty() && $cli );
 
 		$this->unlock_process();
