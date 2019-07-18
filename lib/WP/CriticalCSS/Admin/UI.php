@@ -194,6 +194,22 @@ class UI extends Component {
 			'desc'  => __( 'Allow per post CSS, per term CSS, post type CSS or taxonomy CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
 		] );
 
+		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
+			'name'    => 'visual_validation',
+			'label'   => 'Visual Validation',
+			'type'    => 'select',
+			'options' => [
+				'off'   => 'Off (No Validation)',
+				'error' => 'ERROR (Major issues exist or it failed to process)',
+				'bad'   => 'Medium to bad issues exist (that may normally require manual review)',
+				'warn'  => 'Minor issues were found',
+				'good'  => 'No issues were found!',
+			],
+			'default' => 'off',
+			'desc'    => __( 'If enabled, only allow the set level of visual validation (differences between the actual page and what was created) or better', $this->plugin->get_lang_domain() ),
+		] );
+
+
 		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
 			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 				'name'  => 'web_check_interval',
@@ -291,21 +307,21 @@ class UI extends Component {
 			] );
 			?>
 			<style type="text/css">
-                .form-table .api_queue > th, .form-table .web_check_queue > th {
-                    display: none;
-                }
+				.form-table .api_queue > th, .form-table .web_check_queue > th {
+					display: none;
+				}
 
-                .no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
-                    text-align: center !important;
-                }
+				.no-items, .manage-column, .form-table .api_queue td, .form-table .web_check_queue td {
+					text-align: center !important;
+				}
 
-                .form-table th {
-                    width: auto;
-                }
+				.form-table th {
+					width: auto;
+				}
 
-                .group h2 {
-                    display: none;
-                }
+				.group h2 {
+					display: none;
+				}
 			</style>
 
 			<?php

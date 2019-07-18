@@ -24,6 +24,7 @@ class Manager extends Component {
 		'prioritize_manual_css',
 		'force_include_styles',
 		'fallback_css',
+		'visual_validation',
 	];
 
 	public function get_setting( $name ) {
