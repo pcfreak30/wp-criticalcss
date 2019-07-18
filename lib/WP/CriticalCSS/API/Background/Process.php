@@ -97,7 +97,10 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 				// @codingStandardsIgnoreLine
 				$item['result_status'] = $result->resultStatus;
 			}
-			if ( ! empty( $result->error ) || 'JOB_UNKNOWN' === $result->status ) {
+			if ( ! empty( $result->error ) || in_array( $result->status, [
+					'JOB_UNKNOWN',
+					'JOB_FAILED',
+				] ) ) {
 				unset( $item['queue_id'] );
 
 				return $item;
