@@ -301,7 +301,7 @@ class CriticalCSS extends Plugin {
 			restore_current_blog( $object['blog_id'] );
 		}
 
-		return $url;
+		return apply_filters( 'wp_criticalcss_get_permalink', $url );
 	}
 
 	/**
