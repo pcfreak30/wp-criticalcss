@@ -26,10 +26,9 @@ class Kinsta extends IntegrationAbstract {
 			$this,
 			'purge_cache',
 		], 10, 3 );
-		add_action( 'wp_criticalcss_nocache', [
-			$this,
-			'disable_cache',
-		] );
+		if ( wp_doing_cron() ) {
+			add_filter( 'wp_criticalcss_get_permalink', [ $this, 'modify_permalink' ] );
+		}
 	}
 
 	/**
@@ -37,6 +36,12 @@ class Kinsta extends IntegrationAbstract {
 	 */
 	public function disable() {
 
+	}
+
+	public function modify_permalink( $url ) {
+		$key = 'cache_bust_' . bin2hex( random_bytes( 5 ) );
+
+		return add_query_arg( $key, '1', $url );
 	}
 
 	/**
