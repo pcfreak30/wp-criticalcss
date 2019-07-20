@@ -62,6 +62,8 @@ class Manager extends Component {
 						break;
 
 				}
+				$value = wp_unslash( $value );
+
 				if ( is_multisite() ) {
 					restore_current_blog();
 				}
