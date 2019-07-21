@@ -59,7 +59,6 @@ class Post extends Component {
 			'type'      => 'post',
 			'object_id' => $object_id,
 		], 'manual_css' );
-		$css                     = wp_unslash( $css );
 		$override                = $this->plugin->data_manager->get_item_data( [
 			'type'      => 'post',
 			'object_id' => $object_id,

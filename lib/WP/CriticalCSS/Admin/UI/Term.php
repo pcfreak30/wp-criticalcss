@@ -59,7 +59,6 @@ class Term extends Component {
 			'type'      => 'term',
 			'object_id' => $object_id,
 		], 'manual_css' );
-		$css = wp_unslash( $css );
 		?>
 
 		<table class="form-table">
