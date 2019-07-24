@@ -194,22 +194,6 @@ class UI extends Component {
 			'desc'  => __( 'Allow per post CSS, per term CSS, post type CSS or taxonomy CSS to override generated CSS always. By default generated css will take priority when it exists.', $this->plugin->get_lang_domain() ),
 		] );
 
-		$this->settings_ui->add_field( $this->plugin->get_option_name(), [
-			'name'    => 'visual_validation',
-			'label'   => 'Visual Validation',
-			'type'    => 'select',
-			'options' => [
-				'off'   => 'Off (No Validation)',
-				'error' => 'ERROR (Major issues exist or it failed to process)',
-				'bad'   => 'Medium to bad issues exist (that may normally require manual review)',
-				'warn'  => 'Minor issues were found',
-				'good'  => 'No issues were found!',
-			],
-			'default' => 'off',
-			'desc'    => __( 'If enabled, only allow the set level of visual validation (differences between the actual page and what was created) or better', $this->plugin->get_lang_domain() ),
-		] );
-
-
 		if ( ! apply_filters( 'wp_criticalcss_cache_integration', false ) ) {
 			$this->settings_ui->add_field( $this->plugin->get_option_name(), [
 				'name'  => 'web_check_interval',
