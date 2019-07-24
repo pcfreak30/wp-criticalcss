@@ -17,14 +17,6 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 	 */
 	private $api;
 
-	private $validation_map = [
-		'OFF'   => 4,
-		'ERROR' => 3,
-		'BAD'   => 2,
-		'WARN'  => 1,
-		'GOOD'  => 0,
-	];
-
 	/**
 	 * Process constructor.
 	 *
@@ -117,11 +109,6 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			if ( 'JOB_DONE' === $result->status ) {
 				// @codingStandardsIgnoreLine
 				if ( 'GOOD' === $result->resultStatus && ! empty( $result->css ) ) {
-					if ( ! $this->does_visually_validate( $result ) ) {
-						unset( $item['queue_id'] );
-
-						return $item;
-					}
 					wp_criticalcss()->integration_manager->disable_integrations();
 					if ( ! empty( $item['template'] ) ) {
 						$logs = wp_criticalcss()->template_log->get( $item['template'] );
@@ -158,23 +145,6 @@ class Process extends \WP\CriticalCSS\Background\ProcessAbstract {
 			$item['status']   = $result->status;
 
 			return $item;
-		}
-
-		return false;
-	}
-
-	private function does_visually_validate( $result ) {
-		$visual_validation = strtoupper( wp_criticalcss()->settings_manager->get_setting( 'visual_validation' ) );
-		if ( empty( $result->validationStatus ) || empty( $visual_validation ) ) {
-			return true;
-		}
-
-		if ( ! empty( $result->validationStatus ) ) {
-			$result->validationStatus = strtoupper( $result->validationStatus );
-		}
-
-		if ( isset( $this->validation_map[ $visual_validation ] ) && isset( $this->validation_map[ $result->validationStatus ] ) && $this->validation_map[ $visual_validation ] >= $this->validation_map[ $result->validationStatus ] ) {
-			return true;
 		}
 
 		return false;
