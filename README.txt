@@ -68,6 +68,21 @@ This is used as a special version of the web page that forcibly disables support
 == Changelog ==
 
 
+### 0.7.5 ###
+
+* Bug: Misc fixes to remove warnings with $_POST vars
+* Bug: Fix what is purged in web fetch mode for the page check flag
+* Bug: Remove use of compat function
+* Bug: Fix slashing in saving critical css data
+* Feature: Add WebP compatibility to force webp detection off no nocache requests
+* Enhancement: Refactor queue logic to only process 1 item per run and don't die after
+* Enhancement: Refactor kinsta integration to use their mu-plugin for purging
+* Enhancement: Refactor rewrite url logic for nocache urls based on WP Core rewrite class
+* Enhancement: Enable the queue processes to run until the queue is empty with filterable delays if running in PHP CLI mode (shell)
+* Enhancement: Remove the paging in the queue UI tables for simplicity
+* Enhancement: Add compatibility with Kinsta caching to bust it with a query string for nocache urls
+* Compatibility: Add compatibility with SEO/redirect plugins
+
 ### 0.7.4 ###
 
 * Compatibility: Add compatibility support for Elementor to prevent critical css from showing up on editor preview
