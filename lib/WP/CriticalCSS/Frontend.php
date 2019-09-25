@@ -119,8 +119,8 @@ class Frontend extends Component {
 				<style type="text/css" id="criticalcss" data-no-minify="1"><?php echo $cache ?></style>
 				<?php
 			}
-			$type  = $this->plugin->request->get_current_page_type();
-			$hash  = $this->plugin->data_manager->get_item_hash( $type );
+			$type = $this->plugin->request->get_current_page_type();
+			$hash = $this->plugin->data_manager->get_item_hash( $type );
 			if ( 'on' === $this->plugin->settings_manager->get_setting( 'template_cache' ) && ! empty( $type['template'] ) ) {
 				if ( empty( $cache ) ) {
 					if ( ! $this->plugin->api_queue->get_item_exists( $type ) ) {
@@ -130,7 +130,7 @@ class Frontend extends Component {
 				}
 			} else {
 				$check = $this->plugin->cache_manager->get_cache_fragment( [ 'webcheck', $hash ] );
-				if ( ! ( $manual || $fallback ) && ( empty( $check ) || ( ! empty( $check ) && empty( $cache ) && null !== $cache ) ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
+				if ( ! $manual && ( empty( $check ) || ( ! empty( $check ) && empty( $cache ) && null !== $cache ) ) && ! $this->plugin->web_check_queue->get_item_exists( $type ) ) {
 					$this->plugin->web_check_queue->push_to_queue( $type )->save();
 					$this->plugin->cache_manager->update_cache_fragment( [ 'webcheck', $hash ], true );
 				}
