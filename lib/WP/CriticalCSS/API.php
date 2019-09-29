@@ -121,7 +121,7 @@ class API extends Component {
 				'aff'                      => 3,
 				'version'                  => $this->plugin->get_version(),
 				'wpCriticalCssQueueLength' => $this->plugin->api_queue->get_length(),
-				'forceIncludeCssSelectors' => $force_selectors,
+				'forceInclude' => $force_selectors,
 			],
 		] );
 
