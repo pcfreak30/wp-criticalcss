@@ -120,7 +120,6 @@ class Request extends Component {
 		} else {
 			$rules = array_merge( $root_rewrite, $search_rewrite, $post_rewrite, $page_rewrite, call_user_func_array( 'array_merge', $cpt_rules ), $rules );
 		}
-		$rules = array_unique( $rules );
 
 		return $rules;
 	}
