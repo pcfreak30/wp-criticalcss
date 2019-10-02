@@ -150,7 +150,11 @@ class WPRocket extends IntegrationAbstract {
 	 * @return int
 	 */
 	public function get_cache_expire_period() {
-		return get_rocket_purge_cron_interval();
+		if ( function_exists( 'get_rocket_purge_cron_interval' ) ) {
+			return get_rocket_purge_cron_interval();
+		}
+
+		return apply_filters( 'rocket_container', '' )->get( 'expired_cache_purge_subscriber' )->get_cache_lifespan();
 	}
 
 	/**
