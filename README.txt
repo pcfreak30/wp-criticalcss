@@ -67,6 +67,12 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.7.6 ###
+
+* Bug: Don't check for manual css to see if we need to add to queue since we can just disable the api by removing the key
+* Bug: Fix forceInclude CSS selectors functionality. It was not sending the right field name to the API.
+* Bug: Dont try and remove duplicate rewrite rules due to possible edge cases
+* Compatibility: WP Rocket 3.4 got rid of get_rocket_purge_cron_interval, add compatibility
 
 ### 0.7.5 ###
 
