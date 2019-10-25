@@ -116,9 +116,9 @@ class Request extends Component {
 			}
 		}
 		if ( $this->wp_rewrite->use_verbose_page_rules ) {
-			$rules = array_merge( $root_rewrite, $search_rewrite, $page_rewrite, $post_rewrite, call_user_func_array( 'array_merge', $cpt_rules ), $rules );
+			$rules = array_merge( call_user_func_array( 'array_merge', $cpt_rules ),$root_rewrite, $search_rewrite, $page_rewrite, $post_rewrite, $rules );
 		} else {
-			$rules = array_merge( $root_rewrite, $search_rewrite, $post_rewrite, $page_rewrite, call_user_func_array( 'array_merge', $cpt_rules ), $rules );
+			$rules = array_merge( call_user_func_array( 'array_merge', $cpt_rules ), $root_rewrite, $search_rewrite, $post_rewrite, $page_rewrite, $rules );
 		}
 
 		return $rules;
