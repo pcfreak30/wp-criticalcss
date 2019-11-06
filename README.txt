@@ -67,6 +67,10 @@ This is used as a special version of the web page that forcibly disables support
 
 == Changelog ==
 
+### 0.7.7 ###
+
+* Bug: Fix edge case with custom post types rewrite rules by putting them before the generic rules
+
 ### 0.7.6 ###
 
 * Bug: Don't check for manual css to see if we need to add to queue since we can just disable the api by removing the key
