@@ -7,7 +7,7 @@ use ComposePress\Core\Abstracts\Plugin;
 use WP\CriticalCSS\Admin\UI;
 use WP\CriticalCSS\API\Background\Process as BackgroundProcess;
 use WP\CriticalCSS\Cache\Manager as CacheManager;
-use WP\CriticalCSS\Data\Manager as DataManager;
+use WP\CriticalCSS\Data\Data as DataManager;
 use WP\CriticalCSS\Frontend;
 use WP\CriticalCSS\Installer;
 use WP\CriticalCSS\Integration\Manager as IntegrationManager;
@@ -92,7 +92,7 @@ class CriticalCSS extends Plugin {
 	protected $admin_ui;
 
 	/**
-	 * @var \WP\CriticalCSS\Data\Manager
+	 * @var \WP\CriticalCSS\Data\Data
 	 */
 	protected $data_manager;
 
@@ -131,18 +131,18 @@ class CriticalCSS extends Plugin {
 	/**
 	 * CriticalCSS constructor.
 	 *
-	 * @param \WP\CriticalCSS\Settings\Manager                                                           $settings_manager
-	 * @param \WP\CriticalCSS\Admin\UI                                                                   $admin_ui
-	 * @param \WP\CriticalCSS\Data\Manager                                                               $data_manager
-	 * @param \WP\CriticalCSS\Cache\Manager                                                              $cache_manager
-	 * @param \WP\CriticalCSS\Request                                                                    $request
+	 * @param \WP\CriticalCSS\Settings\Manager                                                    $settings_manager
+	 * @param \WP\CriticalCSS\Admin\UI                                                            $admin_ui
+	 * @param \WP\CriticalCSS\Data\Data                                                           $data_manager
+	 * @param \WP\CriticalCSS\Cache\Manager                                                       $cache_manager
+	 * @param \WP\CriticalCSS\Request                                                             $request
 	 * @param \WP\CriticalCSS\Integration\Manager                                                 $integration_manager
 	 * @param \WP\CriticalCSS\API\Background\Process|\WP\CriticalCSS\Web\Check\Background\Process $api_queue
-	 * @param \WP\CriticalCSS\Frontend                                                                   $frontend
-	 * @param \WP\CriticalCSS\Web\Check\Background\Process                                               $web_check_queue
-	 * @param \WP\CriticalCSS\Installer                                                                  $installer
-	 * @param \WP\CriticalCSS\Log                                                                        $log
-	 * @param \WP\CriticalCSS\Template\Log                                                               $template_log
+	 * @param \WP\CriticalCSS\Frontend                                                            $frontend
+	 * @param \WP\CriticalCSS\Web\Check\Background\Process                                        $web_check_queue
+	 * @param \WP\CriticalCSS\Installer                                                           $installer
+	 * @param \WP\CriticalCSS\Log                                                                 $log
+	 * @param \WP\CriticalCSS\Template\Log                                                        $template_log
 	 */
 	public function __construct(
 		SettingsManager $settings_manager,
@@ -209,7 +209,7 @@ class CriticalCSS extends Plugin {
 	}
 
 	/**
-	 * @return \WP\CriticalCSS\Data\Manager
+	 * @return \WP\CriticalCSS\Data\Data
 	 */
 	public function get_data_manager() {
 		return $this->data_manager;

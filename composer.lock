@@ -1,73 +1,42 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3731f796470598fc6ab95b19b8c2e47d",
+    "content-hash": "fb4daa22dbcc21457990277b34b947f2",
     "packages": [
         {
-            "name": "a5hleyrich/wp-background-processing",
+            "name": "composepress/core",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/A5hleyRich/wp-background-processing.git",
-                "reference": "a3f3a1f66a1dfa529f5712d410d09317cc86a2de"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/A5hleyRich/wp-background-processing/zipball/a3f3a1f66a1dfa529f5712d410d09317cc86a2de",
-                "reference": "a3f3a1f66a1dfa529f5712d410d09317cc86a2de",
-                "shasum": ""
+                "url": "/home/derrick/Projects/composepress/core",
+                "reference": "9c82e9d6a72fad8eef2b1b2078423eb5abeac63a"
             },
             "require": {
-                "php": ">=5.2"
+                "composepress/dice": "^0.6.0"
+            },
+            "require-dev": {
+                "codeception/codeception": "^2.4",
+                "lucatume/wp-browser": "~2.2.0"
             },
             "type": "library",
-            "autoload": {
-                "classmap": [
-                    "classes/"
-                ]
+            "extra": {
+                "composepress": []
             },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPLv2+"
-            ],
-            "authors": [
-                {
-                    "name": "Ashley Rich",
-                    "email": "hello@ashleyrich.com"
-                }
-            ],
-            "description": "WP Background Processing can be used to fire off non-blocking asynchronous requests or as a background processing tool, allowing you to queue tasks.",
-            "time": "2017-10-03T14:33:09+00:00"
-        },
-        {
-            "name": "composepress/core",
-            "version": "0.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ComposePress/core.git",
-                "reference": "080287b81fd811edfe13afe7831c8115e0fce281"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ComposePress/core/zipball/080287b81fd811edfe13afe7831c8115e0fce281",
-                "reference": "080287b81fd811edfe13afe7831c8115e0fce281",
-                "shasum": ""
-            },
-            "require": {
-                "level-2/dice": "dev-v2.0-PHP5.4-5.5"
-            },
-            "type": "library",
             "autoload": {
                 "psr-4": {
                     "ComposePress\\Core\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "ComposePress\\Core\\": "tests/"
+                }
+            },
             "license": [
-                "LGPL-3.0-or-later"
+                "MIT"
             ],
             "authors": [
                 {
@@ -76,7 +45,54 @@
                 }
             ],
             "description": "A simple PSR-4 and composer ready plugin framework for the modern wordpress age",
-            "time": "2018-01-29T06:17:21+00:00"
+            "time": "2020-01-12T18:45:43+00:00"
+        },
+        {
+            "name": "composepress/dice",
+            "version": "0.6.4",
+            "source": {
+                "type": "git",
+                "url": "https://gitlab.com/ComposePress/Dice.git",
+                "reference": "5a7858181935908109062109d61e43d664a117cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/ComposePress%2FDice/repository/archive.zip?sha=5a7858181935908109062109d61e43d664a117cc",
+                "reference": "5a7858181935908109062109d61e43d664a117cc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ComposePress\\Dice\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Tom Butler",
+                    "email": "tom@r.je"
+                },
+                {
+                    "name": "Derrick Hammer",
+                    "email": "derrick@derrickhammer.com"
+                }
+            ],
+            "description": "A minimalist Dependency injection container (DIC) for PHP. Please note: This branch is only compatible with PHP5.6. 5.5, 5.4 and 5.3 compatible version is available as a separate branch on github. ",
+            "homepage": "http://r.je/dice.html",
+            "keywords": [
+                "dependency injection",
+                "dependency injection container",
+                "di",
+                "ioc"
+            ],
+            "time": "2019-07-30T07:06:24+00:00"
         },
         {
             "name": "jakeasmith/http_build_url",
@@ -112,49 +128,6 @@
             "time": "2017-05-01T15:36:40+00:00"
         },
         {
-            "name": "level-2/dice",
-            "version": "dev-v2.0-PHP5.4-5.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Level-2/Dice.git",
-                "reference": "33e5401c4a577b7d8dc7dc04db295fe5084343c4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Level-2/Dice/zipball/33e5401c4a577b7d8dc7dc04db295fe5084343c4",
-                "reference": "33e5401c4a577b7d8dc7dc04db295fe5084343c4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Dice\\": "./"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-2-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Butler",
-                    "email": "tom@r.je"
-                }
-            ],
-            "description": "A minimalist Dependency injection container (DIC) for PHP. Please note: This branch is only compatible with PHP5.6. 5.5, 5.4 and 5.3 compatible version is available as a separate branch on github. ",
-            "homepage": "http://r.je/dice.html",
-            "keywords": [
-                "dependency injection",
-                "dependency injection container",
-                "di",
-                "ioc"
-            ],
-            "time": "2015-11-30T17:19:11+00:00"
-        },
-        {
             "name": "pcfreak30/wordpress-cache-store",
             "version": "0.1.1",
             "source": {
@@ -186,17 +159,61 @@
             ],
             "description": "WordPress cache library to enable a data tree inspired storage structure to offset the limitation of the WordPress cache API for querying available keys",
             "time": "2017-07-22T21:43:49+00:00"
+        },
+        {
+            "name": "woocommerce/action-scheduler",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/woocommerce/action-scheduler.git",
+                "reference": "400725e8f80086f9f584a17b17b5352e27df5b52"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/woocommerce/action-scheduler/zipball/400725e8f80086f9f584a17b17b5352e27df5b52",
+                "reference": "400725e8f80086f9f584a17b17b5352e27df5b52",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^5.6",
+                "woocommerce/woocommerce-sniffs": "0.0.8",
+                "wp-cli/wp-cli": "~1.5.1"
+            },
+            "type": "wordpress-plugin",
+            "extra": {
+                "scripts-description": {
+                    "test": "Run unit tests",
+                    "phpcs": "Analyze code against the WordPress coding standards with PHP_CodeSniffer",
+                    "phpcbf": "Fix coding standards warnings/errors automatically with PHP Code Beautifier"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "classes/",
+                    "deprecated/",
+                    "lib/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "description": "Action Scheduler for WordPress and WooCommerce",
+            "homepage": "https://actionscheduler.org/",
+            "time": "2020-02-13T05:48:08+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "a5hleyrich/wp-background-processing": 20,
-        "level-2/dice": 20
+        "composepress/core": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-dom": "*",
+        "ext-zlib": "*"
+    },
     "platform-dev": []
 }

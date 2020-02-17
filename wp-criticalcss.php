@@ -14,18 +14,22 @@ License: GPL3
  * Activation hooks
  */
 
-use Dice\Dice;
+use ComposePress\Dice\Dice;
 
 
 /**
  * @SuppressWarnings(PHPMD.StaticAccess)
- * @return \WP\CriticalCSS
- * @alias WPCCSS()
+ * @return \WP_CriticalCSS\Plugin
  */
 function wp_criticalcss() {
-	return wp_criticalcss_container()->create( 'WP\CriticalCSS' );
+	return wp_criticalcss_container()->create( '\WP_CriticalCSS\Plugin' );
 }
 
+/**
+ * @param string $env
+ *
+ * @return \ComposePress\Dice\Dice
+ */
 function wp_criticalcss_container( $env = 'prod' ) {
 	static $container;
 	if ( empty( $container ) ) {
@@ -46,16 +50,16 @@ function wp_criticalcss_init() {
 /**
  * Activate function shortcut
  */
-function wp_criticalcss_activate() {
+function wp_criticalcss_activate( $network_wide ) {
 	wp_criticalcss()->init();
-	wp_criticalcss()->activate();
+	wp_criticalcss()->activate( $network_wide );
 }
 
 /**
  * Deactivate function shortcut
  */
-function wp_criticalcss_deactivate() {
-	wp_criticalcss()->deactivate();
+function wp_criticalcss_deactivate( $network_wide ) {
+	wp_criticalcss()->deactivate( $network_wide );
 }
 
 /**
@@ -67,7 +71,7 @@ function wp_criticalcss_php_upgrade_notice() {
 		sprintf(
 			'
 	<div class="error notice">
-		<p>Opps! %s requires a minimum PHP version of 5.4.0. Your current version is: %s. Please contact your host to upgrade.</p>
+		<p>Opps! %s requires a minimum PHP version of 5.5.0. Your current version is: %s. Please contact your host to upgrade.</p>
 	</div>', $info['Name'], PHP_VERSION
 		)
 	);
@@ -88,10 +92,11 @@ function wp_criticalcss_php_vendor_missing() {
 	);
 }
 
-if ( version_compare( PHP_VERSION, '5.4.0' ) < 0 ) {
+if ( version_compare( PHP_VERSION, '5.5.0' ) < 0 ) {
 	add_action( 'admin_notices', 'wp_criticalcss_php_upgrade_notice' );
 } else {
 	if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+		include_once __DIR__ . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
 		include_once __DIR__ . '/vendor/autoload.php';
 		add_action( 'plugins_loaded', 'wp_criticalcss_init', 11 );
 		register_activation_hook( __FILE__, 'wp_criticalcss_activate' );

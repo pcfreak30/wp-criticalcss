@@ -1,14 +1,15 @@
 {
   "require": {
     "jakeasmith/http_build_url": "^1",
-    "a5hleyrich/wp-background-processing": "dev-master",
-    "level-2/dice": "dev-v2.0-PHP5.4-5.5",
     "pcfreak30/wordpress-cache-store": "^0.1.1",
-    "composepress/core": "^0.3.0"
+    "composepress/core": "dev-master",
+    "woocommerce/action-scheduler": "^3.0",
+    "ext-dom": "*",
+    "ext-zlib": "*"
   },
   "autoload": {
     "psr-4": {
-      "": "lib/"
+      "WP_CriticalCSS\\": "src/"
     }
   },
   "autoload-dev": {

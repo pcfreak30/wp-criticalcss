@@ -1,20 +1,30 @@
 <?php
 
 
-namespace WP\CriticalCSS\Integration;
+namespace WP_CriticalCSS\Integration;
 
 
-class Kinsta extends IntegrationAbstract {
+use WP_CriticalCSS\Abstracts\Integration;
 
+/**
+ * Class Kinsta
+ *
+ * @package WP_CriticalCSS\Integration
+ */
+class Kinsta extends Integration {
+
+	/**
+	 * @var
+	 */
 	private $kinsta_cache;
 
 	/**
 	 * Kinsta constructor.
 	 */
-	public function init() {
+	public function setup() {
 		if ( class_exists( '\Kinsta\Cache' ) ) {
 			add_action( 'kinsta_cache_init', [ $this, 'set_kinsta_cache' ] );
-			parent::init();
+			parent::setup();
 		}
 	}
 
@@ -38,6 +48,12 @@ class Kinsta extends IntegrationAbstract {
 
 	}
 
+	/**
+	 * @param $url
+	 *
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function modify_permalink( $url ) {
 		$key = 'cache_bust_' . bin2hex( random_bytes( 5 ) );
 
@@ -63,6 +79,9 @@ class Kinsta extends IntegrationAbstract {
 		sleep( 1 );
 	}
 
+	/**
+	 * @param $url
+	 */
 	private function purge_url( $url ) {
 		$purge = [
 			'single' => [ 'custom|0' => trailingslashit( $url ) ],
@@ -78,6 +97,9 @@ class Kinsta extends IntegrationAbstract {
 		);
 	}
 
+	/**
+	 *
+	 */
 	public function disable_cache() {
 		$permalink = $this->plugin->get_permalink( $this->plugin->request->get_current_page_type() );
 		$this->purge_url( $permalink );
